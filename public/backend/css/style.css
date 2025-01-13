@@ -1,0 +1,58 @@
+.help-block{
+    color: red;
+}
+
+.card.card-flush > .card-header {
+    border-bottom: 1px solid #cecbcb !important;
+}
+
+#kt_app_sidebar .menu-sub .menu-item:hover {
+    border-radius: 0.475rem;
+    margin-right: 1rem;
+}
+
+.classTable .row:first-child {
+    margin-top: 20px;
+}
+
+.classTable thead {
+    background-color: #dbdbdb;
+}
+/*
+.classTable table {
+    border: 1px solid #efefef;
+} */
+
+.classTable table tbody td:first-child,
+.classTable table thead th:first-child {
+    padding-left: 0.75rem !important;
+}
+
+.classTable table tbody td:last-child,
+.classTable table thead th:last-child {
+    padding-right: 0.75rem !important;
+}
+
+.classTable table tbody tr.even {
+    background-color: #f5f5f5;
+}
+
+a.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.dataTables_scrollBody {
+    overflow: unset !important;
+}
+a.dropdown-item:hover {
+    border-radius: 5px;
+    background-color: #E9F3FF;
+}
+
+.iti__flag-container {
+    height: 46px;
+}
+span#toggle-password {
+    top: 20px !important;
+}
