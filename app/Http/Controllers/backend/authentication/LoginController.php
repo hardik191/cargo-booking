@@ -4,7 +4,6 @@ namespace App\Http\Controllers\backend\authentication;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Config;
 use Illuminate\Support\Facades\Auth;
 use Session;
 
@@ -15,7 +14,7 @@ class LoginController extends Controller
      */
     public function index()
     {
-        $data['title'] =  'Login'.'||'.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'Login'.'||'.get_system_name();
         $data['css'] = array(
             'toastr/toastr.min.css'
         );

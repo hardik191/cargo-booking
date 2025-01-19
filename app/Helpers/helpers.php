@@ -6,8 +6,8 @@ function date_formate($date){
     return date("d-M-Y", strtotime($date));
 }
 
-function new_date_formate($date){
-    return date("d/m/Y", strtotime($date));
+function date_small_formate($date){
+    return date("d-m-Y", strtotime($date));
 }
 
 function convert_indian_currency($amount){
@@ -15,7 +15,6 @@ function convert_indian_currency($amount){
 
       return $amt;
 }
-
 
 function ind_money_format($money){
 
@@ -71,5 +70,15 @@ function get_system_setting($key){
     $objSystemSetting = SystemSetting::where('key', $key)->first();
 
     return $objSystemSetting;
+}
+
+function get_system_name(){
+    $objSystemSetting = SystemSetting::where('key', 'general_setting')->first();
+
+    if ($objSystemSetting) {
+        return json_decode($objSystemSetting->value)->system_name ?? 'Project';
+    }
+
+    return 'Project';
 }
 ?>

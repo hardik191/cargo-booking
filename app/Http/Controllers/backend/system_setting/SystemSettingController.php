@@ -15,7 +15,7 @@ class SystemSettingController extends Controller
 
     public function user_profile()
     {
-        $data['title'] =  'Update Profile'.' || '.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'Update Profile'.' || '.get_system_name();
         $data['css'] = array(
             'toastr/toastr.min.css'
         );
@@ -100,7 +100,7 @@ class SystemSettingController extends Controller
      */
     public function index()
     {
-        $data['title'] =  'System Setting'.' || '.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'System Setting'.' || '.get_system_name();
         $data['css'] = array(
             'toastr/toastr.min.css'
         );

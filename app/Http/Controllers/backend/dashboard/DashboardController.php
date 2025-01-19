@@ -13,7 +13,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $data['title'] =  'Dashboard'.'||'.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'Dashboard'.'||'. get_system_name();
 
         $data['header'] = array(
             'title' => 'Dashboard',

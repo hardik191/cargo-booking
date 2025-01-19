@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Mail;
 class ForgotPasswordController extends Controller
 {
     public function forgot_password_index(){
-        $data['title'] =  'Forgot Password'.' || '.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'Forgot Password'.' || '.get_system_name();
         $data['css'] = array(
             'toastr/toastr.min.css'
         );
@@ -98,7 +98,7 @@ class ForgotPasswordController extends Controller
         ->where(['token' => $token])
         ->first();
 
-        $data['title'] =  'Reset Password'.' || '.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'Reset Password'.' || '.get_system_name();
         $data['css'] = array(
             'toastr/toastr.min.css'
         );

@@ -4,13 +4,12 @@ namespace App\Http\Controllers\backend\audit;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Config;
 
 class AuditController extends Controller
 {
     public function index()
     {
-        $data['title'] =  'Audits'.' || '.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'Audits'.' || '. get_system_name();
         $data['css'] = array(
             'toastr/toastr.min.css'
         );

@@ -64,7 +64,7 @@
             </div>
           @endcan
 
-          @can('system-setting list')
+          @can('setting system-setting')
             <div class="menu-item px-5">
                 <a href="{{ route('system-setting') }}" class="menu-link px-5">System Setting</a>
             </div>

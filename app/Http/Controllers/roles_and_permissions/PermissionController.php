@@ -17,7 +17,7 @@ class PermissionController extends Controller
     public function index()
     {
 
-        $data['title'] =  'Permissions '.' || '.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'Permissions '.' || '.get_system_name();
         $data['css'] = array(
             'toastr/toastr.min.css'
 
@@ -230,15 +230,15 @@ class PermissionController extends Controller
                         $actionhtml .= '<a href="javascript:;" class="menu-link px-3" id="dropdownMenuButton' . $row["id"] . '"                 data-bs-toggle="dropdown" aria-expanded="false">';
                         $actionhtml .= '<i class="fs-2x icon-xl fas fa-cog" title="Actions"></i>';
                         $actionhtml .= '</a>';
-                        $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
+                        $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg px-3" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
 
                         // if($user->can('permission edit'))
                         // {
-                            $actionhtml .= '<li><a class="dropdown-item edit-permission" href="javascript:;" data-id="' . $row["id"] . '"><i class="far fa-edit text-warning"></i> Edit Permission</a></li>';
+                            // $actionhtml .= '<li><a class="dropdown-item edit-permission" href="javascript:;" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
                         // }
-                        if($user->can('permission delete')){
-                               $actionhtml .= '<li><a class="dropdown-item delete-permission" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $row["id"] . '"><i class="fa fa-trash text-danger"></i> Delete Permission</a></li>';
-                        }
+                        // if($user->can('permission delete')){
+                        //        $actionhtml .= '<li><a class="dropdown-item delete-permission" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $row["id"] . '"><i class="fa fa-trash text-danger"></i> Delete</a></li>';
+                        // }
 
 
                         $actionhtml .= '</ul>';
@@ -255,7 +255,7 @@ class PermissionController extends Controller
                         // $nestedData[] = $row['id'];
                         $nestedData[] = ucfirst($label);
                         $nestedData[] = ucfirst($formattedName);
-                        $nestedData[] = $actionhtml;
+                        // $nestedData[] = $actionhtml;
                         $data[] = $nestedData;
                     }
                     $json_data = array(

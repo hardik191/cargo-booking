@@ -107,12 +107,11 @@
 
 								<!--begin::Submit button-->
 								<div class="d-grid mb-10">
-									<button type="submit"  class="btn btn-primary">
-										<!--begin::Indicator label-->
-										<span class="indicator-label">Sign In</span>
-										<!--end::Indicator label-->
-
-									</button>
+									<button type="submit" class="btn btn-primary submitbtn">
+                                        <span class="indicator-label">Submit</span>
+                                        <span class="indicator-progress">Please wait...
+                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                    </button>
 								</div>
 								<!--end::Submit button-->
 

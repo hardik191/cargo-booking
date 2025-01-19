@@ -15,7 +15,7 @@
     </div>
 
     <div class="text-center pt-3">
-        <button type="reset" class="btn btn-light me-3" data-kt-permissions-modal-action="cancel">Discard</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary submitbtn" data-kt-permissions-modal-action="submit">
             <span class="indicator-label">Submit</span>
             <span class="indicator-progress">Please wait...

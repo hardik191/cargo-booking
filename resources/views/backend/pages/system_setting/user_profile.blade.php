@@ -131,8 +131,12 @@ if($data['user_image'] != '' || $data['user_image'] != null ){
                     <!--end::Card body-->
                     <!--begin::Actions-->
                     <div class="card-footer d-flex justify-content-end py-6 px-9">
-                        <button type="reset" class="btn btn-light btn-active-light-primary me-2">Discard</button>
-                        <button type="submit" class="btn btn-primary" id="kt_account_profile_details_submit">Save Changes</button>
+                        <button type="reset" class="btn btn-secondary me-2">Discard</button>
+                        <button type="submit" class="btn btn-primary submitbtn">
+                            <span class="indicator-label">Save Changes</span>
+                            <span class="indicator-progress">Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
                     </div>
                     <!--end::Actions-->
                 <input type="hidden"></form>

@@ -62,7 +62,7 @@
 
 
     @include('backend.includes.footer')
-
+    @include('backend.includes.modal')
 
 
 </body>

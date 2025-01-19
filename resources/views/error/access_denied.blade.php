@@ -10,7 +10,7 @@
                 background-image: url('{{ asset('backend/media/misc/auth-bg.png') }}');
             }
         </style>
-            
+        
         <!--end::Page bg image-->
         <!--begin::Authentication - Signup Welcome Message -->
         <div class="d-flex flex-column flex-center flex-column-fluid">
@@ -30,8 +30,8 @@
                         <div class="mb-3">
                             <h1 class="display-6">Access Denied</h1>
                             <div class="fw-semibold fs-3 text-gray-600 m-3">You do not have permission to view this page.
-                                <br>
-                                Please check your credentials and try again.
+                                {{-- <br>
+                                Please check your credentials and try again. --}}
                             </div>
                             <div class="fw-bold fs-3 text-gray-600 mb-7">
                                 Error Code: 403
@@ -41,7 +41,7 @@
                         <!--end::Illustration-->
                         <!--begin::Link-->
                         <div class="mb-0">
-                            <a href="{{ route('login') }}" class="btn btn-sm btn-primary">Sign In</a>
+                            <a href="{{ $route }}" class="btn btn-sm btn-primary">Home</a>
                         </div>
                         <!--end::Link-->
                     </div>

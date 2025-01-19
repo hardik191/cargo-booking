@@ -37,7 +37,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
             <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6"
                 id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
                 <div class="menu-item">
-                    <a class="menu-link {{ (  $currentRoute  ==  "dashboard" ? 'active' : '' ) }}"
+                    <a class="menu-link {{ in_array($currentRoute, ['dashboard']) ? 'active' : '' }}"
                         href="{{route('dashboard')}}">
                         <span class="menu-icon">
                             <i class="ki-duotone ki-element-11 fs-2">
@@ -51,7 +51,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                     </a>
                 </div>
 
-                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (  $currentRoute  ==  "permissions" || $currentRoute  ==  "roles" ? 'here show' : '' ) }}">
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ in_array($currentRoute, ['permissions', 'roles', 'customer-list', 'admin-list', 'add-admin', 'edit-admin']) ? 'here show' : '' }}" >
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-address-book fs-2">
@@ -64,28 +64,54 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                             <span class="menu-arrow"></span>
                         </span>
                         <div class="menu-sub menu-sub-accordion">
-                            <div class="menu-item">
-                                <a class="menu-link {{ (  $currentRoute  ==  "roles" ? 'active' : '' ) }}" href="{{route('roles')}}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Role</span>
-                                </a>
-                            </div>
 
-                            <div class="menu-item">
-                                <a class="menu-link {{ (  $currentRoute  ==  "permissions" ? 'active' : '' ) }}" href="{{route('permissions')}}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Permissions</span>
-                                </a>
-                            </div>
+                            @can('role list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ in_array($currentRoute, ['roles']) ? 'active' : '' }}" href="{{route('roles')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Role</span>
+                                    </a>
+                                </div>
+                            @endcan
 
+                            @can('permission list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ in_array($currentRoute, ['permissions']) ? 'active' : '' }}" href="{{route('permissions')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Permissions</span>
+                                    </a>
+                                </div>
+                            @endcan
+
+                            @can('customer list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ in_array($currentRoute, ['customer-list']) ? 'active' : '' }}" href="{{route('customer-list')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Customer</span>
+                                    </a>
+                                </div>
+                            @endcan
+
+                            @can('admin list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ in_array($currentRoute, ['admin-list', 'add-admin', 'edit-admin']) ? 'active' : '' }}" href="{{route('admin-list')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Admin</span>
+                                    </a>
+                                </div>
+                            @endcan
                         </div>
                     </div>
 
-                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (  $currentRoute  ==  "permissions" || $currentRoute  ==  "roles" ? 'here show' : '' ) }}">
+                    {{-- <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ in_array($currentRoute, ['permissions', 'roles']) ? 'here show' : '' }}" >
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-address-book fs-2">
@@ -94,21 +120,21 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                                     <span class="path3"></span>
                                 </i>
                             </span>
-                            <span class="menu-title">Order Management</span>
+                            <span class="menu-title">Master Management</span>
                             <span class="menu-arrow"></span>
                         </span>
                         <div class="menu-sub menu-sub-accordion">
                             <div class="menu-item">
-                                <a class="menu-link {{ (  $currentRoute  ==  "roles" ? 'active' : '' ) }}" href="{{route('roles')}}">
+                                <a class="menu-link {{ in_array($currentRoute, ['roles']) ? 'active' : '' }}" href="{{route('roles')}}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
-                                    <span class="menu-title">Pending </span>
+                                    <span class="menu-title">Port</span>
                                 </a>
                             </div>
 
                             <div class="menu-item">
-                                <a class="menu-link {{ (  $currentRoute  ==  "permissions" ? 'active' : '' ) }}" href="{{route('permissions')}}">
+                                <a class="menu-link {{ in_array($currentRoute, ['permissions']) ? 'active' : '' }}" href="{{route('permissions')}}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
@@ -117,7 +143,8 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                             </div>
 
                         </div>
-                    </div>
+                    </div> --}}
+
 
             </div>
         </div>

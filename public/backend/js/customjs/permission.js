@@ -9,13 +9,14 @@ var Permission = function(){
             ajaxAction: "getdatatable",
             postData: dataArr,
             hideColumnList: [1],
-            noSortingApply: [0, 3],
-            noSearchApply: [0, 3],
+            rowGroupColumnList: [1],
+            noSortingApply: [0, ],
+            noSearchApply: [0, ],
             defaultSortColumn: [0],
             defaultSortOrder: "DESC",
             setColumnWidth: columnWidth,
         };
-        getDataTablePermission(arrList);
+        getDataTableRowGroupColumn(arrList);
 
 
         $('body').on('click', '.add-permission', function() {

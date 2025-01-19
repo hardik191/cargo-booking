@@ -14,15 +14,17 @@ class User extends Authenticatable implements Auditable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
     use \OwenIt\Auditing\Auditable;
-    
+
     protected $guard_name = 'web';
-    
+
     protected $fillable = [
         'name',
         'email',
+        'country_code',
         'phone_no',
         'user_image',
         'password',
+        'status',
     ];
 
     protected $hidden = [

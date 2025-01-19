@@ -18,7 +18,7 @@ class PermissionSeeder extends Seeder
     {
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-        
+
         // Disable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=0;'); // permissions table
 
@@ -35,7 +35,7 @@ class PermissionSeeder extends Seeder
         // Execute the SQL queries
         DB::unprepared($sql);
 
-        $superAdminRole = Role::firstOrCreate(['name' => 'super admin']);
+        $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin']);
         $permissions = Permission::all();
         $superAdminRole->givePermissionTo($permissions);
 

@@ -18,7 +18,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $data['title'] =  'Roles '.' || '.Config::get('constants.SYSTEM_NAME');
+        $data['title'] =  'Roles '.' || '.get_system_name();
         $data['css'] = array(
             'toastr/toastr.min.css'
 
@@ -251,15 +251,15 @@ class RoleController extends Controller
                         $actionhtml .= '<a href="javascript:;" class="menu-link px-3" id="dropdownMenuButton' . $row["id"] . '"                 data-bs-toggle="dropdown" aria-expanded="false">';
                         $actionhtml .= '<i class="fs-2x icon-xl fas fa-cog" title="Actions"></i>';
                         $actionhtml .= '</a>';
-                        $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
+                        $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg px-3" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
 
                             // if($user->can('role edit'))
                             //     {
-                                   $actionhtml .= '<li><a class="dropdown-item edit-role" href="javascript:;" data-id="' . $row["id"] . '"><i class="far fa-edit text-warning"></i> Edit Role</a></li>';
+                                   $actionhtml .= '<li><a class="dropdown-item edit-role" href="javascript:;" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit </a></li>';
                                 // }
-                            if($user->can('role delete')){
-                               $actionhtml .= '<li><a class="dropdown-item delete-role" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $row["id"] . '"><i class="fa fa-trash text-danger"></i> Delete Role</a></li>';
-                            }
+                            // if($user->can('role delete')){
+                            //    $actionhtml .= '<li><a class="dropdown-item delete-role" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $row["id"] . '"><i class="fa fa-trash text-danger"></i> Delete </a></li>';
+                            // }
 
 
                         $actionhtml .= '</ul>';

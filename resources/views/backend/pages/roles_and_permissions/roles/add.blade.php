@@ -10,14 +10,14 @@
         <!--end::Label-->
         <!--begin::Input-->
         <input class="form-control form-control-solid" placeholder="Enter a role name" name="role_name" />
-       
+
         <div class="fv-row mb-3">
             <label class="fs-5 fw-bold form-label mb-2 mt-3">Role Permissions</label>
             <div class="table-responsive">
                 <table class="table align-middle table-row-dashed fs-6 gy-5">
                     <tbody class="text-gray-600 fw-semibold">
                         {{-- <tr>
-                            <td class="text-gray-800">Administrator Access 
+                            <td class="text-gray-800">Administrator Access
                             <span class="ms-1" data-bs-toggle="tooltip" aria-label="Allows a full access to the system" data-bs-original-title="Allows a full access to the system" data-kt-initialized="1">
                                 <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
                                     <span class="path1"></span>
@@ -58,13 +58,13 @@
                         @endforeach
                     </tbody>
                 </table>
-                
+
             </div>
         </div>
     </div>
 
     <div class="text-center pt-3">
-        <button type="reset" class="btn btn-light me-3" data-kt-roles-modal-action="cancel">Discard</button>
+        <button type="reset" class="btn btn-secondary me-3" data-kt-roles-modal-action="cancel">Discard</button>
         <button type="submit" class="btn btn-primary submitbtn" data-kt-roles-modal-action="submit">
             <span class="indicator-label">Submit</span>
             <span class="indicator-progress">Please wait...

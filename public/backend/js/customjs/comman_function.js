@@ -87,7 +87,7 @@ function handleAjaxResponse(output) {
     if (typeof output.redirect !== 'undefined' && output.redirect != '') {
         setTimeout(function () {
             window.location.href = output.redirect;
-        }, 4000);
+        }, 2000);
     }
     if (typeof output.reload !== 'undefined' && output.reload != '') {
         window.location.href = location.reload();
@@ -233,74 +233,6 @@ function numberformate(value) {
     return parseFloat(value).toFixed(2);
 }
 
-function getDataTable_olds(arr) {
-
-
-    var pageLength = 0
-    if (arr.pageLength) {
-        pageLength = arr.pageLength;
-    } else {
-        pageLength = 10;
-    }
-    var dataTable = $(arr.tableID).DataTable({
-        "scrollX": true,
-        "processing": true,
-        "responsive": true,
-        "lengthMenu": [5, 10, 25, 50, 100],
-        "pageLength": pageLength,
-        "serverSide": true,
-        "bAutoWidth": false,
-        "searching": true,
-        "bLengthChange": true,
-        "bInfo": true,
-        "language": {
-            "search": "_INPUT_",
-            "searchPlaceholder": "Search..."
-        },
-        "order": [
-            [(arr.defaultSortColumn) ? arr.defaultSortColumn : '0', (arr.defaultSortOrder) ? arr.defaultSortOrder : 'desc']
-        ],
-        "columnDefs": [{
-                "targets": arr.hideColumnList,
-                "visible": false
-            },
-            {
-                "targets": arr.noSortingApply,
-                "orderable": false
-            },
-            {
-                "targets": arr.noSearchApply,
-                "searchable": false
-            },
-            (arr.setColumnWidth) ? arr.setColumnWidth : ''
-        ],
-
-        "bStateSave": true,
-        "fnStateSave": function (oSettings, oData) {
-            localStorage.setItem('offersDataTables', JSON.stringify(oData));
-        },
-        "fnStateLoad": function (oSettings) {
-            return JSON.parse(localStorage.getItem('offersDataTables'));
-        },
-
-
-        "ajax": {
-            url: arr.ajaxURL,
-            method: "POST",
-            headers: {
-                'X-CSRF-TOKEN': $('input[name="_token"]').val()
-            },
-            data: { 'action': arr.ajaxAction, 'data': arr.postData },
-            error: function() { // error handling
-
-                $(".row-list-error").html("");
-                $(arr.tableID).append('<tbody class="row-list-error"><tr><td colspan="4" style="text-align: center;"><p style="color:red;">Sorry, No Record Found</p></td></tr></tbody>');
-                $(arr.tableID + "processing").css("display", "none");
-            }
-        }
-    });
-}
-
 function getDataTable(arr) {
 
 
@@ -442,149 +374,135 @@ function getDataTablePermission(arr) {
 
 }
 
-function getDataTabless(arr) {
-
+function getDataTableRowGroupColumn(arr) {
     if ($.fn.DataTable.isDataTable(arr.tableID)) {
         $(arr.tableID).DataTable().destroy();
     }
 
-    var pageLength = 0
+    var pageLength = 0;
     if (arr.pageLength) {
         pageLength = arr.pageLength;
     } else {
         pageLength = 10;
     }
     var dataTable = $(arr.tableID).DataTable({
-        "scrollX": true,
-        "processing": true,
-        "responsive": false,
-        "lengthMenu": [5, 10, 25, 50, 100],
-        "pageLength": pageLength,
-        "serverSide": true,
-        "bAutoWidth": false,
-        "searching": true,
-        "bLengthChange": true,
-        "bInfo": true,
-        "language": {
-            "search": "_INPUT_",
-            "searchPlaceholder": "Search..."
+        scrollX: true,
+        processing: true,
+        responsive: false,
+        lengthMenu: [5, 10, 25, 50, 100],
+        pageLength: pageLength,
+        serverSide: true,
+        bAutoWidth: false,
+        searching: true,
+        bLengthChange: true,
+        bInfo: true,
+        language: {
+            search: "_INPUT_",
+            searchPlaceholder: "Search...",
         },
-        "order": [
-            [(arr.defaultSortColumn) ? arr.defaultSortColumn : '0', (arr.defaultSortOrder) ? arr.defaultSortOrder : 'desc']
+        order: [
+            [
+                arr.defaultSortColumn ? arr.defaultSortColumn : "0",
+                arr.defaultSortOrder ? arr.defaultSortOrder : "desc",
+            ],
         ],
-        "columnDefs": [{
-                "targets": arr.hideColumnList,
-                "visible": false
+        columnDefs: [
+            {
+                targets: arr.hideColumnList,
+                visible: false,
             },
             {
-                "targets": arr.noSortingApply,
-                "orderable": false
+                targets: arr.noSortingApply,
+                orderable: false,
             },
             {
-                "targets": arr.noSearchApply,
-                "searchable": false
+                targets: arr.noSearchApply,
+                searchable: false,
             },
-            (arr.setColumnWidth) ? arr.setColumnWidth : ''
+            arr.setColumnWidth ? arr.setColumnWidth : "",
         ],
 
-        // "bStateSave": true,
-        // "fnStateSave": function (oSettings, oData) {
-        //     localStorage.setItem('offersDataTables', JSON.stringify(oData));
-        // },
-        // "fnStateLoad": function (oSettings) {
-        //     return JSON.parse(localStorage.getItem('offersDataTables'));
-        // },
+        rowGroup: {
+            dataSrc: arr.rowGroupColumnList,
+        },
 
-
-        "ajax": {
+        ajax: {
             url: arr.ajaxURL,
             method: "POST",
             headers: {
-                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                "X-CSRF-TOKEN": $('input[name="_token"]').val(),
             },
-            data: { 'action': arr.ajaxAction, 'data': arr.postData },
-            error: function() { // error handling
+            data: { action: arr.ajaxAction, data: arr.postData },
+            error: function () {
+                // error handling
 
                 $(".row-list-error").html("");
-                $(arr.tableID).append('<tbody class="row-list-error"><tr><td colspan="4" style="text-align: center;"><p style="color:red;">Sorry, No Record Found</p></td></tr></tbody>');
+                $(arr.tableID).append(
+                    '<tbody class="row-list-error"><tr><td colspan="4" style="text-align: center;"><p style="color:red;">Sorry, No Record Found</p></td></tr></tbody>'
+                );
                 $(arr.tableID + "processing").css("display", "none");
-            }
-        }
+            },
+        },
     });
 }
 
-function old_getDataTable(arr) {
+// image show in modal usein-FsLightbox
+function getDataTableFsLightbox(arr) {
+    const table = $(arr.tableID);
 
-    var pageLength = 0
-    if (arr.pageLength) {
-        pageLength = arr.pageLength;
-    } else {
-        pageLength = 10;
+    // Destroy existing DataTable instance
+    if ($.fn.DataTable.isDataTable(table)) {
+        table.DataTable().destroy();
     }
 
-    if ($.fn.DataTable.isDataTable(arr.tableID)) {
-        $(arr.tableID).DataTable().destroy();
-    }
-
-    var dataTable = $(arr.tableID).DataTable({
-        "scrollX": true,
-        "processing": true,
-        "responsive": false,
-        "lengthMenu": [5, 10, 25, 50, 100],
-        "pageLength": pageLength,
-        "serverSide": true,
-        "bAutoWidth": false,
-        "searching": true,
-        "bLengthChange": true,
-        "bInfo": true,
-        "language": {
-            "search": "_INPUT_",
-            "searchPlaceholder": "Search..."
+    // DataTable configuration
+    table.DataTable({
+        scrollX: true,
+        processing: true,
+        responsive: false, // Set to true for responsive design
+        lengthMenu: [5, 10, 25, 50, 100],
+        pageLength: arr.pageLength || 10,
+        serverSide: true,
+        bAutoWidth: false,
+        searching: true,
+        bLengthChange: true,
+        bInfo: true,
+        language: {
+            search: "_INPUT_",
+            searchPlaceholder: "Search...",
         },
-        "order": [
-            [(arr.defaultSortColumn) ? arr.defaultSortColumn : '0', (arr.defaultSortOrder) ? arr.defaultSortOrder : 'desc']
+        order: [[arr.defaultSortColumn || 0, arr.defaultSortOrder || "desc"]],
+        columnDefs: [
+            { targets: arr.hideColumnList, visible: false },
+            { targets: arr.noSortingApply, orderable: false },
+            { targets: arr.noSearchApply, searchable: false },
+            arr.setColumnWidth || {}, // Apply column width if defined
         ],
-        "columnDefs": [{
-                "targets": arr.hideColumnList,
-                "visible": false
-            },
-            {
-                "targets": arr.noSortingApply,
-                "orderable": false
-            },
-            {
-                "targets": arr.noSearchApply,
-                "searchable": false
-            },
-            (arr.setColumnWidth) ? arr.setColumnWidth : ''
-        ],
-        "rowCallback": function( row, data, index ) {
-            if ( index % 2 === 0 ) {
-                $(row).css("background-color", "#f8f8f8"); // grey
-            } else {
-                $(row).css("background-color", "#ffffff"); // white
-            }
-        },
-        "bStateSave": true,
-          "fnStateSave": function (oSettings, oData) {
-              localStorage.setItem('offersDataTables', JSON.stringify(oData));
-          },
-          "fnStateLoad": function (oSettings) {
-              return JSON.parse(localStorage.getItem('offersDataTables'));
-          },
-
-        "ajax": {
+        ajax: {
             url: arr.ajaxURL,
             method: "POST",
             headers: {
-                'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                "X-CSRF-TOKEN": $('input[name="_token"]').val(),
             },
-            data: { 'action': arr.ajaxAction, 'data': arr.postData },
-            error: function() { // error handling
+            data: {
+                action: arr.ajaxAction,
+                data: arr.postData,
+            },
+            error: function () {
+                // Clear previous rows and show error message
                 $(".row-list-error").html("");
-                $(arr.tableID).append('<tbody class="row-list-error"><tr><td colspan="4" style="text-align: center;"><p style="color:red;">Sorry, No Record Found</p></td></tr></tbody>');
+                table.append(
+                    '<tbody class="row-list-error"><tr><td colspan="4" style="text-align: center;"><p style="color:red;">Sorry, No Record Found</p></td></tr></tbody>'
+                );
                 $(arr.tableID + "processing").css("display", "none");
+            },
+        },
+        drawCallback: function () {
+            // Reinitialize plugins like FsLightbox here if needed
+            if (typeof refreshFsLightbox === "function") {
+                refreshFsLightbox();
             }
-        }
+        },
     });
 }
+

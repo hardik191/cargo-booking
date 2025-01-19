@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->nullable();
+            $table->integer('country_code')->nullable();
             $table->bigInteger('phone_no')->nullable();
             $table->string('user_image')->nullable();
             $table->string('password');
+            $table->tinyInteger('status')->default('1')->comment('1 For Active, 2 For Inactive, 3 For Deleted');
             $table->rememberToken();
             $table->timestamps();
         });

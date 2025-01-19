@@ -11,6 +11,11 @@
     margin-right: 1rem;
 }
 
+/* table */
+.classTable .row {
+    margin: 10px 0;
+}
+
 .classTable .row:first-child {
     margin-top: 20px;
 }
@@ -36,6 +41,21 @@
 .classTable table tbody tr.even {
     background-color: #f5f5f5;
 }
+.classTable {
+    overflow-x: auto;
+}
+
+.dataTables_scrollHead {
+    overflow: visible !important;
+}
+.dataTables_scrollBody {
+    overflow: unset !important;
+}
+.dataTables_scrollHeadInner {
+    width: 100% !important;
+}
+
+/* end datatable */
 
 a.dropdown-item {
     display: flex;
