@@ -92,37 +92,49 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            DB::beginTransaction();
+        
+        $checkEmail = User::where('email', $request->email)->count();
+        $checkPhoneNo = User::where('phone_no', $request->phone_no)
+                        ->where('country_code', $request->country_code)->count();
 
-            // Create the user
-            $user = User::create([
-                'name' => $request['name'],
-                'email' => $request['email'],
-                'phone_no' => $request['phone_no'],
-                'country_code' => $request['country_code'],
-                'password' => Hash::make($request['password']),
-                'status' => 'active', // Example default value
-                'status' => 1,
-            ]);
-
-            // Assign the role
-            $user->assignRole($request['role']);
-
-
-            DB::commit();
-            $return['status'] = 'success';
-            $return['message'] = 'Admin successfully added.';
+        if($checkEmail != 0){
+            $return['status'] = 'warning';
             $return['jscode'] = '$("#loader").hide();';
-            $return['redirect'] = route('admin-list');
-        } catch (\Exception $e) {
-            // If an error occurs
-            DB::rollback();
-            $return['status'] = 'error';
+            $return['message'] = 'The email is already taken.';
+        }else if($checkPhoneNo != 0){
+            $return['status'] = 'warning';
             $return['jscode'] = '$("#loader").hide();';
-            $return['message'] = 'Something goes to wrong.';
+            $return['message'] = 'The phone is already taken.';
+        } else {
+            try {
+                DB::beginTransaction();
+
+                // Create the user
+                $user = User::create([
+                    'name' => $request['name'],
+                    'email' => $request['email'],
+                    'phone_no' => $request['phone_no'],
+                    'country_code' => $request['country_code'],
+                    'password' => Hash::make($request['password']),
+                    'status' => 1,
+                ]);
+
+                // Assign the role
+                $user->assignRole($request['role']);
+
+                DB::commit();
+                $return['status'] = 'success';
+                $return['message'] = 'Admin successfully added.';
+                $return['jscode'] = '$("#loader").hide();';
+                $return['redirect'] = route('admin-list');
+            } catch (\Exception $e) {
+                // If an error occurs
+                DB::rollback();
+                $return['status'] = 'error';
+                $return['jscode'] = '$("#loader").hide();';
+                $return['message'] = 'Something goes to wrong.';
+            }
         }
-
         echo json_encode($return);
         exit;
     }
@@ -130,7 +142,7 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show( $id)
     {
         //
     }
@@ -138,17 +150,99 @@ class AdminController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $data['roles'] = Role::whereNotIn('name', ['Customer'])->get();
+        $data['user_list'] = User::where('id', $id)->first();
+        // dd($data);
+        $data['title'] =  'Edit Admin' . ' || ' .get_system_name();
+        $data['header'] = array(
+            'title' => 'edit Admin',
+            'breadcrumb' => array(
+                'Home' => route('dashboard'),
+                'Edit List' => route('admin-list'),
+                'Edit Admin' => 'Edit Admin',
+            )
+        );
+        $data['css'] = array(
+            'toastr/toastr.min.css'
+        );
+        $data['plugincss'] = array();
+        $data['pluginjs'] = array(
+            'toastr/toastr.min.js',
+            'validate/jquery.validate.min.js',
+        );
+        $data['js'] = array(
+            'comman_function.js',
+            'jquery.form.min.js',
+            'admin.js',
+        );
+        $data['funinit'] = array(
+            'Admin.edit()'
+        );
+
+        return view('backend.pages.user_management.admin.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+        $checkEmail = User::where('id', '!=', $request->edit_id)->where('email', $request->email)->count();
+        $checkPhoneNo = User::where('id', '!=', $request->edit_id)
+                        ->where('phone_no', $request->phone_no)
+                        ->where('country_code', $request->country_code)->count();
+
+        if($checkEmail != 0){
+            $return['status'] = 'warning';
+            $return['jscode'] = '$("#loader").hide();';
+            $return['message'] = 'The email is already taken.';
+        }else if($checkPhoneNo != 0){
+            $return['status'] = 'warning';
+            $return['jscode'] = '$("#loader").hide();';
+            $return['message'] = 'The phone is already taken.';
+        } else {
+            try {
+                DB::beginTransaction();
+            
+                // Update the user if edit_id is present
+                $user = User::find($request->edit_id);
+                // $user = User::where('id', $request->edit_id)->orWhere('sd', '$fsdf')->first();
+    
+                $user->update([
+                    'name' => $request->name,
+                    'email' => $request['email'],
+                    'phone_no' => $request['phone_no'],
+                    'country_code' => $request['country_code'],
+                    // Only update the password if it's provided
+                    'password' => $request['password'] ? Hash::make($request['password']) : $user->password,
+                    'status' => $request['status'] ?? $user->status, // Default to existing status if not provided
+                ]);
+        
+                // Update the role if provided
+                if ($request['role']) {
+                    $user->syncRoles([$request['role']]); // Replace current roles with the new role
+                }           
+            
+                DB::commit();
+            
+                $return['status'] = 'success';
+                $return['message'] = 'Admin successfully updated.';
+                $return['jscode'] = '$("#loader").hide();';
+                $return['redirect'] = route('admin-list');
+            } catch (\Exception $e) {
+                // If an error occurs
+                DB::rollback();
+                $return['status'] = 'error';
+                $return['jscode'] = '$("#loader").hide();';
+                $return['message'] = 'Something went wrong.';
+                $return['error'] = $e->getMessage(); // Optional: include the exception message for debugging
+            }
+        }
+        echo json_encode($return);
+        exit;
+        
     }
 
     public function ajaxcall(Request $request){

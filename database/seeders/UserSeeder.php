@@ -18,9 +18,9 @@ class UserSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin']);
-        $superAdminRole = Role::firstOrCreate(['name' => 'Logistics Manager']);
-        $superAdminRole = Role::firstOrCreate(['name' => 'Cargo Coordinator']);
-        $superAdminRole = Role::firstOrCreate(['name' => 'Warehouse/Storage Manager']);
+        Role::firstOrCreate(['name' => 'Logistics Manager']);
+        Role::firstOrCreate(['name' => 'Cargo Coordinator']);
+        Role::firstOrCreate(['name' => 'Warehouse/Storage Manager']);
 
         // Cargo Booking Officer/Agent
         // Cargo Coordinator

@@ -32,7 +32,7 @@
                                 <label class="fs-6 fw-semibold form-label required">Phone No </label>
                                 <input name="phone_no" id="phone_no" class="form-control form-control-solid form-control-lg onlyNumber"
                                     autocomplete="off" type="text" value=""/>
-                                <input type="hidden" name="country_code" id="country_code" value="">
+                                <input type="hidden" name="country_code" id="country_code" value="91">
 
                             </div>
 
