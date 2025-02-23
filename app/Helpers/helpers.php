@@ -72,6 +72,16 @@ function get_system_setting($key){
     return $objSystemSetting;
 }
 
+function get_system_setting_val($key)
+{
+    // ccd($key);
+    $objSystemSetting = SystemSetting::where('key', $key)->first();
+
+    $data = json_decode($objSystemSetting->value);
+
+    return $data;
+}
+
 function get_system_name(){
     $objSystemSetting = SystemSetting::where('key', 'general_setting')->first();
 

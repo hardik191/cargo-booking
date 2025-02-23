@@ -5,9 +5,11 @@ use App\Http\Controllers\backend\authentication\ErrorController;
 use App\Http\Controllers\backend\authentication\ForgotPasswordController;
 use App\Http\Controllers\backend\authentication\LoginController;
 use App\Http\Controllers\backend\dashboard\DashboardController;
+use App\Http\Controllers\backend\port\PortController;
 use App\Http\Controllers\backend\system_setting\SystemSettingController;
 use App\Http\Controllers\backend\user_management\AdminController;
 use App\Http\Controllers\backend\user_management\CustomerController;
+use App\Http\Controllers\customer\authentication\CustomerLoginController;
 use App\Http\Controllers\roles_and_permissions\PermissionController;
 use App\Http\Controllers\roles_and_permissions\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +72,18 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
         Route::post('admin-ajaxcall', [AdminController::class, 'ajaxcall'])->name('admin-ajaxcall');
     });
 
+    $adminPrefixs = "master-management";
+    Route::group(['prefix' => $adminPrefixs, 'middleware' => ['auth']], function () {
+
+        // Prot
+        Route::get('port-list', [PortController::class, 'index'])->name('port-list')->middleware('checkPermission:port list');
+        Route::post('add-save-port', [PortController::class, 'store'])->name('add-save-port');
+        Route::post('edit-save-port', [PortController::class, 'update'])->name('edit-save-port');
+        Route::post('port-ajaxcall', [PortController::class, 'ajaxcall'])->name('port-ajaxcall');
+
+
+    });
+
     //Update Profile
     Route::get('update-profile', [SystemSettingController::class, 'user_profile'])->name('update-profile');
     Route::post('update-save-profile', [SystemSettingController::class, 'update_save_profile'])->name('update-save-profile');
@@ -89,4 +103,11 @@ Route::post('forgot-password-mail-sent', [ForgotPasswordController::class, 'mail
 Route::get('reset-password/{token}', [ForgotPasswordController::class, 'reset_password_index'])->name('reset-password');
 Route::post('submit-reset-password', [ForgotPasswordController::class, 'submit_reset_password'])->name('submit-reset-password');
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
+// Customer Login
+Route::get('/', [CustomerLoginController::class, 'sign_in'])->name('sign-in');
+Route::post('sign_in_login', [CustomerLoginController::class, 'sign_in_login'])->name('sign_in_login');
+
+Route::get('/sign-up', [CustomerLoginController::class, 'sign_up'])->name('sign-up');
+Route::post('save-customer-account', [CustomerLoginController::class, 'save_customer_account'])->name('save-customer-account');
 

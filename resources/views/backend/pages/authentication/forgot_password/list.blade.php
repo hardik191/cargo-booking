@@ -99,7 +99,7 @@
 												<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
 											</button>
 										</div>
-										<a href="{{ route('login') }}" class="btn btn-secondary ">Cancel</a>
+										<a href="{{ url()->previous() }}" class="btn btn-secondary ">Cancel</a>
 									</div>
 								</form>
 								<!--end::Form-->
@@ -108,8 +108,7 @@
 							<!--end::Wrapper-->
 							<!--begin::Footer-->
 							<div class="text-center">
-                                <a href="{{$general_setting_details->footer_link}}"
-                                    class=" text-hover-primary text-muted">{{$general_setting_details->footer_text}}</a>
+                                <a href="{{$general_setting_details->footer_link}}" class=" text-hover-primary text-muted">{{$general_setting_details->footer_text}}</a>
 
                         	</div>
 						</div>

@@ -51,6 +51,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                     </a>
                 </div>
 
+                {{-- User Management --}}
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ in_array($currentRoute, ['permissions', 'roles', 'customer-list', 'admin-list', 'add-admin', 'edit-admin']) ? 'here show' : '' }}" >
                         <span class="menu-link">
                             <span class="menu-icon">
@@ -111,7 +112,8 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                         </div>
                     </div>
 
-                    {{-- <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ in_array($currentRoute, ['permissions', 'roles']) ? 'here show' : '' }}" >
+                {{-- Master --}}
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ in_array($currentRoute, ['port-list']) ? 'here show' : '' }}" >
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-address-book fs-2">
@@ -125,7 +127,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                         </span>
                         <div class="menu-sub menu-sub-accordion">
                             <div class="menu-item">
-                                <a class="menu-link {{ in_array($currentRoute, ['roles']) ? 'active' : '' }}" href="{{route('roles')}}">
+                                <a class="menu-link {{ in_array($currentRoute, ['port-list']) ? 'active' : '' }}" href="{{route('port-list')}}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
@@ -133,17 +135,17 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                                 </a>
                             </div>
 
-                            <div class="menu-item">
+                            {{-- <div class="menu-item">
                                 <a class="menu-link {{ in_array($currentRoute, ['permissions']) ? 'active' : '' }}" href="{{route('permissions')}}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
                                     <span class="menu-title">Permissions</span>
                                 </a>
-                            </div>
+                            </div> --}}
 
                         </div>
-                    </div> --}}
+                    </div>
 
 
             </div>

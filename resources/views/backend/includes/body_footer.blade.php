@@ -9,8 +9,7 @@ $general_setting_details = json_decode($get_system_setting['value']);
         <!--begin::Copyright-->
         <div class="text-gray-900 order-2 order-md-1">
             {{-- <span class="text-muted fw-semibold me-1">{{ date('Y') }}&copy;</span> --}}
-            <a href="{{ isset($general_setting_details->footer_link) ? $general_setting_details->footer_link : 'javascript:;' }}"
-                class="text-gray-800 text-hover-primary">{{ isset($general_setting_details->footer_text) ? $general_setting_details->footer_text : '' }}</a>
+            <a href="{{ isset($general_setting_details->footer_link) ? $general_setting_details->footer_link : 'javascript:;' }}" target="_black" class="text-gray-800 text-hover-primary">{{ isset($general_setting_details->footer_text) ? $general_setting_details->footer_text : '' }}</a>
         </div>
         <!--end::Copyright-->
 

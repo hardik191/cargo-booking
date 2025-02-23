@@ -51,7 +51,7 @@
 
 
                             <div class="col-md-6">
-                                <div class="mb-1">
+                                <div class="mb-1" data-kt-password-meter="true">
                                     <label class="form-label required">Password</label>
                                     <div class="input-group position-relative">
                                         <input class="form-control input-group-required form-control-lg" type="password" placeholder="Password" name="password" id="password" autocomplete="off" data-kt-translate="sign-up-input-password" />
