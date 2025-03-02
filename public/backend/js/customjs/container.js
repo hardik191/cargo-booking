@@ -1,70 +1,70 @@
-var Port = function () {
+var Container = function () {
     var list = function () {
 
         var dataArr = {};
         var columnWidth = { width: "5%", targets: 0 };
         var arrList = {
-            tableID: "#port_list",
-            ajaxURL: baseurl + "admin/master-management/port-ajaxcall",
+            tableID: "#container_list",
+            ajaxURL: baseurl + "admin/master-management/container-ajaxcall",
             ajaxAction: "getdatatable",
             postData: dataArr,
             hideColumnList: [],
-            noSortingApply: [ 4],
-            noSearchApply: [0, 4],
+            noSortingApply: [ 5],
+            noSearchApply: [0, 5],
             defaultSortColumn: [0],
             defaultSortOrder: "DESC",
             setColumnWidth: columnWidth,
         };
         getDataTable(arrList);
 
-        $('body').on('click', '.add-port', function () {
+        $('body').on('click', '.add-container', function () {
 
             $.ajax({
                 type: "POST",
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val(),
                 },
-                url: baseurl + "admin/master-management/port-ajaxcall",
-                data: { 'action': 'add-port' },
+                url: baseurl + "admin/master-management/container-ajaxcall",
+                data: { 'action': 'add-container' },
                 success: function (data) {
 
-                    $('#add_port_modal').modal('show');
-                    $('.append-port-data-add').html(data);
+                    $('#add_container_modal').modal('show');
+                    $('.append-container-data-add').html(data);
 
-                    add_save_port();
+                    add_save_container();
                 }
             });
         });
 
-        $('body').on('click', '.edit-port', function () {
-            var port_id = $(this).data('id');
+        $('body').on('click', '.edit-container', function () {
+            var container_id = $(this).data('id');
             $.ajax({
                 type: "POST",
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val(),
                 },
-                url: baseurl + "admin/master-management/port-ajaxcall",
-                data: { 'action': 'edit-port', port_id: port_id },
+                url: baseurl + "admin/master-management/container-ajaxcall",
+                data: { 'action': 'edit-container', container_id: container_id },
                 success: function (data) {
 
-                    $('#edit_port_modal').modal('show');
-                    $('.append-port-data-edit').html(data);
+                    $('#edit_container_modal').modal('show');
+                    $('.append-container-data-edit').html(data);
 
-                    edit_save_port();
+                    edit_save_container();
                 }
             });
         });
 
 
         // 
-        $("body").on("click", ".delete-port, .inactive-port, .active-port", function () {
+        $("body").on("click", ".delete-container, .inactive-container, .active-container", function () {
             var id = $(this).data("id");
             var actionClass = "";
-            if ($(this).hasClass("delete-port")) {
+            if ($(this).hasClass("delete-container")) {
                 actionClass = ".yes-sure-delete";
-            } else if ($(this).hasClass("inactive-port")) {
+            } else if ($(this).hasClass("inactive-container")) {
                 actionClass = ".yes-sure-inactive";
-            } else if ($(this).hasClass("active-port")) {
+            } else if ($(this).hasClass("active-container")) {
                 actionClass = ".yes-sure-active";
             }
             setTimeout(function () { $(actionClass + ":visible").attr("data-id", id); }, 500);
@@ -89,8 +89,8 @@ var Port = function () {
                 $.ajax({
                     type: "POST",
                     headers: { "X-CSRF-TOKEN": $('input[name="_token"]').val(), },
-                    url: baseurl + "admin/master-management/port-ajaxcall",
-                    data: { action: "common-port", data: data },
+                    url: baseurl + "admin/master-management/container-ajaxcall",
+                    data: { action: "common-container", data: data },
                     success: function (data) {
                         handleAjaxResponse(data);
                     },
@@ -99,21 +99,29 @@ var Port = function () {
         });
     }
 
-function add_save_port() {
+function add_save_container() {
 
-    $("#add-save-port-form").validate({
+    $("#add-save-container-form").validate({
         debug: true,
         errorElement: "span", //default input error message container
         errorClass: "help-block", // default input error message class
 
         rules: {
-            port_name: { required: true },
-            // start_date: { required: true },
+            container_type: { required: true },
+            // max_container: { required: true, digits: true, min: 1 },
+            max_capacity: { required: true, digits: true, min: 1 },
+            capacity_unit: { required: true },
+            base_price: { required: true, number: true, min: 1 },
+            status: { required: true }
         },
 
         messages: {
-            port_name: { required: "Please enter port name." },
-            // start_date: { required: "Please enter start date." },
+            container_type: { required: "Please enter container type." },
+            // max_container: { required: "Please enter max container.", digits: "Only numbers allowed.", min: "Container must be at least 1." },
+            max_capacity: { required: "Please enter max capacity.", digits: "Only numbers allowed.", min: "Capacity must be at least 1." },
+            capacity_unit: { required: "Please select a capacity unit." },
+            base_price: { required: "Please enter a base price.", number: "Enter a valid number.", min: "Base price must be at least 1." },
+            status: { required: "Please select a status." }
         },
 
         invalidHandler: function (event, validator) {
@@ -147,20 +155,19 @@ function add_save_port() {
             customValid = customerInfoValid();
             var elem = $(element);
             if (elem.hasClass("select2-hidden-accessible")) {
-                element = $(
-                    "#select2-" + elem.attr("id") + "-container"
-                ).parent();
+            element = $("#select2-" + elem.attr("id") + "-container").parent();
                 error.insertAfter(element);
             }
-            // Handle radio buttons (e.g., pass_to_inspection)
+            // Handle Radio Buttons (Capacity Unit & Status)
             else if (elem.is(":radio")) {
-                // If the element is a radio button, find the closest .form-check-custom container
                 var radioGroup = elem.closest(".form-check-radio-custom");
-
-                // Insert the error message after the radio group container
-                error.insertAfter(radioGroup);
+                if (radioGroup.length) {
+                    error.insertAfter(radioGroup);
+                } else {
+                    error.insertAfter(elem.closest("div")); // Fallback for radio buttons
+                }
             }
-            // Handle other elements (e.g., text inputs)
+            // Default error placement for other elements
             else {
                 error.insertAfter(element);
             }
@@ -174,23 +181,30 @@ function add_save_port() {
     }
 }
 
-function edit_save_port() {
+function edit_save_container() {
 
-    $("#edit-save-port-form").validate({
+    $("#edit-save-container-form").validate({
         debug: true,
         errorElement: "span", //default input error message container
         errorClass: "help-block", // default input error message class
 
         rules: {
-            port_name: { required: true },
-            // start_date: { required: true },
+            container_type: { required: true },
+            // max_container: { required: true, digits: true, min: 1 },
+            max_capacity: { required: true, digits: true, min: 1 },
+            capacity_unit: { required: true },
+            base_price: { required: true, number: true, min: 1 },
+            status: { required: true }
         },
 
         messages: {
-            port_name: { required: "Please enter port name." },
-            // start_date: { required: "Please enter start date." },
+            container_type: { required: "Please enter container type." },
+            // max_container: { required: "Please enter max container.", digits: "Only numbers allowed.", min: "Container must be at least 1." },
+            max_capacity: { required: "Please enter max capacity.", digits: "Only numbers allowed.", min: "Capacity must be at least 1." },
+            capacity_unit: { required: "Please select a capacity unit." },
+            base_price: { required: "Please enter a base price.", number: "Enter a valid number.", min: "Base price must be at least 1." },
+            status: { required: "Please select a status." }
         },
-
         invalidHandler: function (event, validator) {
             validateTrip = false;
             customValid = customerInfoValid();
@@ -222,20 +236,19 @@ function edit_save_port() {
             customValid = customerInfoValid();
             var elem = $(element);
             if (elem.hasClass("select2-hidden-accessible")) {
-                element = $(
-                    "#select2-" + elem.attr("id") + "-container"
-                ).parent();
+            element = $("#select2-" + elem.attr("id") + "-container").parent();
                 error.insertAfter(element);
             }
-            // Handle radio buttons (e.g., pass_to_inspection)
+            // Handle Radio Buttons (Capacity Unit & Status)
             else if (elem.is(":radio")) {
-                // If the element is a radio button, find the closest .form-check-custom container
                 var radioGroup = elem.closest(".form-check-radio-custom");
-
-                // Insert the error message after the radio group container
-                error.insertAfter(radioGroup);
+                if (radioGroup.length) {
+                    error.insertAfter(radioGroup);
+                } else {
+                    error.insertAfter(elem.closest("div")); // Fallback for radio buttons
+                }
             }
-            // Handle other elements (e.g., text inputs)
+            // Default error placement for other elements
             else {
                 error.insertAfter(element);
             }

@@ -13,7 +13,7 @@ class ErrorController extends Controller
 
         $user = Auth::user();
         if($user->hasRole('Customer')){
-            $url = route('customer-dashboard');
+            $url = route('dashboard1');
         } else {
             $url = route('dashboard');
         }

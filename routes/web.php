@@ -4,12 +4,15 @@ use App\Http\Controllers\backend\audit\AuditController;
 use App\Http\Controllers\backend\authentication\ErrorController;
 use App\Http\Controllers\backend\authentication\ForgotPasswordController;
 use App\Http\Controllers\backend\authentication\LoginController;
+use App\Http\Controllers\backend\container\ContainerController;
 use App\Http\Controllers\backend\dashboard\DashboardController;
+use App\Http\Controllers\backend\order_charge\OrderChargeController;
 use App\Http\Controllers\backend\port\PortController;
 use App\Http\Controllers\backend\system_setting\SystemSettingController;
 use App\Http\Controllers\backend\user_management\AdminController;
 use App\Http\Controllers\backend\user_management\CustomerController;
 use App\Http\Controllers\customer\authentication\CustomerLoginController;
+use App\Http\Controllers\customer\order\PendingOrderController;
 use App\Http\Controllers\roles_and_permissions\PermissionController;
 use App\Http\Controllers\roles_and_permissions\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -81,7 +84,17 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
         Route::post('edit-save-port', [PortController::class, 'update'])->name('edit-save-port');
         Route::post('port-ajaxcall', [PortController::class, 'ajaxcall'])->name('port-ajaxcall');
 
+        // Containers
+        Route::get('container-list', [ContainerController::class, 'index'])->name('container-list')->middleware('checkPermission:container list');
+        Route::post('add-save-container', [ContainerController::class, 'store'])->name('add-save-container');
+        Route::post('edit-save-container', [ContainerController::class, 'update'])->name('edit-save-container');
+        Route::post('container-ajaxcall', [ContainerController::class, 'ajaxcall'])->name('container-ajaxcall');
 
+        // charge
+        Route::get('order-charge-list', [OrderChargeController::class, 'index'])->name('order-charge-list')->middleware('checkPermission:order-charge list');
+        Route::post('add-save-order-charge', [OrderChargeController::class, 'store'])->name('add-save-order-charge');
+        Route::post('edit-save-order-charge', [OrderChargeController::class, 'update'])->name('edit-save-order-charge');
+        Route::post('order-charge-ajaxcall', [OrderChargeController::class, 'ajaxcall'])->name('order-charge-ajaxcall');
     });
 
     //Update Profile
@@ -98,16 +111,36 @@ Route::get('access-denied', [ErrorController::class, 'accessDenied'])->name('acc
 
 Route::get('/superadmin', [LoginController::class, 'index'])->name('login');
 Route::post('check-login', [LoginController::class, 'store'])->name('check-login');
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
+// forgot
 Route::get('forgot-password', [ForgotPasswordController::class, 'forgot_password_index'])->name('forgot-password');
 Route::post('forgot-password-mail-sent', [ForgotPasswordController::class, 'mail_Sent'])->name('forgot-password-mail-sent');
 Route::get('reset-password/{token}', [ForgotPasswordController::class, 'reset_password_index'])->name('reset-password');
 Route::post('submit-reset-password', [ForgotPasswordController::class, 'submit_reset_password'])->name('submit-reset-password');
-Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 // Customer Login
 Route::get('/', [CustomerLoginController::class, 'sign_in'])->name('sign-in');
-Route::post('sign_in_login', [CustomerLoginController::class, 'sign_in_login'])->name('sign_in_login');
+Route::post('sign-in-check-login', [CustomerLoginController::class, 'sign_in_login'])->name('sign-in-check-login');
 
 Route::get('/sign-up', [CustomerLoginController::class, 'sign_up'])->name('sign-up');
-Route::post('save-customer-account', [CustomerLoginController::class, 'save_customer_account'])->name('save-customer-account');
+Route::post('save-create-customer-account', [CustomerLoginController::class, 'save_customer_account'])->name('save-create-customer-account');
 
+
+// customer
+$adminPrefix = "customer";
+Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard1');
+
+    $adminPrefixs = "order-management";
+    Route::group(['prefix' => $adminPrefixs, 'middleware' => ['auth']], function () {
+
+        Route::get('create-order', [PendingOrderController::class, 'create'])->name('create-order');
+        Route::post('create-save-order', [PendingOrderController::class, 'store'])->name('create-save-order');
+
+        // Pending Application
+        Route::get('pending-order', [PendingOrderController::class, 'index'])->name('pending-order1');
+        Route::get('view-pending-order/{id}', [PendingOrderController::class, 'show'])->name('view-pending-order1');
+    });
+ 
+});

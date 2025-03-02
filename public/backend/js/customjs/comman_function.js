@@ -50,6 +50,7 @@ function handleAjaxFormSubmit(form, type) {
 
 
 function showToster(status, message) {
+    const validStatuses = ["success", "error", "warning", "info"];
 
     toastr.options = {
         closeButton: true,
@@ -57,32 +58,46 @@ function showToster(status, message) {
         showMethod: 'slideDown',
         timeOut: 1500
     };
-    if (status == 'success') {
-        toastr.success(message, 'Success');
-    }
-    if (status == 'error') {
-        toastr.error(message, 'Fail');
 
+    if (validStatuses.includes(status)) {
+        toastr[status](message, status.charAt(0).toUpperCase() + status.slice(1));
+    } else {
+        console.warn("Invalid Toaster status:", status);
     }
-    if (status == 'warning') {
-        toastr.warning(message, 'Warning');
 
+    if (status !== "success") {
+        $(".submitbtn:visible").attr("data-kt-indicator", "off").removeAttr("disabled");
     }
-    setTimeout(function () {
-        $(".submitbtn:visible").attr("data-kt-indicator", "false");
-        $(".submitbtn:visible").removeAttr("disabled");
-    }, 3000);
 }
 
 
+function showToSwal(status, message) {
+    Swal.fire({
+        html: message,
+        icon: status, // Accepts 'success', 'error', 'warning', 'info'
+        buttonsStyling: false,
+        confirmButtonText: "Ok, got it!",
+        customClass: { confirmButton: "btn btn-light" },
+    });
+
+    if (status !== "success") {
+        $(".submitbtn:visible")
+            .attr("data-kt-indicator", "off")
+            .removeAttr("disabled");
+    }
+}
 
 function handleAjaxResponse(output) {
     $(".submitbtn:visible").attr("data-kt-indicator", "on");
-    $(".submitbtn:visible").attr("disabled", "disabled");
+    $(".submitbtn:visible").attr("disabled", true);
     $("#loader").show();
     output = JSON.parse(output);
     if (output.message != '') {
-        showToster(output.status, output.message, '');
+        if (output.sweet_alert == "sweet_alert") {
+            showToSwal(output.status, output.message);
+        } else {
+            showToster(output.status, output.message);
+        }
     }
     if (typeof output.redirect !== 'undefined' && output.redirect != '') {
         setTimeout(function () {
@@ -99,6 +114,8 @@ function handleAjaxResponse(output) {
         setTimeout(function () {
             eval(output.ajaxcall);
         }, 1000);
+        $("#loader").hide();
+        $(".submitbtn:visible").attr("data-kt-indicator", "off").attr("disabled", false);
     }
 }
 
@@ -176,31 +193,26 @@ function handleFormValidateWithMsg(form, rules, messages, submitCallback, showTo
     })
 }
 
-$(".onlyNumber").keypress(function (e) {
-    //if the letter is not digit then display error and don't type anything
-    if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-        //display error message
-        //    $("#errmsg").html("Digits Only").show().fadeOut("slow");
-        return false;
+//  (Allow only digits and a single decimal point (0-9 or .))
+$("body").on("input", ".onlyDigit", function () {
+    let value = $(this).val();
+    // Remove any character that is not a digit or a single decimal point
+    value = value.replace(/[^0-9.]/g, "");
+    // Ensure only a single decimal point is allowed
+    const parts = value.split(".");
+    if (parts.length > 2) {
+        value = parts[0] + "." + parts.slice(1).join(""); // Keep the first decimal point
     }
+    $(this).val(value);
 });
-$('body').on("keydown", ".onlyDigit", function (event) {
 
-    if (event.shiftKey == true) {
-        event.preventDefault();
-    }
+// ( Allow only digits 0-9)
+$('body').on("input", ".onlyNumber", function (event) {
+    let value = $(this).val();
+    // Allow only digits 0-9
+    value = value.replace(/[^0-9]/g, ''); // Remove any character that is not a digit or
 
-    if ((event.keyCode >= 48 && event.keyCode <= 57) ||
-        (event.keyCode >= 96 && event.keyCode <= 105) ||
-        event.keyCode == 8 || event.keyCode == 110 || event.keyCode == 9 || event.keyCode == 37 ||
-        event.keyCode == 39 || event.keyCode == 46 || event.keyCode == 190) {
-
-    } else {
-        event.preventDefault();
-    }
-
-    if ($(this).val().indexOf('.') !== -1 && event.keyCode == 190)
-        event.preventDefault();
+    $(this).val(value);
 });
 
 

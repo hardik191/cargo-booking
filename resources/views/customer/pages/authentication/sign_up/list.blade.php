@@ -29,7 +29,16 @@
 
         </style>
 	</head>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
+<style>
+    .iti {
+        width: 100%;
+    }
+	.help-block{
+		color: red;
+	}
+</style>
 
     @if (!empty($css))
             @foreach ($css as $value)
@@ -56,7 +65,8 @@
 				<div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1">
 					<div class="d-flex flex-center flex-column flex-lg-row-fluid">
 						<div class="w-lg-500px p-10">
-							<form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" data-kt-redirect-url="index.html" action="#">
+							<form class="form w-100" id="sign-up-form" action="{{ route('save-create-customer-account') }}" method="post">
+								@csrf
 								<div class="text-center mb-11">
 									<h1 class="text-gray-900 fw-bolder mb-3">Sign Up</h1>
 									<div class="text-gray-500 fw-semibold fs-6">Your Accoont Details.</div>
@@ -72,7 +82,8 @@
 									<input type="text" placeholder="Email" name="email" autocomplete="off" class="form-control bg-transparent email" />
 								</div>
                                 <div class="fv-row mb-8">
-									<input type="text" placeholder="Mobile Number" name="mobile_number" autocomplete="off" class="form-control bg-transparent mobile_number" />
+                                    <input type="hidden" name="country_code" id="country_code" value="91">
+                                    <input name="phone_no" id="phone_no" class="form-control form-control-solid form-control-lg onlyNumber" autocomplete="off" type="text" value=""/>
 								</div>
 
                                 <div class="fv-row mb-8 fv-plugins-icon-container" >
@@ -85,12 +96,12 @@
                                             </span>
 
                                         </div>
-                                        <div class="d-flex align-items-center mb-3 mt-5" data-kt-password-meter-control="highlight">
+                                        {{-- <div class="d-flex align-items-center mb-3 mt-5" data-kt-password-meter-control="highlight">
                                             <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2 active"></div>
                                             <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2 active"></div>
                                             <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px me-2 active"></div>
                                             <div class="flex-grow-1 bg-secondary bg-active-success rounded h-5px active"></div>
-                                        </div>
+                                        </div> --}}
                                         <div class="text-muted">Use 8 or more characters with a mix of letters, numbers &amp; symbols.<div></div></div>
                                         <div class="help-block password-error"></div>
                                     </div>
@@ -98,12 +109,13 @@
 
 								<div class="fv-row mb-3" data-kt-password-meter="true">
                                     <div class="input-group position-relative">
-                                            <input type="password" placeholder="Password" name="password" id="password" autocomplete="off" class="form-control input-group-required bg-transparent password-required" />
+                                            <input type="password" placeholder="Confirm password" name="confirm_password" id="confirm_password" autocomplete="off" class="form-control input-group-required bg-transparent " />
                                             <span class="input-group-text" data-kt-password-meter-control="visibility">
                                                 <i class="ki-duotone ki-eye-slash fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
                                                 <i class="ki-duotone ki-eye d-none fs-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                                             </span>
                                         </div>
+									<div class="help-block confirm-password-error"></div>
                                 </div>
 
 								<div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
@@ -111,10 +123,11 @@
 									<a href="{{route('forgot-password')}}" class="link-primary">Forgot Password ?</a>
 								</div>
 								<div class="d-grid mb-10">
-									<button type="submit" class="btn btn-primary submitbtn">
-										<span class="indicator-label">Sign In</span>
+									 <button type="submit" class="btn btn-primary submitbtn">
+										<span class="indicator-label">Submit</span>
 										<span class="indicator-progress">Please wait...
-										<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+											<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+										</span>
 									</button>
 								</div>
 								<div class="text-gray-500 text-center fw-semibold fs-6">Not a Member yet?

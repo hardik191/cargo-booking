@@ -1,11 +1,11 @@
-var Port = function () {
+var Order_charge = function () {
     var list = function () {
 
         var dataArr = {};
         var columnWidth = { width: "5%", targets: 0 };
         var arrList = {
-            tableID: "#port_list",
-            ajaxURL: baseurl + "admin/master-management/port-ajaxcall",
+            tableID: "#order_charge_list",
+            ajaxURL: baseurl + "admin/master-management/order-charge-ajaxcall",
             ajaxAction: "getdatatable",
             postData: dataArr,
             hideColumnList: [],
@@ -17,54 +17,54 @@ var Port = function () {
         };
         getDataTable(arrList);
 
-        $('body').on('click', '.add-port', function () {
+        $('body').on('click', '.add-order-charge', function () {
 
             $.ajax({
                 type: "POST",
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val(),
                 },
-                url: baseurl + "admin/master-management/port-ajaxcall",
-                data: { 'action': 'add-port' },
+                url: baseurl + "admin/master-management/order-charge-ajaxcall",
+                data: { 'action': 'add-order-charge' },
                 success: function (data) {
 
-                    $('#add_port_modal').modal('show');
-                    $('.append-port-data-add').html(data);
-
-                    add_save_port();
+                    $('#add_order_charge_modal').modal('show');
+                    $('.append-order-charge-data-add').html(data);
+                    $('.select3').select2();
+                    add_save_order_charge();
                 }
             });
         });
 
-        $('body').on('click', '.edit-port', function () {
-            var port_id = $(this).data('id');
+        $('body').on('click', '.edit-order-charge', function () {
+            var order_charge_id = $(this).data('id');
             $.ajax({
                 type: "POST",
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val(),
                 },
-                url: baseurl + "admin/master-management/port-ajaxcall",
-                data: { 'action': 'edit-port', port_id: port_id },
+                url: baseurl + "admin/master-management/order-charge-ajaxcall",
+                data: { 'action': 'edit-order-charge', order_charge_id: order_charge_id },
                 success: function (data) {
 
-                    $('#edit_port_modal').modal('show');
-                    $('.append-port-data-edit').html(data);
-
-                    edit_save_port();
+                    $('#edit_order_charge_modal').modal('show');
+                    $('.append-order-charge-data-edit').html(data);
+                    $('.select3').select2();
+                    edit_save_order_charge();
                 }
             });
         });
 
 
         // 
-        $("body").on("click", ".delete-port, .inactive-port, .active-port", function () {
+        $("body").on("click", ".delete-order-charge, .inactive-order-charge, .active-order-charge", function () {
             var id = $(this).data("id");
             var actionClass = "";
-            if ($(this).hasClass("delete-port")) {
+            if ($(this).hasClass("delete-order-charge")) {
                 actionClass = ".yes-sure-delete";
-            } else if ($(this).hasClass("inactive-port")) {
+            } else if ($(this).hasClass("inactive-order-charge")) {
                 actionClass = ".yes-sure-inactive";
-            } else if ($(this).hasClass("active-port")) {
+            } else if ($(this).hasClass("active-order-charge")) {
                 actionClass = ".yes-sure-active";
             }
             setTimeout(function () { $(actionClass + ":visible").attr("data-id", id); }, 500);
@@ -89,8 +89,8 @@ var Port = function () {
                 $.ajax({
                     type: "POST",
                     headers: { "X-CSRF-TOKEN": $('input[name="_token"]').val(), },
-                    url: baseurl + "admin/master-management/port-ajaxcall",
-                    data: { action: "common-port", data: data },
+                    url: baseurl + "admin/master-management/order-charge-ajaxcall",
+                    data: { action: "common-order-charge", data: data },
                     success: function (data) {
                         handleAjaxResponse(data);
                     },
@@ -99,21 +99,23 @@ var Port = function () {
         });
     }
 
-function add_save_port() {
+function add_save_order_charge() {
 
-    $("#add-save-port-form").validate({
+    $("#add-save-order-charge-form").validate({
         debug: true,
         errorElement: "span", //default input error message container
         errorClass: "help-block", // default input error message class
 
         rules: {
-            port_name: { required: true },
-            // start_date: { required: true },
+            charge_name: { required: true },
+            charge_value: { required: true, number: true, min: 1 },
+            charge_type: { required: true },
         },
 
         messages: {
-            port_name: { required: "Please enter port name." },
-            // start_date: { required: "Please enter start date." },
+            charge_name: { required: "Please enter charge name." },
+            charge_value: { required: "Please enter charge value.", number: "Enter a valid number.", min: "Charge value must be at least 1." },
+            charge_type: { required: "Please select charge type." },
         },
 
         invalidHandler: function (event, validator) {
@@ -174,21 +176,23 @@ function add_save_port() {
     }
 }
 
-function edit_save_port() {
+function edit_save_order_charge() {
 
-    $("#edit-save-port-form").validate({
+    $("#edit-save-order-charge-form").validate({
         debug: true,
         errorElement: "span", //default input error message container
         errorClass: "help-block", // default input error message class
 
         rules: {
-            port_name: { required: true },
-            // start_date: { required: true },
+            charge_name: { required: true },
+            charge_value: { required: true, number: true, min: 1 },
+            edit_charge_type: { required: true },
         },
 
         messages: {
-            port_name: { required: "Please enter port name." },
-            // start_date: { required: "Please enter start date." },
+            charge_name: { required: "Please enter charge name." },            
+            charge_value: { required: "Please enter charge value.", number: "Enter a valid number.", min: "Charge value must be at least 1." },
+            edit_charge_type: { required: "Please select charge type." },
         },
 
         invalidHandler: function (event, validator) {

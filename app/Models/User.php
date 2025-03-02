@@ -24,7 +24,9 @@ class User extends Authenticatable implements Auditable
         'phone_no',
         'user_image',
         'password',
-        'status',
+        'status', // 1 = active, 1 = inactive, 3 = deleted
+        'is_user_allowed_login', // 1= No, 2= Yes default(2)
+        'is_user_exit', // 1= No, 2= Yes
     ];
 
     protected $hidden = [

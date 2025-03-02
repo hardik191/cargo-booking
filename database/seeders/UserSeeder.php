@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Models\UserDetail;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
@@ -14,13 +16,23 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Disable foreign key checks before truncating
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('users')->truncate(); // Truncate the users table
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;'); // Re-enable foreign key checks
+
+        DB::table('user_details')->truncate(); // Clear user_details table
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
+        // Create roles
         $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin']);
-        Role::firstOrCreate(['name' => 'Logistics Manager']);
-        Role::firstOrCreate(['name' => 'Cargo Coordinator']);
-        Role::firstOrCreate(['name' => 'Warehouse/Storage Manager']);
+        $customerRole = Role::firstOrCreate(['name' => 'Customer']);
+        $logisticsManagerRole = Role::firstOrCreate(['name' => 'Logistics Manager']);
+        $cargoCoordinatorRole = Role::firstOrCreate(['name' => 'Cargo Coordinator']);
+        $warehouseManagerRole = Role::firstOrCreate(['name' => 'Warehouse/Storage Manager']);
 
         // Cargo Booking Officer/Agent
         // Cargo Coordinator
@@ -38,14 +50,21 @@ class UserSeeder extends Seeder
 
         $superAdminRole = Role::firstOrCreate(['name' => 'Customer']);
         // Create a superadmin user and assign role
-        $superAdmin = User::create([
+        // Create Customer user
+        $customer = User::create([
             'name' => 'User',
             'email' => 'user@user.com',
             'country_code' => '91',
             'phone_no' => '1234567890',
             'password' => bcrypt('Master@1234'),
         ]);
-        $superAdmin->assignRole($superAdminRole);
+        $customer->assignRole($customerRole);
+        UserDetail::create([
+            'user_id' => $customer->id,
+            'user_code' => generateCustomerCode(),
+            'add_by' => 1,
+            'updated_by' => 1,
+        ]);
     }
 }
 

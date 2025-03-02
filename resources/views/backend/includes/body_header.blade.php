@@ -65,7 +65,12 @@
                         <div class="app-navbar flex-shrink-0">
 
 
-                          @include('backend.includes.userpanel')
+                            @if (Auth::user()->hasRole('Customer'))
+                                @include('backend.includes.customer.userpanel')
+                            @else
+                                @include('backend.includes.userpanel')
+                            @endif
+                            
                             <!--begin::Header menu toggle-->
                             <div class="app-navbar-item d-lg-none ms-2 me-n2" title="Show header menu">
                                 <div class="btn btn-flex btn-icon btn-active-color-primary w-30px h-30px"

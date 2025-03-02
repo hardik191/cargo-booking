@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\backend\port;
+namespace App\Http\Controllers\backend\order_charge;
 
 use App\Http\Controllers\Controller;
-use App\Models\Port;
+use App\Models\OrderCharge;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
-class PortController extends Controller
+class OrderChargeController extends Controller
 {
     public function index()
     {
-        $data['title'] =  'Port List' . ' || ' . get_system_name();
+        $data['title'] =  'Order Charge List' . ' || ' . get_system_name();
         $data['header'] = array(
-            'title' => 'Port List',
+            'title' => 'Order Charge List',
             'breadcrumb' => array(
                 'Dashboard' => route('dashboard'),
-                'Port List' => 'Port List',
+                'Order Charge List' => 'Order Charge List',
             )
         );
         $data['css'] = array(
@@ -37,13 +38,13 @@ class PortController extends Controller
         $data['js'] = array(
             'comman_function.js',
             'jquery.form.min.js',
-            'port.js',
+            'order_charge.js',
         );
         $data['funinit'] = array(
-            'Port.init()'
+            'Order_charge.init()'
         );
 
-        return view('backend.pages.port.list', $data);
+        return view('backend.pages.order_charge.list', $data);
     }
 
     /**
@@ -59,22 +60,29 @@ class PortController extends Controller
      */
     public function store(Request $request)
     {
+        
         DB::beginTransaction();
         try {
-
             $request->validate([
-                'port_name' => 'required|unique:ports,port_name',
-                // 'location' => 'required',
+                'charge_name' => 'required|unique:order_charges,charge_name',
+                'charge_value' => 'required|numeric|min:1',
+                'charge_type' => 'required',
             ], [
-                'port_name.required' => 'The Port Name field is required.',
-                'port_name.unique' => 'The Port Name already exists.',
-                // 'location.required' => 'The Location field is required.',
+                'charge_name.required' => 'The Charge Name field is required.',
+                'charge_name.unique' => 'Charge Name already exists.',
+
+                'charge_value.required' => 'The Charge Value field is required.',
+                'charge_value.numeric' => 'The Charge Value must be a valid number.',
+                'charge_value.min' => 'The Charge Value must be at least 1.',
+
+                'charge_type.required' => 'The Charge Type field is required.',
             ]);
-            
-            Port::create([
-                'port_name' => $request->port_name,
-                // 'location' => $request->location,
-                'status' => $request->status,
+
+            OrderCharge::create([
+                'charge_name' => $request->charge_name,
+                'charge_type' => $request->charge_type,
+                'charge_value' => $request->charge_value,
+                'status' => $request->status ?? 1,
                 'add_by' => auth()->user()->id,
                 'updated_by' => auth()->user()->id,
             ]);
@@ -83,10 +91,11 @@ class PortController extends Controller
 
             $return = [
                 'status' => 'success',
-                'message' => 'Port successfully added.',
-                'jscode' => '$("#loader").hide();$("#add_port_modal").modal("hide");',
-                'ajaxcall' => 'Port.init()'
+                'message' => 'Order Charge successfully added.',
+                'jscode' => '$("#loader").hide();$("#add_order_charge_modal").modal("hide");',
+                'ajaxcall' => 'Order_charge.init()'
             ];
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
 
@@ -95,7 +104,7 @@ class PortController extends Controller
                 $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
             }
             $errorMessages .= '</ul>';
-
+            
             $return = [
                 'sweet_alert' => 'sweet_alert',
                 'status' => 'warning',
@@ -137,20 +146,28 @@ class PortController extends Controller
 
         DB::beginTransaction();
         try {
+
             $request->validate([
-                'port_name' => 'required|unique:ports,port_name,' . $request->edit_id,
-                // 'location' => 'required',
+                'charge_name' => 'required|unique:order_charges,charge_name,' . $request->edit_id,
+                'charge_value' => 'required|numeric|min:1',
+                'edit_charge_type' => 'required',
             ], [
-                'port_name.required' => 'The Port Name field is required.',
-                'port_name.unique' => 'The Port Name already exists.',
-                // 'location.required' => 'The Location field is required.',
+                'charge_name.required' => 'The Charge Name field is required.',
+                'charge_name.unique' => 'Charge Name already exists.',
+
+                'charge_value.required' => 'The Charge Value field is required.',
+                'charge_value.numeric' => 'The Charge Value must be a valid number.',
+                'charge_value.min' => 'The Charge Value must be at least 1.',
+
+                'edit_charge_type.required' => 'The Charge Type field is required.',
             ]);
 
-            $findPort = Port::find($request->edit_id);
-            $findPort->update([
-                'port_name' => $request->port_name,
-                'location' => $request->location,
-                'status' => $request->status,
+            $findOrderCharge = OrderCharge::find($request->edit_id);
+            $findOrderCharge->update([
+                'charge_name' => $request->charge_name,
+                'charge_type' => $request->edit_charge_type,
+                'charge_value' => $request->charge_value,
+                'status' => $request->status ?? 1,
                 'updated_by' => auth()->user()->id,
             ]);
 
@@ -158,9 +175,9 @@ class PortController extends Controller
 
             $return = [
                 'status' => 'success',
-                'message' => 'Port successfully updated.',
-                'jscode' => '$("#loader").hide();$("#edit_port_modal").modal("hide");',
-                'ajaxcall' => 'Port.init()'
+                'message' => 'Order Charge successfully updated.',
+                'jscode' => '$("#loader").hide();$("#edit_order_charge_modal").modal("hide");',
+                'ajaxcall' => 'Order_charge.init()'
             ];
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
@@ -174,7 +191,7 @@ class PortController extends Controller
             $return = [
                 'sweet_alert' => 'sweet_alert',
                 'status' => 'warning',
-                'message' => $errorMessages, // Show all validation errors
+                'message' => $errorMessages,
                 'jscode' => '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();',
             ];
         } catch (\Exception $e) {
@@ -199,12 +216,22 @@ class PortController extends Controller
                 $requestData = $_REQUEST;
                 $columns = array(
                     0 => 'id',
-                    1 => 'port_name',
-                    2 => 'location',
-                    3 => DB::raw('(CASE WHEN status = "1" THEN "Active" ELSE "Inactive" END)')
+                    1 => 'charge_name',
+                    2 => 'charge_value',
+                    3 => DB::raw("
+                        (CASE 
+                            WHEN charge_type = '1' THEN 'Inhouse'
+                            WHEN charge_type = '2' THEN 'Vendoring'
+                            WHEN charge_type = '3' THEN 'Inhouse + Vendoring'
+                            WHEN charge_type = '4' THEN 'Bought Out'
+                            WHEN charge_type = '5' THEN 'Bought Out + Inhouse'
+                            ELSE 'Unknown'
+                        END)
+                    "),
+                    4 => DB::raw('(CASE WHEN status = "1" THEN "Active" ELSE "Inactive" END)')
                 );
 
-                $query = Port::where('status', '!=', '3'); // no deleted
+                $query = OrderCharge::where('status', '!=', '3'); // no deleted
 
                 if (!empty($requestData['search']['value'])) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
                     $searchVal = $requestData['search']['value'];
@@ -230,14 +257,17 @@ class PortController extends Controller
                 $totalFiltered = count($temp->get());
 
                 $resultArr = $query->skip($requestData['start'])
-                ->take($requestData['length'])
-                ->get();
+                    ->take($requestData['length'])
+                    ->get();
 
                 $data = array();
                 $i = 0;
                 // ccd($resultArr);
+                $chargeTypes = Config::get('constants.CHARGE_TYPE'); // Get charge type names
+
                 foreach ($resultArr as $row) {
                     $status = '';
+                    $charge_type_badge = '';
                     $actionhtml = '';
                     $actionhtml .= '<div class="dropdown">';
                     $actionhtml .= '<a href="javascript:;" class="menu-link px-3" id="dropdownMenuButton' . $row["id"] . '"                 data-bs-toggle="dropdown" aria-expanded="false">';
@@ -245,31 +275,46 @@ class PortController extends Controller
                     $actionhtml .= '</a>';
                     $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg px-3" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
 
-                    if ($user->can('port edit')) {
-                        $actionhtml .= '<li><a class="dropdown-item edit-port" href="javascript:;" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
+                    if ($user->can('order-charge edit')) {
+                        $actionhtml .= '<li><a class="dropdown-item edit-order-charge" href="javascript:;" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
                     }
                     if ($row['status'] == 1) {
                         $status = '<span class="badge py-1 px-4 fs-7 badge-light-success">Active</span>';
-                        if ($user->can('port status')) {
-                            $actionhtml .= '<li><a class="dropdown-item inactive-port" href="#" data-bs-toggle="modal" data-bs-target="#inactiveModal" data-id="' . $row["id"] . '"><i class="fa fa-times text-danger"></i> Inactive</a></li>';
+                        if ($user->can('order-charge status')) {
+                            $actionhtml .= '<li><a class="dropdown-item inactive-order-charge" href="#" data-bs-toggle="modal" data-bs-target="#inactiveModal" data-id="' . $row["id"] . '"><i class="fa fa-times text-danger"></i> Inactive</a></li>';
                         }
                     } elseif ($row['status'] == 2) {
                         $status = '<span class="badge badge-light-danger py-1 px-4 fs-7 fs-base">Inactive</span>';
-                        if ($user->can('port status')) {
-                            $actionhtml .= '<li><a class="dropdown-item active-port" href="#" data-bs-toggle="modal" data-bs-target="#activeModal" data-id="' . $row["id"] . '"><i class="fa fa-check text-success"></i> Active</a></li>';
+                        if ($user->can('order-charge status')) {
+                            $actionhtml .= '<li><a class="dropdown-item active-order-charge" href="#" data-bs-toggle="modal" data-bs-target="#activeModal" data-id="' . $row["id"] . '"><i class="fa fa-check text-success"></i> Active</a></li>';
                         }
                     }
-                    if ($user->can('port delete')) {
-                        $actionhtml .= '<li><a class="dropdown-item delete-port" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $row["id"] . '"><i class="fa fa-trash text-danger"></i> Delete</a></li>';
+                    if ($user->can('order-charge delete')) {
+                        $actionhtml .= '<li><a class="dropdown-item delete-order-charge" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $row["id"] . '"><i class="fa fa-trash text-danger"></i> Delete</a></li>';
                     }
                     $actionhtml .= '</ul>';
                     $actionhtml .= '</div>';
 
+                    $badgeClasses = [
+                        'badge-primary',
+                        // 'badge-secondary',
+                        // 'badge-success',
+                        // 'badge-info',
+                        // 'badge-warning',
+                        // 'badge-danger',
+                        // 'badge-dark'
+                    ];
+
+                    $randomBadge = $badgeClasses[array_rand($badgeClasses)]; // Pick a random badge
+
+                    $charge_type_badge = '<span class="badge badge-outline ' . $randomBadge . '">' . ($chargeTypes[$row->charge_type] ?? 'Unknown') . '</span>';
+
                     $i++;
                     $nestedData = array();
                     $nestedData[] = $i;
-                    $nestedData[] = $row->port_name;
-                    $nestedData[] = $row->location ?? 'N/A';
+                    $nestedData[] = $row->charge_name;
+                    $nestedData[] = $row->charge_value;
+                    $nestedData[] = $charge_type_badge;
                     $nestedData[] = $status;
                     $nestedData[] = $actionhtml;
                     $data[] = $nestedData;
@@ -284,24 +329,26 @@ class PortController extends Controller
                 echo json_encode($json_data);
                 break;
 
-            case 'add-port':
+            case 'add-order-charge':
 
-                $list = view('backend.pages.port.add');
+                $data['charge_type'] = Config::get('constants.CHARGE_TYPE');
+
+                $list = view('backend.pages.order_charge.add', $data);
                 echo $list;
                 break;
 
-            case 'edit-port':
-
-                $data['port_details'] = Port::find($request->port_id);
+            case 'edit-order-charge':
+                $data['charge_type'] = Config::get('constants.CHARGE_TYPE');
+                $data['order_charge_details'] = OrderCharge::find($request->order_charge_id);
                 // dd($data['permission_details']);
-                $list = view('backend.pages.port.edit', $data);
+                $list = view('backend.pages.order_charge.edit', $data);
                 echo $list;
                 break;
 
-            case 'common-port':
+            case 'common-order-charge':
                 $data = $request->input('data');
 
-                $findId = Port::find($data['id']);
+                $findId = OrderCharge::find($data['id']);
                 $result = $findId->update([
                     'status' => $data['type'],
                     'updated_by' => $user->id,
@@ -309,9 +356,9 @@ class PortController extends Controller
                 ]);
 
                 $statusMessages = [
-                    1 => 'Port successfully activated.',
-                    2 => 'Port successfully inactivated.',
-                    3 => 'Port successfully deleted.',
+                    1 => 'Order Charge successfully activated.',
+                    2 => 'Order Charge successfully inactivated.',
+                    3 => 'Order Charge successfully deleted.',
                 ];
 
                 $modalSelectors = [
@@ -324,7 +371,7 @@ class PortController extends Controller
                     $return['status'] = 'success';
                     $return['message'] = $statusMessages[$data['type']];
                     $return['jscode'] = '$("#loader").hide();$("#' . $modalSelectors[$data['type']] . '").modal("hide");';
-                    $return['ajaxcall'] = 'Port.init()';
+                    $return['ajaxcall'] = 'Order_charge.init()';
                 } else {
                     $return['status'] = 'error';
                     $return['jscode'] = '$("#loader").hide();';

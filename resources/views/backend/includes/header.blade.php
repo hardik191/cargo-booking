@@ -27,7 +27,7 @@ $branding_details = json_decode($get_system_setting['value']);
     <title>{{$title}}</title>
 
 
-    <style>
+    {{-- <style>
         [data-kt-app-layout=dark-sidebar] .app-sidebar {
             background-color: {{isset($branding_details->sidebar_color) ? $branding_details->sidebar_color : '#000000'}} !important;
         }
@@ -245,6 +245,187 @@ $branding_details = json_decode($get_system_setting['value']);
             color: {{ $branding_details->sidebar_active_font_color }} !important;
         }
 /*  */
+    </style> --}}
+
+    <style>
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-heading {
+            color: {{ isset($branding_details->sidebar_active_color) ? $branding_details->sidebar_active_color : '#ffffff' }} !important;
+        }
+        .card-header-bg {
+            background-color: {{ isset($branding_details->card_color) ? $branding_details->card_color : '#000000' }} !important;
+        }
+
+        .card-colors {
+            color: {{ isset($branding_details->card_color_text) ? $branding_details->card_color_text : '#FFFFFF' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar {
+            background-color: {{ isset($branding_details->sidebar_color) ? $branding_details->sidebar_color : '#000000' }};
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link {
+            color: {{ isset($branding_details->sidebar_menu_font_color) ? $branding_details->sidebar_menu_font_color : '#9a9cae' }} !important;
+        }
+
+        .classTable thead th {
+            background-color: {{ isset($branding_details->table_color) ? $branding_details->table_color : 'black' }} !important;
+            color: {{ isset($branding_details->table_color_text) ? $branding_details->table_color_text : 'black' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-icon .svg-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-icon i {
+            color: {{ isset($branding_details->sidebar_menu_font_color) ? $branding_details->sidebar_menu_font_color : '#9a9cae' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-title {
+            color: {{ isset($branding_details->sidebar_menu_font_color) ? $branding_details->sidebar_menu_font_color : '#9a9cae' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active .menu-title {
+            color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-arrow:after {
+            background-color: {{ $branding_details->sidebar_menu_font_color ?? '#f5f5f5' }} !important;
+            color: {{ $branding_details->sidebar_menu_font_color ?? '#f5f5f5' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active .menu-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active .menu-icon .svg-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active .menu-icon i {
+            color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active .menu-bullet .bullet {
+            background-color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active {
+            transition: color .2s ease;
+            background-color: {{ isset($branding_details->sidebar_active_color) ? $branding_details->sidebar_active_color : '#1c1c21' }} !important;
+            color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.hover:not(.here)>.menu-link:not(.disabled):not(.active):not(.here) .menu-title,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-title {
+            color: {{ isset($branding_details->hover_font_color) ? $branding_details->hover_font_color : '#9a9cae' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.hover:not(.here)>.menu-link:not(.disabled):not(.active):not(.here) .menu-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.hover:not(.here)>.menu-link:not(.disabled):not(.active):not(.here) .menu-icon .svg-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.hover:not(.here)>.menu-link:not(.disabled):not(.active):not(.here) .menu-icon i,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-icon .svg-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-icon i {
+            color: {{ isset($branding_details->hover_font_color) ? $branding_details->hover_font_color : '#9a9cae' }} !important;
+        }
+
+        .menu-item.menu-accordion.show:not(.hiding):not(.menu-dropdown)>.menu-link .menu-arrow:after,
+        .menu-item.menu-accordion.showing:not(.menu-dropdown)>.menu-link .menu-arrow:after {
+            background-color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.hover:not(.here)>.menu-link:not(.disabled):not(.active):not(.here),
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) {
+            transition: color .2s ease;
+            background-color: {{ isset($branding_details->hover_color) ? $branding_details->hover_color : '#f5f5f5' }} !important;
+            color: {{ isset($branding_details->hover_font_color) ? $branding_details->hover_font_color : '#000000' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.hover:not(.here)>.menu-link:not(.disabled):not(.active):not(.here) .menu-bullet .bullet,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item:not(.here) .menu-link:hover:not(.disabled):not(.active):not(.here) .menu-bullet .bullet {
+            background-color: {{ isset($branding_details->hover_font_color) ? $branding_details->hover_font_color : '#000000' }} !important;
+
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link.active,
+        #kt_app_sidebar span.menu-link:hover,
+        #kt_app_sidebar .menu-sub .menu-item.menu-link :hover {
+            transition: color .2s ease;
+            background-color: {{ isset($branding_details->hover_color) ? $branding_details->hover_color : '#f5f5f5' }};
+            color: {{ isset($branding_details->hover_font_color) ? $branding_details->hover_font_color : '#000000' }} !important;
+        }
+
+        #kt_app_sidebar .menu-sub .menu-item .menu-link.active:hover {
+            border-radius:  0.475rem;
+            margin-right: 0rem !important;
+        }
+
+        #kt_app_header {
+            top: 1px;
+            background: #FCFCFC;
+            border-bottom: 1px dashed {{ isset($branding_details->sidebar_color) ? $branding_details->sidebar_color : '#000000' }};
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.show>.menu-link {
+            transition: color .2s ease;
+            background-color: {{ isset($branding_details->sidebar_active_color) ? $branding_details->sidebar_active_color : '#1c1c21' }} !important;
+            color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.show>.menu-link .menu-title {
+            color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+        }
+
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.show>.menu-link .menu-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.show>.menu-link .menu-icon .svg-icon,
+        [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item.show>.menu-link .menu-icon i {
+            color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+        }
+
+        /* primary_color */
+        .btn.btn-primary {
+            color: {{ isset($branding_details->primary_color_text) ? $branding_details->primary_color_text : '#ffffff' }} !important;
+            border-color: {{ isset($branding_details->primary_color) ? $branding_details->primary_color : '#1b84ff' }} !important;
+            background-color: {{ isset($branding_details->primary_color) ? $branding_details->primary_color : '#1b84ff' }} !important;
+        }
+
+        .btn.btn-primary .svg-icon,
+        .btn.btn-primary i {
+            color: {{ isset($branding_details->primary_color_text) ? $branding_details->primary_color_text : '#ffffff' }} !important;
+        }
+
+        .btn-check:active+.btn.btn-primary,
+        .btn-check:checked+.btn.btn-primary,
+        .btn.btn-primary.active,
+        .btn.btn-primary.show,
+        .btn.btn-primary:active:not(.btn-active),
+        .btn.btn-primary:focus:not(.btn-active),
+        .btn.btn-primary:hover:not(.btn-active),
+        .show>.btn.btn-primary {
+            color: {{ isset($branding_details->hover_font_color) ? $branding_details->hover_font_color : '#ffffff' }} !important;
+            border-color: {{ isset($branding_details->hover_color) ? $branding_details->hover_color : '#1b84ff' }} !important;
+            background-color: {{ isset($branding_details->hover_color) ? $branding_details->hover_color : '#1b84ff' }} !important;
+        }
+
+        .btn-check:active+.btn.btn-primary .svg-icon,
+        .btn-check:active+.btn.btn-primary i,
+        .btn-check:checked+.btn.btn-primary .svg-icon,
+        .btn-check:checked+.btn.btn-primary i,
+        .btn.btn-primary.active .svg-icon,
+        .btn.btn-primary.active i,
+        .btn.btn-primary.show .svg-icon,
+        .btn.btn-primary.show i,
+        .btn.btn-primary:active:not(.btn-active) .svg-icon,
+        .btn.btn-primary:active:not(.btn-active) i,
+        .btn.btn-primary:focus:not(.btn-active) .svg-icon,
+        .btn.btn-primary:focus:not(.btn-active) i,
+        .btn.btn-primary:hover:not(.btn-active) .svg-icon,
+        .btn.btn-primary:hover:not(.btn-active) i,
+        .show>.btn.btn-primary .svg-icon,
+        .show>.btn.btn-primary i {
+            color: {{ isset($branding_details->hover_font_color) ? $branding_details->hover_font_color : '#ffffff' }} !important;
+        }
+
+        .badge-sidebar{
+            background-color: {{ isset($branding_details->sidebar_active_color) ? $branding_details->sidebar_active_color : '#1c1c21' }} !important;
+            color: {{ isset($branding_details->sidebar_active_font_color) ? $branding_details->sidebar_active_font_color : '#f5f5f5' }} !important;
+        }
+
+        /* aa */
     </style>
     
     @if (!empty($css))

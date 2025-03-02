@@ -1,16 +1,29 @@
 <div class="row g-3 g-xl-3 ">
     <div class="col-md-12">
         <label class="fs-6 fw-semibold form-label mb-2">
-            <span class="required">Port Name</span>
+            <span class="required">Charge Name</span>
         </label>
-         <input type="text" class="form-control form-control-lg" autocomplete="off" name="port_name" id="port_name"  placeholder="Please enter port name"/>
+         <input type="text" class="form-control form-control-lg" autocomplete="off" name="charge_name" placeholder="Please enter charge name"/>
     </div>
 
     <div class="col-md-12">
         <label class="fs-6 fw-semibold form-label mb-2">
-            <span class="">Location</span>
+            <span class="required">Charge Value</span>
         </label>
-         <input type="text" class="form-control form-control-lg" autocomplete="off" name="location" id="location"  placeholder="Please enter location"/>
+         <input type="text" class="form-control form-control-lg charge_value onlyDigit" autocomplete="off" name="charge_value" placeholder="Please enter charge value"/>
+    </div>
+
+    <div class="col-md-12">
+        <label class="fs-6 fw-semibold form-label mb-2">
+            <span class="required">Charge Type</span>
+        </label>
+
+        <select name="charge_type" id="charge_type" class="form-select select3" data-control="select2" data-dropdown-parent="#add_order_charge_modal" data-placeholder="Select charge type" data-hide-search="true" data-allow-clear="true"  >
+            <option></option>
+            @foreach($charge_type as $key => $type)
+                <option value="{{ $key }}">{{ $type }}</option>
+            @endforeach
+        </select>
     </div>
 
     <div class="col-md-12">

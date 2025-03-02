@@ -17,10 +17,13 @@
             <!--end::Header-->
             <!--begin::Wrapper-->
             <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-                <!--begin::Sidebar-->
-                @include('backend.includes.sidebar')
-                <!--end::Sidebar-->
-                <!--begin::Main-->
+               
+                @if (Auth::user()->hasRole('Customer'))
+                    @include('backend.includes.customer.sidebar')
+                @else
+                    @include('backend.includes.sidebar')
+                @endif
+                
                 <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
                     <!--begin::Content wrapper-->
                     <div class="d-flex flex-column flex-column-fluid">

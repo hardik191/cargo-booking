@@ -15,5 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionSeeder::class);
         $this->call(UserSeeder::class);
         $this->call(SystemSettingSeeder::class);
+        $this->call(PortsTableSeeder::class);
+        $this->call(ContainersTableSeeder::class);
     }
 }

@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\backend\port;
+namespace App\Http\Controllers\backend\container;
 
 use App\Http\Controllers\Controller;
-use App\Models\Port;
+use App\Models\Container;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class PortController extends Controller
+class ContainerController extends Controller
 {
     public function index()
     {
-        $data['title'] =  'Port List' . ' || ' . get_system_name();
+        $data['title'] =  'Container List' . ' || ' . get_system_name();
         $data['header'] = array(
-            'title' => 'Port List',
+            'title' => 'Container List',
             'breadcrumb' => array(
                 'Dashboard' => route('dashboard'),
-                'Port List' => 'Port List',
+                'Container List' => 'Container List',
             )
         );
         $data['css'] = array(
@@ -37,13 +37,13 @@ class PortController extends Controller
         $data['js'] = array(
             'comman_function.js',
             'jquery.form.min.js',
-            'port.js',
+            'container.js',
         );
         $data['funinit'] = array(
-            'Port.init()'
+            'Container.init()'
         );
 
-        return view('backend.pages.port.list', $data);
+        return view('backend.pages.container.list', $data);
     }
 
     /**
@@ -51,7 +51,37 @@ class PortController extends Controller
      */
     public function create()
     {
-        //
+        $data['title'] =  'Container List' . ' || ' . get_system_name();
+        $data['header'] = array(
+            'title' => 'Container List',
+            'breadcrumb' => array(
+                'Dashboard' => route('dashboard'),
+                'Container List' => 'Container List',
+            )
+        );
+        $data['css'] = array(
+            'toastr/toastr.min.css'
+        );
+        $data['plugincss'] = array(
+            'plugins/custom/datatables/table/datatables.bundle.css',
+        );
+        $data['pluginjs'] = array(
+            'toastr/toastr.min.js',
+            'validate/jquery.validate.min.js'
+        );
+        $data['widgetjs'] = array(
+            'plugins/custom/datatables/table/datatables.bundle.js',
+        );
+        $data['js'] = array(
+            'comman_function.js',
+            'jquery.form.min.js',
+            'container.js',
+        );
+        $data['funinit'] = array(
+            'Container.init()'
+        );
+
+        return view('backend.pages.container.list', $data);
     }
 
     /**
@@ -63,29 +93,32 @@ class PortController extends Controller
         try {
 
             $request->validate([
-                'port_name' => 'required|unique:ports,port_name',
-                // 'location' => 'required',
-            ], [
-                'port_name.required' => 'The Port Name field is required.',
-                'port_name.unique' => 'The Port Name already exists.',
-                // 'location.required' => 'The Location field is required.',
+                'container_type' => 'required|unique:containers,container_type',
+                // 'max_container' => 'required|integer|min:1',
+                'max_capacity' => 'required|integer|min:1',
+                'capacity_unit' => 'required|in:1,2', // 1=KG, 2=Tons
+                'base_price' => 'required|numeric|min:1',
+                'status' => 'required|in:1,2',
             ]);
-            
-            Port::create([
-                'port_name' => $request->port_name,
-                // 'location' => $request->location,
+
+            // Save new container
+            Container::create([
+                'container_type' => $request->container_type,
+                // 'max_container' => $request->max_container,
+                'max_capacity' => $request->max_capacity,
+                'capacity_unit' => $request->capacity_unit,
+                'base_price' => $request->base_price,
                 'status' => $request->status,
                 'add_by' => auth()->user()->id,
                 'updated_by' => auth()->user()->id,
             ]);
 
             DB::commit();
-
             $return = [
                 'status' => 'success',
-                'message' => 'Port successfully added.',
-                'jscode' => '$("#loader").hide();$("#add_port_modal").modal("hide");',
-                'ajaxcall' => 'Port.init()'
+                'message' => 'Container successfully added.',
+                'jscode' => '$("#loader").hide();$("#add_container_modal").modal("hide");',
+                'ajaxcall' => 'Container.init()'
             ];
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
@@ -138,29 +171,32 @@ class PortController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'port_name' => 'required|unique:ports,port_name,' . $request->edit_id,
-                // 'location' => 'required',
-            ], [
-                'port_name.required' => 'The Port Name field is required.',
-                'port_name.unique' => 'The Port Name already exists.',
-                // 'location.required' => 'The Location field is required.',
+                'container_type' => 'required|unique:containers,container_type,' . $request->edit_id,
+                // 'max_container' => 'required|integer|min:1',
+                'max_capacity' => 'required|integer|min:1',
+                'capacity_unit' => 'required|in:1,2', // 1=KG, 2=Tons
+                'base_price' => 'required|numeric|min:1',
+                'status' => 'required|in:1,2',
+                'updated_by' => auth()->user()->id,
             ]);
 
-            $findPort = Port::find($request->edit_id);
-            $findPort->update([
-                'port_name' => $request->port_name,
-                'location' => $request->location,
+            $findContainer = Container::find($request->edit_id);
+            $findContainer->update([
+                'container_type' => $request->container_type,
+                // 'max_container' => $request->max_container,
+                'max_capacity' => $request->max_capacity,
+                'capacity_unit' => $request->capacity_unit,
+                'base_price' => $request->base_price,
                 'status' => $request->status,
-                'updated_by' => auth()->user()->id,
             ]);
 
             DB::commit();
 
             $return = [
                 'status' => 'success',
-                'message' => 'Port successfully updated.',
-                'jscode' => '$("#loader").hide();$("#edit_port_modal").modal("hide");',
-                'ajaxcall' => 'Port.init()'
+                'message' => 'Container successfully updated.',
+                'jscode' => '$("#loader").hide();$("#edit_container_modal").modal("hide");',
+                'ajaxcall' => 'Container.init()'
             ];
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
@@ -199,12 +235,14 @@ class PortController extends Controller
                 $requestData = $_REQUEST;
                 $columns = array(
                     0 => 'id',
-                    1 => 'port_name',
-                    2 => 'location',
-                    3 => DB::raw('(CASE WHEN status = "1" THEN "Active" ELSE "Inactive" END)')
+                    1 => 'container_type',
+                    // 2 => 'max_container',
+                    2 => 'max_capacity',
+                    3 => 'base_price',
+                    4 => DB::raw('(CASE WHEN status = "1" THEN "Active" ELSE "Inactive" END)')
                 );
 
-                $query = Port::where('status', '!=', '3'); // no deleted
+                $query = Container::where('status', '!=', '3'); // no deleted
 
                 if (!empty($requestData['search']['value'])) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
                     $searchVal = $requestData['search']['value'];
@@ -224,20 +262,29 @@ class PortController extends Controller
                     });
                 }
 
-                $temp = $query->orderBy($columns[$requestData['order'][0]['column']], $requestData['order'][0]['dir']);
+                $columnIndex = $requestData['order'][0]['column'];
+                $columnSortOrder = $requestData['order'][0]['dir'];
+                $columnName = $columns[$columnIndex];
 
-                $totalData = count($temp->get());
-                $totalFiltered = count($temp->get());
+                // if ($columnName === 'item_details') {
+
+                // } else {
+                $query->orderBy($columnName, $columnSortOrder);
+                // }
+
+                $totalData = $query->count();
+                $totalFiltered = $query->count();
 
                 $resultArr = $query->skip($requestData['start'])
-                ->take($requestData['length'])
-                ->get();
+                    ->take($requestData['length'])
+                    ->get();
 
                 $data = array();
                 $i = 0;
                 // ccd($resultArr);
                 foreach ($resultArr as $row) {
                     $status = '';
+                    $unit = '';
                     $actionhtml = '';
                     $actionhtml .= '<div class="dropdown">';
                     $actionhtml .= '<a href="javascript:;" class="menu-link px-3" id="dropdownMenuButton' . $row["id"] . '"                 data-bs-toggle="dropdown" aria-expanded="false">';
@@ -245,31 +292,40 @@ class PortController extends Controller
                     $actionhtml .= '</a>';
                     $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg px-3" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
 
-                    if ($user->can('port edit')) {
-                        $actionhtml .= '<li><a class="dropdown-item edit-port" href="javascript:;" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
+                    if ($user->can('container edit')) {
+                        $actionhtml .= '<li><a class="dropdown-item edit-container" href="javascript:;" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
                     }
                     if ($row['status'] == 1) {
                         $status = '<span class="badge py-1 px-4 fs-7 badge-light-success">Active</span>';
-                        if ($user->can('port status')) {
-                            $actionhtml .= '<li><a class="dropdown-item inactive-port" href="#" data-bs-toggle="modal" data-bs-target="#inactiveModal" data-id="' . $row["id"] . '"><i class="fa fa-times text-danger"></i> Inactive</a></li>';
+                        if ($user->can('container status')) {
+                            $actionhtml .= '<li><a class="dropdown-item inactive-container" href="#" data-bs-toggle="modal" data-bs-target="#inactiveModal" data-id="' . $row["id"] . '"><i class="fa fa-times text-danger"></i> Inactive</a></li>';
                         }
                     } elseif ($row['status'] == 2) {
                         $status = '<span class="badge badge-light-danger py-1 px-4 fs-7 fs-base">Inactive</span>';
-                        if ($user->can('port status')) {
-                            $actionhtml .= '<li><a class="dropdown-item active-port" href="#" data-bs-toggle="modal" data-bs-target="#activeModal" data-id="' . $row["id"] . '"><i class="fa fa-check text-success"></i> Active</a></li>';
+                        if ($user->can('container status')) {
+                            $actionhtml .= '<li><a class="dropdown-item active-container" href="#" data-bs-toggle="modal" data-bs-target="#activeModal" data-id="' . $row["id"] . '"><i class="fa fa-check text-success"></i> Active</a></li>';
                         }
                     }
-                    if ($user->can('port delete')) {
-                        $actionhtml .= '<li><a class="dropdown-item delete-port" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $row["id"] . '"><i class="fa fa-trash text-danger"></i> Delete</a></li>';
+                    if ($user->can('container delete')) {
+                        $actionhtml .= '<li><a class="dropdown-item delete-container" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="' . $row["id"] . '"><i class="fa fa-trash text-danger"></i> Delete</a></li>';
                     }
                     $actionhtml .= '</ul>';
                     $actionhtml .= '</div>';
+                    
+
+                    if ($row->capacity_unit == 1) {
+                        $unit = '<span class="badge badge-outline badge-primary">KG</span>';
+                    } else {
+                        $unit = '<span class="badge badge-outline badge-primary">Tone</span>';
+                    }
 
                     $i++;
                     $nestedData = array();
                     $nestedData[] = $i;
-                    $nestedData[] = $row->port_name;
-                    $nestedData[] = $row->location ?? 'N/A';
+                    $nestedData[] = $row->container_type ?? 'N/A';
+                    // $nestedData[] = $row->max_container ?? '0';
+                    $nestedData[] = $row->max_capacity . ' ' . $unit  ?? '0';
+                    $nestedData[] = $row->base_price ?? 'N/A';
                     $nestedData[] = $status;
                     $nestedData[] = $actionhtml;
                     $data[] = $nestedData;
@@ -284,24 +340,24 @@ class PortController extends Controller
                 echo json_encode($json_data);
                 break;
 
-            case 'add-port':
+            case 'add-container':
 
-                $list = view('backend.pages.port.add');
+                $list = view('backend.pages.container.add');
                 echo $list;
                 break;
 
-            case 'edit-port':
+            case 'edit-container':
 
-                $data['port_details'] = Port::find($request->port_id);
+                $data['container_details'] = Container::find($request->container_id);
                 // dd($data['permission_details']);
-                $list = view('backend.pages.port.edit', $data);
+                $list = view('backend.pages.container.edit', $data);
                 echo $list;
                 break;
 
-            case 'common-port':
+            case 'common-container':
                 $data = $request->input('data');
 
-                $findId = Port::find($data['id']);
+                $findId = Container::find($data['id']);
                 $result = $findId->update([
                     'status' => $data['type'],
                     'updated_by' => $user->id,
@@ -309,9 +365,9 @@ class PortController extends Controller
                 ]);
 
                 $statusMessages = [
-                    1 => 'Port successfully activated.',
-                    2 => 'Port successfully inactivated.',
-                    3 => 'Port successfully deleted.',
+                    1 => 'Container successfully activated.',
+                    2 => 'Container successfully inactivated.',
+                    3 => 'Container successfully deleted.',
                 ];
 
                 $modalSelectors = [
@@ -324,7 +380,7 @@ class PortController extends Controller
                     $return['status'] = 'success';
                     $return['message'] = $statusMessages[$data['type']];
                     $return['jscode'] = '$("#loader").hide();$("#' . $modalSelectors[$data['type']] . '").modal("hide");';
-                    $return['ajaxcall'] = 'Port.init()';
+                    $return['ajaxcall'] = 'Container.init()';
                 } else {
                     $return['status'] = 'error';
                     $return['jscode'] = '$("#loader").hide();';

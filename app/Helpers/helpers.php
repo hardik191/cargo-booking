@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\SystemSetting;
+use App\Models\UserDetail;
 
 function date_formate($date){
     return date("d-M-Y", strtotime($date));
@@ -90,5 +91,38 @@ function get_system_name(){
     }
 
     return 'Project';
+}
+
+function generateCustomerCode()
+{
+    $prefix = 'CUS-';
+
+    // Get the latest user_code in the database
+    $latestUserCode = UserDetail::where('user_code', 'like', $prefix . '%')
+        ->orderBy('user_code', 'desc')
+        ->first();
+
+    // If there is a latest user_code, extract the numeric part and increment it
+    if ($latestUserCode) {
+        // Extract the numeric part of the code (EMP-01 -> 01)
+        $lastNumber = intval(str_replace($prefix, '', $latestUserCode->user_code));
+
+        // Increment the number
+        $newNumber = $lastNumber + 1;
+    } else {
+        // Start with 1 if no existing code is found
+        $newNumber = 1;
+    }
+
+    // Generate the new user_code, zero-padded to 2 digits (EMP-01, EMP-02, etc.)
+    $newCode = $prefix . str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+
+    // Check if the generated code already exists and ensure uniqueness
+    while (UserDetail::where('user_code', $newCode)->exists()) {
+        $newNumber++;
+        $newCode = $prefix . str_pad($newNumber, 2, '0', STR_PAD_LEFT);
+    }
+
+    return $newCode;
 }
 ?>

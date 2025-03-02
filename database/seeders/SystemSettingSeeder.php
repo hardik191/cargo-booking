@@ -14,6 +14,10 @@ class SystemSettingSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        DB::table('system_setting')->truncate();
+
         DB::table('system_setting')->insert([
             'key' => "general_setting",
             'value' => json_encode([
@@ -27,28 +31,28 @@ class SystemSettingSeeder extends Seeder
             'created_at' => Carbon::now()->format('Y-m-d h:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d h:i:s'),
         ]);
-
+        
         DB::table('system_setting')->insert([
             'key' => "branding",
             'value' => json_encode([
                 '_token' => 'tEXzYp7ny9S28j69RKZNLjAjOSlMdkTBOqH1sjP2',
-                'primary_color' => '#000000',
+                'primary_color' => '#3341ff',
                 'primary_color_text' => '#ffffff',
                 'key' => 'branding',
                 'secondary_color' => '#000000',
                 'secondary_color_text' => '#ffffff',
                 'tertiary_color' => '#000000',
                 'tertiary_color_text' => '#ffffff',
-                'table_color' => '#000000',
-                'table_color_text' => '#ffffff',
-                'card_color' => '#000000',
-                'card_color_text' => '#ffffff',
+                'table_color' => '#70bcff',
+                'table_color_text' => '#000000',
+                'card_color' => '#d1d1d1',
+                'card_color_text' => '#000000',
                 'sidebar_color' => '#000000',
                 'sidebar_menu_font_color' => '#e5e1e1',
-                'sidebar_active_color' => '#221fff',
-                'sidebar_active_font_color' => '#faf9f9',
-                'hover_color' => '#c266ff',
-                'hover_font_color' => '#ffffff',
+                'sidebar_active_color' => '#1949f9',
+                'sidebar_active_font_color' => '#ffffff',
+                'hover_color' => '#f566ff',
+                'hover_font_color' => '#000000',
                 'favicon_icon' => null,
                 'avatar_remove' => null,
                 'login_icon' => null,
@@ -58,16 +62,16 @@ class SystemSettingSeeder extends Seeder
             'created_at' => Carbon::now()->format('Y-m-d h:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d h:i:s'),
         ]);
-        DB::table('system_setting')->insert([
-            'key' => "email_setting",
-            'created_at' => Carbon::now()->format('Y-m-d h:i:s'),
-            'updated_at' => Carbon::now()->format('Y-m-d h:i:s'),
-        ]);
-        DB::table('system_setting')->insert([
-            'key' => "sms_whatsapp_setting",
-            'created_at' => Carbon::now()->format('Y-m-d h:i:s'),
-            'updated_at' => Carbon::now()->format('Y-m-d h:i:s'),
-        ]);
+        // DB::table('system_setting')->insert([
+        //     'key' => "email_setting",
+        //     'created_at' => Carbon::now()->format('Y-m-d h:i:s'),
+        //     'updated_at' => Carbon::now()->format('Y-m-d h:i:s'),
+        // ]);
+        // DB::table('system_setting')->insert([
+        //     'key' => "sms_whatsapp_setting",
+        //     'created_at' => Carbon::now()->format('Y-m-d h:i:s'),
+        //     'updated_at' => Carbon::now()->format('Y-m-d h:i:s'),
+        // ]);
 
     }
 }

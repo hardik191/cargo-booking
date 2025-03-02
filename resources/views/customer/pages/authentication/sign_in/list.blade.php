@@ -55,7 +55,8 @@
 				<div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1">
 					<div class="d-flex flex-center flex-column flex-lg-row-fluid">
 						<div class="w-lg-500px p-10">
-							<form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" data-kt-redirect-url="index.html" action="#">
+							<form class="form w-100" novalidate="novalidate" id="sign-in-form" action="{{ route('sign-in-check-login') }}" method="post">
+								@csrf
 								<div class="text-center mb-11">
 									<h1 class="text-gray-900 fw-bolder mb-3">Sign In</h1>
 									<div class="text-gray-500 fw-semibold fs-6">You can book cargo.</div>
@@ -65,7 +66,7 @@
 									<span class="w-125px text-gray-500 fw-semibold fs-7">Or with email</span>
 								</div> --}}
 								<div class="fv-row mb-8">
-									<input type="text" placeholder="Email" name="email" autocomplete="off" class="form-control bg-transparent" />
+									<input type="text" placeholder="Email" name="login" autocomplete="off" class="form-control bg-transparent" />
 								</div>
 
 								<div class="fv-row mb-3" data-kt-password-meter="true">
@@ -179,7 +180,7 @@
         </script>
 		<script src="{{asset('backend/plugins/global/plugins.bundle.js')}}"></script>
 		<script src="{{asset('backend/js/scripts.bundle.js')}}"></script>
-		//<script src="{{asset('backend/js/custom/authentication/sign-in/general.js')}}"></script>
+		{{--<script src="{{asset('backend/js/custom/authentication/sign-in/general.js')}}"></script> --}}
 	</body>
 
     @if (!empty($pluginjs))

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\backend\authentication;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Session;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -54,26 +55,70 @@ class LoginController extends Controller
      */
     public function store(Request $request)
     {
+        $user = User::where(function ($query) use ($request) {
+            $query->where('email', $request->email);
+                // ->orWhere('phone_no', $request->login);
+        })
+            ->whereHas('roles', function ($query) {
+                $query->where('name', '!=', 'Customer'); // Filter only customers
+            })
+            ->first();
 
+        if ($user) {
+            if ($user->is_user_allowed_login == 2 && $user->password) {
+                // if ($user && Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
+                if ($user && Auth::attempt(['id' => $user->id, 'password' => $request->input('password')])) {
 
-            if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
-                $loginData = '';
-                $request->session()->forget('logindata');
-                $loginData = array(
-                    'user_type' => Auth::user()->user_type,
-                    'id' => Auth::user()->id
-                );
-                Session::push('logindata', $loginData);
-                $return['status'] = 'success';
-                $return['message'] = 'You have successfully logged in.';
-                $return['redirect'] = route('dashboard');
-            } else {
-                    $return['status'] = 'error';
+                    $loginData = '';
+                    $request->session()->forget('logindata');
+                    $loginData = array(
+                        // 'user_type' => Auth::user()->user_type,
+                        'id' => Auth::user()->id
+                    );
+                    Session::push('logindata', $loginData);
+                    $return['status'] = 'success';
+                    $return['message'] = 'You have successfully logged in.';
+                    $return['redirect'] = route('dashboard');
+                } else {
+                    $return['status'] = 'warning';
                     $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
                     $return['message'] = 'Invalid Login Id/Password';
+                }
+            } else {
+
+                if ($user->id == 1) {
+                    if ($user && Auth::attempt(['id' => $user->id, 'password' => $request->input('password')])) {
+
+                        $loginData = '';
+                        $request->session()->forget('logindata');
+                        $loginData = array(
+                            // 'user_type' => Auth::user()->user_type,
+                            'id' => Auth::user()->id
+                        );
+                        Session::push('logindata', $loginData);
+                        $return['status'] = 'success';
+                        $return['message'] = 'You have successfully logged in.';
+                        $return['redirect'] = route('dashboard');
+                    } else {
+                        $return['status'] = 'warning';
+                        $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
+                        $return['message'] = 'Invalid Login Id/Password';
+                    }
+                } else {
+                    $return['sweet_alert'] = 'sweet_alert';
+                    $return['status'] = 'warning';
+                    $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
+                    $return['message'] = 'Your account does not have permission to log in. Please contact support for admin.';
+                }
             }
-            return json_encode($return);
-            exit();
+        } else {
+            $return['sweet_alert'] = 'sweet_alert';
+            $return['status'] = 'warning';
+            $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
+            $return['message'] = 'No account found. Please check your email or mobile number.';
+        }
+        return json_encode($return);
+        exit();
 
     }
 
@@ -110,7 +155,6 @@ class LoginController extends Controller
     }
 
     public function logout(Request $request) {
-        // $this->resetGuard();
         $userRole = Auth::user()->getRoleNames();
         // dd($userRole[0]);
         $request->session()->forget('logindata');
@@ -119,7 +163,10 @@ class LoginController extends Controller
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
-
+        if ($userRole[0] == "Customer") {
+            return redirect()->route('sign-in');
+        } else {
             return redirect()->route('login');
+        }
     }
 }
