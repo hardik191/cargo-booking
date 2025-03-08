@@ -8,7 +8,7 @@ $data = Auth()->user();
 
 
 if($data['user_image'] != '' || $data['user_image'] != null ){
-    $image = url("backend/upload/userprofile/".$data['user_image']);
+    $image = asset('storage/uploads/userprofile/' . $data['user_image']);
 }else{
     $image = url("backend/upload/userprofile/default.jpg");
 }

@@ -40,6 +40,9 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
     Route::get('audit', [AuditController::class, 'index'])->name('audit');
     Route::post('audit-ajaxcall', [AuditController::class, 'ajaxcall'])->name('audit-ajaxcall');
 
+    Route::get('change-password', [SystemSettingController::class, 'change_password'])->name('change-password');
+    Route::post('change-save-password', [SystemSettingController::class, 'change_save_password'])->name('change-save-password');
+
     $adminPrefixs = "role-management";
     Route::group(['prefix' => $adminPrefixs, 'middleware' => ['auth']], function() {
         // Roles
@@ -132,6 +135,9 @@ $adminPrefix = "customer";
 Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard1');
 
+    // change password
+    Route::get('change-password', [SystemSettingController::class, 'change_password'])->name('change-password1');
+
     $adminPrefixs = "order-management";
     Route::group(['prefix' => $adminPrefixs, 'middleware' => ['auth']], function () {
 
@@ -141,6 +147,6 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
         // Pending Application
         Route::get('pending-order', [PendingOrderController::class, 'index'])->name('pending-order1');
         Route::get('view-pending-order/{id}', [PendingOrderController::class, 'show'])->name('view-pending-order1');
+        Route::post('pending-order-ajaxcall', [PendingOrderController::class, 'ajaxcall'])->name('pending-order-ajaxcall1');
     });
- 
 });

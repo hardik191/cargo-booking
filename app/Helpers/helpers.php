@@ -2,6 +2,12 @@
 
 use App\Models\SystemSetting;
 use App\Models\UserDetail;
+use Carbon\Carbon;
+
+function enterDateforment($date, $format = 'd-m-Y H:i A')
+{
+    return $date ? Carbon::parse($date)->format($format) : '';
+}
 
 function date_formate($date){
     return date("d-M-Y", strtotime($date));

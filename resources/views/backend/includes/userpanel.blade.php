@@ -4,7 +4,7 @@
       //    echo $user_details['name']; die();
 
       if ($user_details['user_image'] != '' || $user_details['user_image'] != null) {
-          $image = url('backend/upload/userprofile/' . $user_details['user_image']);
+            $image = asset('storage/uploads/userprofile/' . $user_details->user_image);
       } else {
           $image = url('backend/upload/userprofile/default.jpg');
       }
@@ -63,6 +63,10 @@
                 <a href="{{ route('audit') }}" class="menu-link px-5">Audit</a>
             </div>
           @endcan
+
+            <div class="menu-item px-5">
+                <a href="{{ route('change-password') }}" class="menu-link px-5">Change Password</a>
+            </div>
 
           @can('setting system-setting')
             <div class="menu-item px-5">

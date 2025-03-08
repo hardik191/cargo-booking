@@ -19,6 +19,34 @@
     }
 </script>
 
+@if(session('warning'))
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                text: "{{ session('warning') }}",
+                icon: "warning", // Use "warning" instead of session('warning')
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: { confirmButton: "btn btn-light" },
+            });
+        });
+    </script>
+@endif
+
+@if(session('error'))
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                text: "{{ session('error') }}",
+                icon: "error", // Use "error" instead of session('error')
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: { confirmButton: "btn btn-light" },
+            });
+        });
+    </script>
+@endif
+
  <script>
     var hostUrl = "{{ asset('/') }}";
     var baseurl = "{{ asset('/') }}";

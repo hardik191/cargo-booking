@@ -3,7 +3,7 @@ $user_details = Auth()->user();
 //    echo $user_details['name']; die();
 
 if ($user_details['user_image'] != '' || $user_details['user_image'] != null) {
-    $image = url('backend/upload/userprofile/' . $user_details['user_image']);
+    $image = asset('storage/uploads/userprofile/' . $user_details->user_image);
 } else {
     $image = url('backend/upload/userprofile/default.jpg');
 }

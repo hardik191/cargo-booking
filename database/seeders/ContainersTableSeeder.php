@@ -19,7 +19,7 @@ class ContainersTableSeeder extends Seeder
 
         DB::table('containers')->insert([
             [
-                'container_type' => '20ft',
+                'container_type' => '20FT',
                 'max_container' => 400,
                 'max_capacity' => 28000,
                 'capacity_unit' => 1, // Tons
@@ -31,7 +31,7 @@ class ContainersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'container_type' => '40ft',
+                'container_type' => '40FT',
                 'max_container' => 400,
                 'max_capacity' => 32000,
                 'capacity_unit' => 2, // KG
@@ -43,7 +43,7 @@ class ContainersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'container_type' => '45ft',
+                'container_type' => '45FT',
                 'max_container' => 400,
                 'max_capacity' => 36000,
                 'capacity_unit' => 2, // Tons
@@ -55,7 +55,7 @@ class ContainersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'container_type' => 'Reefer 20ft',
+                'container_type' => 'Reefer 20FT',
                 'max_container' => 400,
                 'max_capacity' => 10000,
                 'capacity_unit' => 2, // Tons
@@ -67,7 +67,7 @@ class ContainersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'container_type' => 'Reefer 40ft',
+                'container_type' => 'Reefer 40FT',
                 'max_capacity' => 10000,
                 'max_container' => 400,
                 'capacity_unit' => 2, // Tons

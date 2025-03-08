@@ -81,7 +81,7 @@ class LoginController extends Controller
                     $return['redirect'] = route('dashboard');
                 } else {
                     $return['status'] = 'warning';
-                    $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
+                    $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled").removeAttr("data-kt-indicator");$("#loader").hide();';
                     $return['message'] = 'Invalid Login Id/Password';
                 }
             } else {

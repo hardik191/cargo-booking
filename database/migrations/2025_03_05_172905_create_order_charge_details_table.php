@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('containers', function (Blueprint $table) {
+        Schema::create('order_charge_details', function (Blueprint $table) {
             $table->id();
-            $table->string('container_type')->comment('20ft, 40ft, 45ft, etc.');
-            $table->integer('max_container')->default(1)->comment('Maximum number of containers allowed'); //new column
-            $table->decimal('max_capacity', 15, 2)->comment('Maximum weight in KG or Tons');
-            $table->tinyInteger('capacity_unit')->default(1)->comment('1=KG, 2=Tons');
-            $table->decimal('base_price', 15, 2)->comment('Base price per container type');
-            $table->tinyInteger('status')->default(1)->comment('1=Active, 2=Inactive');
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('charge_id');
+            $table->tinyInteger('charge_type');
+            $table->decimal('charge_value', 10, 2);
             $table->unsignedBigInteger('add_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
 
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
+            $table->foreign('charge_id')->references('id')->on('order_charges')->onDelete('cascade');
             $table->foreign('add_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('containers');
+        Schema::dropIfExists('order_charge_details');
     }
 };

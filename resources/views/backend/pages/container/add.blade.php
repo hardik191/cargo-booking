@@ -17,7 +17,7 @@
         <label class="fs-6 fw-semibold form-label mb-2">
             <span class="required">Maximum Capacity</span>
         </label>
-        <input type="text" class="form-control form-control-lg max_capacity onlyNumber" autocomplete="off" name="max_capacity" placeholder="Please enter maximum capacity"/>
+        <input type="text" class="form-control form-control-lg max_capacity onlyDigit" autocomplete="off" name="max_capacity" placeholder="Please enter maximum capacity"/>
     </div>
 
     <div class="col-md-6">

@@ -5,10 +5,14 @@ namespace App\Http\Controllers\backend\system_setting;
 use App\Http\Controllers\Controller;
 use App\Models\SystemSetting;
 use App\Models\User;
-use App\Models\Users;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Config;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class SystemSettingController extends Controller
 {
@@ -44,57 +48,118 @@ class SystemSettingController extends Controller
         return view('backend.pages.system_setting.user_profile', $data);
     }
 
-    public function update_save_profile(Request $request){
+    public function update_save_profile(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'editId' => 'required|exists:users,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $request->editId,
+            'user_image' => 'nullable|image|mimes:jpeg,png,jpg',
+        ]);
 
-        // echo "<pre>"; print_r($request->editId); die();
-        $status = '';
+        DB::beginTransaction();
 
-        $countUser = Users::where("email",$request->email)
-                        ->where("id",'!=',$request->editId)
-                        ->count();
+        try {
+            // Find user
+            $objUser = User::findOrFail($request->editId);
 
-        if($countUser == 0){
+            // Prepare update data
+            $data = [
+                'name' => $request->name,
+                'email' => $request->email,
+            ];
 
-            $objUsers = Users::find($request->editId);
-            $objUsers->name = $request->name;
-            $objUsers->email = $request->email;
-            if($request->user_image){
-                $image = $request->user_image;
-                $imagename = 'user_image'.time().'.'.$image->getClientOriginalExtension();
-                $destinationPath = public_path('backend/upload/userprofile/');
-                $image->move($destinationPath, $imagename);
-                $objUsers->user_image  = $imagename ;
+            // Handle Image Upload
+
+            if ($request->hasFile('user_image')) {
+                // Delete old image if it exists
+                if ($objUser->user_image) {
+                    $oldImagePath = 'uploads/userprofile/' . $objUser->user_image;
+                    if (Storage::exists('public/' . $oldImagePath)) {
+                        Storage::delete('public/' . $oldImagePath);
+                    }
+                }
+                // Upload new image
+                $data['user_image'] = $this->uploadUserImage($request->file('user_image'), $objUser->user_image);
+            } elseif ($request->avatar_remove == 1) {
+                // Remove the image
+                if ($objUser->user_image) {
+                    $oldImagePath = 'uploads/userprofile/' . $objUser->user_image;
+                    if (Storage::exists('public/' . $oldImagePath)) {
+                        Storage::delete('public/' . $oldImagePath);
+                    }
+                }
+                $data['user_image'] = null;
             }
-            if($objUsers->save()){
-                $status = 'true';
-            }else{
-                $status = false;
-            }
 
-        }else{
-            $status = "email_exist";
+            // Update user data
+            $objUser->updateOrFail($data);
+
+            DB::commit(); // Commit transaction
+
+            $return = [
+                'status' => 'success',
+                'message' => 'Your profile successfully updated.',
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled").attr("data-kt-indicator", "off");$("#loader").hide();',
+                'redirect' => route('update-profile'),
+
+                // 'ajaxcall' => 'Order_charge.init()'
+            ];
+            echo json_encode($return);
+            exit;
+        } catch (ValidationException $e) {
+            DB::rollBack();
+
+            $errorMessages = '<ul>';
+            foreach ($e->errors() as $error) {
+                $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
+            }
+            $errorMessages .= '</ul>';
+
+            $return = [
+                'sweet_alert' => 'sweet_alert',
+                'status' => 'warning',
+                'message' => $errorMessages, // Show all errors
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled").attr("data-kt-indicator", "off");$("#loader").hide();',
+            ];
+            echo json_encode($return);
+            exit;
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $return = [
+                'status' => 'warning',
+                'jscode' => '$("#loader").hide();',
+                'message' => 'Something goes to wrong.',
+            ];
+            echo json_encode($return);
+            exit;
         }
 
-
-        if ($status == "true") {
-            $return['status'] = 'success';
-             $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
-            $return['message'] = 'Your profile successfully updated.';
-            $return['redirect'] = route('update-profile');
-        } else {
-            if ($status == "email_exist") {
-                $return['status'] = 'error';
-                 $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
-                $return['message'] = 'The email address has already been registered.';
-            }else{
-                $return['status'] = 'error';
-                 $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
-                $return['message'] = 'Something goes to wrong';
-            }
-        }
-        echo json_encode($return);
-        exit;
+       
     }
+
+    private function uploadUserImage($image, $oldImage = null)
+    {
+        // Delete the old image if it exists
+        if ($oldImage) {
+            $oldImagePath = 'public/uploads/userprofile/' . $oldImage;
+            if (Storage::exists($oldImagePath)) {
+                Storage::delete($oldImagePath);
+            }
+        }
+
+        // Generate unique image name
+        $imagename = 'user_image_' . time() . '.' . $image->getClientOriginalExtension();
+
+        // Store image in the 'public/uploads/userprofile/' directory
+        $image->storeAs('public/uploads/userprofile', $imagename);
+
+        // Return new image name
+        return $imagename;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -216,7 +281,7 @@ class SystemSettingController extends Controller
                 $return['message'] = 'System setting successfully updated.';
                 $return['redirect'] = route('system-setting');
             } else {
-                $return['status'] = 'error';
+                $return['status'] = 'warning';
                 $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
                 $return['message'] = 'Something goes to wrong';
             }
@@ -225,35 +290,74 @@ class SystemSettingController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function change_password()
     {
-        //
+        $data['title'] =  'Change Password' . ' || ' . get_system_name();
+        $data['css'] = array(
+            'toastr/toastr.min.css'
+        );
+        $data['plugincss'] = array();
+        $data['pluginjs'] = array(
+            'toastr/toastr.min.js',
+            'validate/jquery.validate.min.js',
+        );
+        $data['js'] = array(
+            'comman_function.js',
+            'jquery.form.min.js',
+            'update_profile.js',
+        );
+        $data['funinit'] = array(
+            'Update_profile.change_password()'
+        );
+        $data['header'] = array(
+            'title' => 'Change Password',
+            'breadcrumb' => array(
+                'Dashboard' => route('dashboard'),
+                'Change Password' => 'Change Password',
+            )
+        );
+
+        return view('backend.pages.system_setting.change_password', $data);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function change_save_password(Request $request)
     {
-        //
-    }
+        DB::beginTransaction();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        try {
+            if(Auth::id() == $request->user_id){
+                $findUser = User::find(Auth::id());
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+                if (!Hash::check($request->old_password, $findUser->password)) {
+                    $return['sweet_alert'] = 'sweet_alert';
+                    $return['status'] = 'warning';
+                    $return['jscode'] = '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();';
+                    $return['message'] = 'Old password is incorrect.';
+
+                    echo json_encode($return);
+                    exit;
+                }
+
+                $objUser = $findUser->update([
+                    'password' => Hash::make($request->new_password),
+                ]);
+
+                DB::commit();
+                $return = [
+                    'status' => 'success',
+                    'message' => 'Password successfully updated.',
+                    'jscode' => '$("#loader").hide();',
+                    'redirect' => route('change-password'),
+                ];
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            $return['status'] = 'warning';
+            $return['jscode'] = '$("#loader").hide();';
+            $return['message'] = 'Something goes to wrong.';
+            throw $e;
+        }
+        echo json_encode($return);
+        exit;
     }
 }

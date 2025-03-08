@@ -2,6 +2,21 @@
     color: red;
 }
 
+.field-requireds {
+    border: 1px solid red !important;
+}
+
+input.readonly, textarea.readonly, input.readonly:focus, textarea.readonly:focus{
+    background-color: #f0f0f0;
+    color: var(--bs-gray-600) !important;
+    cursor: not-allowed;
+}
+
+.form-select:disabled {
+    color: var(--bs-gray-600) !important;
+    background-color: #f0f0f0 !important;
+}
+
 .card.card-flush > .card-header {
     border-bottom: 1px solid #cecbcb !important;
 }

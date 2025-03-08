@@ -1,7 +1,7 @@
 @extends('backend.layout.layout')
 @section('content')
 
-  <form action="{{ route('create-save-order') }}" enctype="multipart/form-data" class="form fw-bold" id="create-save-order-form" method="POST">
+  <form action="{{ route('create-save-order') }}" class="form fw-bold" id="create-save-order-form" method="POST">
         @csrf
         @php
             $temp_var = 1;
@@ -96,9 +96,8 @@
                         </div>
                         <div class="card-body p-9">
                             <div class="table-responsive classTable">
-                                <table class="table table-bordered" style="border-radius: 10px !important; border: 2px solid rgb(40, 39, 39) !important;">
+                                <table class="table table-bordered" id="container-details-table" style="border-radius: 10px !important; border: 2px solid rgb(40, 39, 39) !important;">
                                     <thead>
-                                        
                                         <tr class="fw-bold fs-6 text-gray-800 text-uppercase" style="border: 2px solid">
                                             <th class="min-w-150px">Container Type</th>
                                             <th class="min-w-150px">Max Capacity</th>
@@ -112,19 +111,24 @@
                                         @foreach ($container_details as $con_key => $container_val )
                                             <tr>
                                                 <td>
+                                                    <input type="hidden" name="container_id[]" value="{{ $container_val->id }}" autocomplete="off">
                                                     {{ $container_val->container_type }}
                                                 </td>
                                                 <td>
                                                     {{ $container_val->max_capacity }}
+                                                    <input type="hidden" name="base_price[]" class="base_price" value="{{ $container_val->base_price }}">
                                                 </td>
                                                 <td>
                                                     {{ $container_val->base_price }}
                                                 </td>
                                                 <td>
-                                                    <input type="text" name="my_order_qty[]" class="form-control my_order_qty onlyNumber" placeholder="Please enter my order qty" autocomplete="off">
+                                                    <input type="text" name="my_order_qty[]" class="form-control my_order_qty onlyNumber" placeholder="{{ $container_val->container_type }} order qty" value="0" autocomplete="off">
                                                 </td>
                                                 <td>
-                                                    <input type="text" name="my_capacity[]" class="form-control my_capacity onlyNumber" placeholder="Please enter my capacity" autocomplete="off">
+                                                    <input type="text" name="my_capacity[]" class="form-control my_capacity onlyNumber" placeholder="{{ $container_val->container_type }} capacity" value="0" autocomplete="off">
+                                                </td>
+                                                 <td>
+                                                    <input type="text" name="sub_price[]" class="form-control sub_price onlyNumber readonly" readonly placeholder="Please enter my capacity" value="0.00" autocomplete="off">
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -132,9 +136,11 @@
                                     <tfoot>
                                         <tr>
                                             <td colspan="3" class="text-end">TOTAL QTY</td>
-                                            <td class="">23</td>
+                                            <td class="total_qty">0</td>
                                             <td class="text-end">TOTAL PRICE</td>
-                                            <td class=""></td>
+                                            <td class="total_price">0</td>
+                                            <input type="hidden" name="total_qty" class="total_qty" value="0" >
+                                            <input type="hidden" name="total_price" class="total_price" value="0" >
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -143,7 +149,7 @@
                     </div>  
                 </div>
                 
-                 <div class="col-md-12">
+                <div class="col-md-12">
                     <div class="card card-xl-stretch">
                         <div class="card-header pt-1 card-header-bg">
                             <h3 class="card-title align-items-start flex-column ">
@@ -152,7 +158,7 @@
                         </div>
                         <div class="card-body p-9">
                             <div class="table-responsive classTable">
-                                <table class="table table-bordered" style="border-radius: 10px !important; border: 2px solid rgb(40, 39, 39) !important;">
+                                <table class="table table-bordered" id="charge-details-table" style="border-radius: 10px !important; border: 2px solid rgb(40, 39, 39) !important;">
                                     <thead>
                                         <tr class="fw-bold fs-6 text-gray-800 text-uppercase" style="border: 2px solid">
                                             <th class="min-w-150px">Charge Name</th>
@@ -181,6 +187,9 @@
                                             @endphp
                                             <tr>
                                                 <td>
+                                                    <input type="hidden" name="charge_id[]" value="{{ $charge_val->id }}" />
+                                                    <input type="hidden" name="charge_type[]" class="charge_type" value="{{ $charge_val->charge_type }}">
+                                                    <input type="hidden" name="charge_value[]" class="charge_value" value="{{ $charge_val->charge_value }}">
                                                     {{ $charge_val->charge_name }}
                                                 </td>
                                                 <td>
@@ -195,9 +204,13 @@
                                     <tfoot>
                                         <tr>
                                             <td colspan="2" class="text-end">TOTAL CHARGE</td>
-                                            <td class="">23</td>
-                                            {{-- <td class="text-end">TOTAL PRICE</td>
-                                            <td class=""></td> --}}
+                                            <td class="total_charge">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="text-end">FINAL TOTAL</td>
+                                            <td class="final_total">0</td>
+                                            <input type="hidden" name="total_charge" class="total_charge" value="0">
+                                            <input type="hidden" name="final_total" class="final_total" value="0">
                                         </tr>
                                     </tfoot>
                                 </table>

@@ -18,7 +18,7 @@
         <label class="fs-6 fw-semibold form-label mb-2">
             <span class="required">Maximum Capacity</span>
         </label>
-        <input type="text" class="form-control form-control-lg max_capacity onlyNumber" autocomplete="off" name="max_capacity" value="{{ $container_details->max_capacity }}" placeholder="Please enter maximum capacity"/>
+        <input type="text" class="form-control form-control-lg max_capacity onlyDigit" autocomplete="off" name="max_capacity" value="{{ $container_details->max_capacity }}" placeholder="Please enter maximum capacity"/>
     </div>
 
     <div class="col-md-6">
@@ -41,7 +41,7 @@
         <label class="fs-6 fw-semibold form-label mb-2">
             <span class="required">Base Price</span>
         </label>
-         <input type="text" class="form-control form-control-lg base_price onlyDigit" autocomplete="off" name="base_price" value="{{ $container_details->base_price }}" placeholder="Please enter base price"/>
+        <input type="text" class="form-control form-control-lg base_price onlyDigit" autocomplete="off" name="base_price" value="{{ $container_details->base_price }}" placeholder="Please enter base price"/>
     </div>
 
     <div class="col-md-12">

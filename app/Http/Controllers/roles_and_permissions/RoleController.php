@@ -6,10 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Config;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
@@ -97,9 +96,9 @@ class RoleController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             $return = [
-                'status' => 'error',
+                'status' => 'warning',
                 'jscode' => '$("#loader").hide();',
-                'message' => 'Error:: ' . $e->getMessage(),
+                'message' => 'Something goes to wrong.',
             ];
         }
         echo json_encode($return);
