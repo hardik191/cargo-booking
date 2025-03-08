@@ -19,6 +19,20 @@
     }
 </script>
 
+@if(session('success'))
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                text: "{{ session('success') }}",
+                icon: "success", // Use "warning" instead of session('warning')
+                buttonsStyling: false,
+                confirmButtonText: "Ok, got it!",
+                customClass: { confirmButton: "btn btn-light" },
+            });
+        });
+    </script>
+@endif
+
 @if(session('warning'))
     <script>
         document.addEventListener("DOMContentLoaded", function() {

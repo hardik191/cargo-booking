@@ -58,7 +58,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                     </div>
                 </div>
              
-                  <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array($currentRoute, ['create-order' ,'pending-order1', ]) ? 'here show' : '' ) }}">
+                  <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array($currentRoute, ['create-order', 'edit-order', 'pending-order1', ]) ? 'here show' : '' ) }}">
                         <!--begin:Menu link-->
                         <span class="menu-link">
                             <span class="menu-icon">
@@ -86,7 +86,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                             {{-- @endif --}}
                         
                                 <div class="menu-item">
-                                    <a class="menu-link {{ ( in_array($currentRoute, ['pending-order1']) ? 'active' : '' ) }}" href="{{route('pending-order1')}}">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['pending-order1', 'edit-order', ]) ? 'active' : '' ) }}" href="{{route('pending-order1')}}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>

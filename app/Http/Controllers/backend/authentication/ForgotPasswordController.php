@@ -41,51 +41,76 @@ class ForgotPasswordController extends Controller
     }
 
     public function mail_Sent(Request $request){
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-        ], [
-            'email.required' => 'Please enter your email address.',
-            'email.email' => 'Please enter a valid email address.',
-            'email.exists' => 'Your enter email address was not found.',
-        ]);
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'email' => 'required|email|exists:users,email',
+            ], [
+                'email.required' => 'Please enter your email address.',
+                'email.email' => 'Please enter a valid email address.',
+                'email.exists' => 'Your enter email address was not found.',
+            ]);
 
-        DB::table('password_reset_tokens')->where(['email'=> $request->email])->delete();
-        $token = Str::random(64);
+            DB::table('password_reset_tokens')->where(['email'=> $request->email])->delete();
+            $token = Str::random(64);
 
-        // $result = PasswordReset::create([
-        //     'email' => $request->email,
-        //     'token' => $token,
-        //     'created_at' => Carbon::now()
-        // ]);
+            // $result = PasswordReset::create([
+            //     'email' => $request->email,
+            //     'token' => $token,
+            //     'created_at' => Carbon::now()
+            // ]);
 
-        $result = DB::table('password_reset_tokens')->insert([
-            'email' => $request->email,
-            'token' => $token,
-            'created_at' => Carbon::now()
-          ]);
+            $result = DB::table('password_reset_tokens')->insert([
+                'email' => $request->email,
+                'token' => $token,
+                'created_at' => Carbon::now()
+            ]);
 
-        $user = User::Where('email', $request->email)->first();
+            $user = User::Where('email', $request->email)->first();
 
-        Mail::send('emails.forget_password', ['token' => $token, 'name' => $user->name], function($message) use($request){
-            $message->to($request->email);
-            $message->subject('Reset Password');
-        });
+            Mail::send('emails.forget_password', ['token' => $token, 'name' => $user->name], function($message) use($request){
+                $message->to($request->email);
+                $message->subject('Reset Password');
+            });
 
-        if(isset($result)){
+            if(isset($result)){
+                $return = [
+                    'status' => 'success',
+                    'message' => 'We have send a password reset link to your email.',
+                    'jscode' => '$("#loader").hide();',
+                    'redirect' => route('login'),
+                ];
+            } else {
+                $return = [
+                    'status' => 'error',
+                    'jscode' => '$("#loader").hide();',
+                    'message' => 'Something goes to wrong.',
+                ];
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+
+            $errorMessages = '<ul>';
+            foreach ($e->errors() as $error) {
+                $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
+            }
+            $errorMessages .= '</ul>';
+
             $return = [
-                'status' => 'success',
-                'message' => 'We have send a password reset link to your email.',
-                'jscode' => '$("#loader").hide();',
-                'redirect' => route('login'),
+                'sweet_alert' => 'sweet_alert',
+                'status' => 'warning',
+                'message' => $errorMessages,
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();',
             ];
-        } else {
+        } catch (\Exception $e) {
+            DB::rollBack();
+
             $return = [
                 'status' => 'error',
                 'jscode' => '$("#loader").hide();',
-                'message' => 'Something goes to wrong.',
+                'message' => 'Something went wrong. Please try again.',
             ];
         }
-
         return json_encode($return);
             exit();
     }
@@ -174,6 +199,21 @@ class ForgotPasswordController extends Controller
                     'redirect' => route('login'),
                 ];
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+
+            $errorMessages = '<ul>';
+            foreach ($e->errors() as $error) {
+                $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
+            }
+            $errorMessages .= '</ul>';
+
+            $return = [
+                'sweet_alert' => 'sweet_alert',
+                'status' => 'warning',
+                'message' => $errorMessages,
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();',
+            ];
         } catch (\Exception $e) {
             DB::rollback();
             $return = [

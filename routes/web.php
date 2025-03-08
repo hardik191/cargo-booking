@@ -12,6 +12,7 @@ use App\Http\Controllers\backend\system_setting\SystemSettingController;
 use App\Http\Controllers\backend\user_management\AdminController;
 use App\Http\Controllers\backend\user_management\CustomerController;
 use App\Http\Controllers\customer\authentication\CustomerLoginController;
+use App\Http\Controllers\customer\order\AcceptedrderController;
 use App\Http\Controllers\customer\order\PendingOrderController;
 use App\Http\Controllers\roles_and_permissions\PermissionController;
 use App\Http\Controllers\roles_and_permissions\RoleController;
@@ -143,10 +144,17 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
 
         Route::get('create-order', [PendingOrderController::class, 'create'])->name('create-order');
         Route::post('create-save-order', [PendingOrderController::class, 'store'])->name('create-save-order');
+        Route::get('edit-order/{id}', [PendingOrderController::class, 'edit'])->name('edit-order');
+        Route::post('update-save-order', [PendingOrderController::class, 'update'])->name('update-save-order');
 
         // Pending Application
         Route::get('pending-order', [PendingOrderController::class, 'index'])->name('pending-order1');
         Route::get('view-pending-order/{id}', [PendingOrderController::class, 'show'])->name('view-pending-order1');
         Route::post('pending-order-ajaxcall', [PendingOrderController::class, 'ajaxcall'])->name('pending-order-ajaxcall1');
+
+        // Accepted order
+        Route::get('accepted-order', [AcceptedrderController::class, 'index'])->name('accepted-order');
+        Route::get('view-accepted-order/{id}', [AcceptedrderController::class, 'show'])->name('view-accepted-order1');
+        Route::post('accepted-order-ajaxcall', [AcceptedrderController::class, 'ajaxcall'])->name('accepted-order-ajaxcall1');
     });
 });

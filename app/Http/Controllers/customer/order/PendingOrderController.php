@@ -21,6 +21,8 @@ class PendingOrderController extends Controller
      */
     public function index()
     {
+        $data['port_details'] = Port::where('status', '1')->get();
+
         $data['title'] =  'Pending Order' . ' || ' . get_system_name();
         $data['header'] = array(
             'title' => 'Pending Order',
@@ -123,16 +125,16 @@ class PendingOrderController extends Controller
                 'total_price' => 'required|numeric|min:0',
                 'total_charge' => 'required|numeric|min:0',
                 'final_total' => 'required|numeric|min:0',
-                'my_order_qty' => 'required|array',
-                'my_order_qty.*' => 'required|numeric|min:0',
-                'my_capacity' => 'required|array',
-                'my_capacity.*' => 'required|numeric|min:0',
-                'sub_price' => 'required|array',
-                'sub_price.*' => 'required|numeric|min:0',
-                'charge_type' => 'required|array',
-                'charge_type.*' => 'required|integer|min:0|max:5',
-                'charge_value' => 'required|array',
-                'charge_value.*' => 'required|numeric|min:0',
+                // 'my_order_qty' => 'required|array',
+                // 'my_order_qty.*' => 'required|numeric|min:0',
+                // 'my_capacity' => 'required|array',
+                // 'my_capacity.*' => 'required|numeric|min:0',
+                // 'sub_price' => 'required|array',
+                // 'sub_price.*' => 'required|numeric|min:0',
+                // 'charge_type' => 'required|array',
+                // 'charge_type.*' => 'required|integer|min:0|max:5',
+                // 'charge_value' => 'required|array',
+                // 'charge_value.*' => 'required|numeric|min:0',
             ]);
 
             // Create a new order
@@ -141,9 +143,11 @@ class PendingOrderController extends Controller
                 'sender_email' => $request->sender_email,
                 'sender_phone_no' => $request->sender_phone_no,
                 'sender_port_id' => $request->sender_port,
+                'sender_country_code' => $request->sender_country_code ?? 91,
                 'receiver_name' => $request->receiver_name,
                 'receiver_email' => $request->receiver_email,
                 'receiver_phone_no' => $request->receiver_phone_no,
+                'receiver_country_code' => $request->receiver_country_code ?? 91,
                 'receiver_port_id' => $request->receiver_port,
                 'total_capacity' => array_sum($request->my_capacity),
                 'total_qty' => $request->total_qty,
@@ -168,9 +172,9 @@ class PendingOrderController extends Controller
                         'capacity_unit' => $findContainer->capacity_unit,
                         'base_price' => $findContainer->base_price,
 
-                        'my_order_qty' => $qty,
-                        'my_capacity' => $request->my_capacity[$index],
-                        'sub_price' => $request->sub_price[$index],
+                        'my_order_qty' => $qty ?? 0,
+                        'my_capacity' => $request->my_capacity[$index] ?? 0,
+                        'sub_price' => $request->sub_price[$index] ?? 0,
                         'add_by' => auth()->id(),
                         'updated_by' => auth()->id(),
                     ]);
@@ -235,17 +239,188 @@ class PendingOrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $data['order_details'] = Order::with(['orderContainerDetailMany', 'orderChargeDetailMany'])->where('id', $id)->first();
+
+        if (is_null($data['order_details'])) {
+            return redirect()->route('production-entry-list')->with('warning', 'Production Entry not found');
+        }
+
+        $data['port_details'] = Port::where('status', '1')->orWhere('id', $data['order_details']->sender_port_id)->orWhere('id', $data['order_details']->receiver_port_id)->get();
+
+        // $data['container_details'] = Container::where('status', '1')->get();
+        // $data['order_charge_details'] = OrderCharge::where('status', '1')->get();
+
+        $data['container_details'] = Container::where('status', '1')
+            ->orWhereIn('id', OrderContainerDetail::where('order_id', $id)->pluck('container_id'))
+            ->get();
+
+        $data['order_charge_details'] = OrderCharge::where('status', '1')
+            ->orWhereIn('id', OrderChargeDetail::where('order_id', $id)->pluck('charge_id'))
+            ->get();
+
+        $data['chargeTypes'] = Config::get('constants.CHARGE_TYPE'); // Get charge type names
+
+        $data['title'] =  'Edit Order' . ' || ' . get_system_name();
+        $data['header'] = array(
+            'title' => 'Edit Order',
+            'breadcrumb' => array(
+                'Home' => route('dashboard'),
+                'Pending Order' => route('pending-order1'),
+                'Edit Order' => 'Edit Order',
+            )
+        );
+
+        $data['css'] = array(
+            'toastr/toastr.min.css'
+        );
+        $data['plugincss'] = array(
+            // 'plugins/custom/datatables/table/datatables.bundle.css',
+        );
+        $data['pluginjs'] = array(
+            'toastr/toastr.min.js',
+            'validate/jquery.validate.min.js',
+        );
+        $data['widgetjs'] = array(
+            // 'plugins/custom/datatables/table/datatables.bundle.js',
+        );
+        $data['js'] = array(
+            'comman_function.js',
+            'jquery.form.min.js',
+            'pending_order.js',
+        );
+        $data['funinit'] = array(
+            'Pending_order.edit()'
+        );
+
+        return view('customer.pages.order.order.edit', $data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            // Validate Request Data
+            $request->validate([
+                'sender_name' => 'required|string|max:255',
+                'sender_email' => 'required|email|max:255',
+                'sender_phone_no' => 'required|', // digits_between:8,15
+                'sender_port' => 'required|exists:ports,id',
+                'receiver_name' => 'required|string|max:255',
+                'receiver_email' => 'required|email|max:255',
+                'receiver_phone_no' => 'required|', //digits_between:8,15
+                'receiver_port' => 'required|exists:ports,id',
+                'total_qty' => 'required|numeric|min:1',
+                'total_price' => 'required|numeric|min:0',
+                'total_charge' => 'required|numeric|min:0',
+                'final_total' => 'required|numeric|min:0',
+                // 'my_order_qty' => 'required|array',
+                // 'my_order_qty.*' => 'required|numeric|min:0',
+                // 'my_capacity' => 'required|array',
+                // 'my_capacity.*' => 'required|numeric|min:0',
+                // 'sub_price' => 'required|array',
+                // 'sub_price.*' => 'required|numeric|min:0',
+                // 'charge_type' => 'required|array',
+                // 'charge_type.*' => 'required|integer|min:0|max:5',
+                // 'charge_value' => 'required|array',
+                // 'charge_value.*' => 'required|numeric|min:0',
+            ]);
+
+            // Update Order
+            $order = Order::findOrFail($request->editId);
+            $order->update([
+                'sender_name' => $request->sender_name,
+                'sender_email' => $request->sender_email,
+                'sender_phone_no' => $request->sender_phone_no,
+                'sender_country_code' => $request->sender_country_code ?? 91,
+                'sender_port_id' => $request->sender_port,
+                'receiver_name' => $request->receiver_name,
+                'receiver_email' => $request->receiver_email,
+                'receiver_phone_no' => $request->receiver_phone_no,
+                'receiver_country_code' => $request->receiver_country_code ?? 91,
+                'receiver_port_id' => $request->receiver_port,
+                'total_capacity' => array_sum($request->my_capacity),
+                'total_qty' => $request->total_qty,
+                'total_price' => $request->total_price,
+                'total_charge' => $request->total_charge,
+                'final_total' => $request->final_total,
+                'order_status' => 1, // Pending
+                'payment_status' => 1, // Pending
+                'updated_by' => auth()->id(),
+            ]);
+
+            // Update Container Details
+            foreach ($request->my_order_qty as $index => $qty) {
+                if ($qty >= 0) {
+                    OrderContainerDetail::updateOrCreate(
+                        ['id' => $request->container_detail_main_id[$index] ?? null], // Use ID if exists
+                        [
+                            'order_id' => $order->id,
+                            'container_id' => $request->container_id[$index],
+
+                            // 'max_capacity' => $request->max_capacity[$index],
+                            // 'capacity_unit' => $request->capacity_unit[$index],
+                            // 'base_price' => $request->base_price[$index],
+
+                            'my_order_qty' => $qty ?? 0,
+                            'my_capacity' => $request->my_capacity[$index] ?? 0,
+                            'sub_price' => $request->sub_price[$index] ?? 0,
+                            'updated_by' => auth()->id(),
+                        ]
+                    );
+                }
+            }
+
+            // Update Order Charge Details
+            foreach ($request->charge_type as $index => $chargeType) {
+                OrderChargeDetail::updateOrCreate(
+                    ['id' => $request->charge_detail_main_id[$index] ?? null], // Use ID if exists
+                    [
+                        'order_id' => $order->id,
+                        'charge_id' => $request->charge_id[$index],
+                        'charge_type' => $chargeType,
+                        'charge_value' => $request->charge_value[$index],
+                        'updated_by' => auth()->id(),
+                    ]
+                );
+            }
+
+            DB::commit();
+            $return = [
+                'status' => 'success',
+                'message' => 'Order successfully updated.',
+                'jscode' => '$("#loader").hide();',
+                'redirect' =>  route('pending-order1'),
+            ];
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+
+            $errorMessages = '<ul>';
+            foreach ($e->errors() as $error) {
+                $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
+            }
+            $errorMessages .= '</ul>';
+
+            $return = [
+                'sweet_alert' => 'sweet_alert',
+                'status' => 'warning',
+                'message' => $errorMessages,
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();',
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $return['status'] = 'warning';
+            $return['jscode'] = '$("#loader").hide();';
+            $return['message'] = 'Something goes to wrong.';
+            throw $e;
+        }
+
+        echo json_encode($return);
+        exit;
     }
 
     public function ajaxcall(Request $request)
@@ -261,7 +436,7 @@ class PendingOrderController extends Controller
                     0 => 'id',
                     1 => 'order_code',
                     2 => 'sender_name',
-                    3 => '',
+                    3 => 'receiver_name',
                     4 => 'final_total',
                     5 => DB::raw("
                         (CASE 
@@ -283,8 +458,15 @@ class PendingOrderController extends Controller
                     "),
                 );
 
-                $query = Order::where('is_deleted', '1'); 
+                $query = Order::where('is_deleted', '1');
 
+                if (!empty($request->input('data')['sender_port']) && $request->input('data')['sender_port'] != 'all') {
+                    $query->where('sender_port_id', $request->input('data')['sender_port']);
+                }
+                if (!empty($request->input('data')['receiver_port']) && $request->input('data')['receiver_port'] != 'all') {
+                    $query->where('receiver_port_id', $request->input('data')['receiver_port']);
+                }
+                
                 if (!empty($requestData['search']['value'])) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
                     $searchVal = $requestData['search']['value'];
                     $query->where(function ($query) use ($columns, $searchVal, $requestData) {
@@ -328,7 +510,7 @@ class PendingOrderController extends Controller
                 $i = 0;
 
                 $financialYearColors = [];
-                $availableColors = ['#FF5733', '#33FF57', '#3375FF', '#FF33A8', '#FFD733']; // Define different colors
+                $availableColors = ['#FF5733', '#46b259', '#3375FF', '#FF33A8', '#FFD733']; // Define different colors
 
                 foreach ($resultArr as $row) {
                     $actionhtml = '';
@@ -338,7 +520,7 @@ class PendingOrderController extends Controller
 
                     // Assign the same color to all orders of the same financial year
                     if (!isset($financialYearColors[$financialYear])) {
-                        $financialYearColors[$financialYear] = array_shift($availableColors) ?? '#000000';
+                        $financialYearColors[$financialYear] = array_shift($availableColors) ?? '#1b84ff';
                     }
 
                     $orderColor = $financialYearColors[$financialYear];
@@ -351,9 +533,9 @@ class PendingOrderController extends Controller
                     $actionhtml .= '</a>';
                     $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg px-3" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
 
-                    if ($user->can('order edit')) {
-                        $actionhtml .= '<li><a class="dropdown-item " href="javascript:;" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
-                    }
+                    // if ($user->can('order edit')) {
+                        $actionhtml .= '<li><a class="dropdown-item " href="' . route('edit-order',  $row["id"]) . '" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
+                    // }
                     
                     $actionhtml .= '</ul>';
                     $actionhtml .= '</div>';
@@ -362,16 +544,25 @@ class PendingOrderController extends Controller
                     $sender_email = $row->sender_email ?? 'N/A';
                     $sender_country_code = $row->sender_country_code ? '+'.$row->sender_country_code : '';
                     $sender_phone_no = $row->sender_phone_no ? $sender_country_code . ' ' . $row->sender_phone_no : 'N/A';
+                    
+                    // $sender_location = $row->senderPortId->location ? '(' . $row->senderPortId->location.')' : '';
+                    // $sender_Port= $row->senderPortId->port_name ? $row->senderPortId->port_name . ' ' . $sender_location : 'N/A';
+                    $sender_Port = $row->senderPortId->port_name ? $row->senderPortId->port_name : 'N/A';
 
                     $receiver_name = $row->receiver_name ?? 'N/A';
                     $receiver_email = $row->receiver_email ?? 'N/A';
                     $receiver_country_code = $row->receiver_country_code ? '+'.$row->receiver_country_code : '';
                     $receiver_phone_no = $row->receiver_phone_no ? $receiver_country_code . ' ' . $row->receiver_phone_no : 'N/A';
 
+                    // $receiver_location = $row->receiverPortId->location ? '(' . $row->receiverPortId->location.')' : '';
+                    // $receiver_Port= $row->receiverPortId->port_name ? $row->receiverPortId->port_name . ' ' . $receiver_location : 'N/A';
+                    $receiver_Port = $row->receiverPortId->port_name ? $row->receiverPortId->port_name : 'N/A';
+
                     $sender_details = '<div class="d-flex align-items-center">
                                         <div class="d-flex justify-content-start flex-column">
-                                            <a href="' . route('view-pending-order1', $row['id']) . '" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">' 
-                                            . $sender_name . '</a>
+                                            <span class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">' 
+                                            . $sender_name . '</span>
+                                            <span class="text-primary">'. $sender_Port .'</span>
                                             <span class="text-gray-500 fw-semibold d-block fs-7">' . $sender_email . '
                                             </span>
                                             <span class="text-gray-500 fw-semibold d-block fs-7">' . $sender_phone_no . '
@@ -381,8 +572,9 @@ class PendingOrderController extends Controller
 
                     $receiver_details = '<div class="d-flex align-items-center">
                                         <div class="d-flex justify-content-start flex-column">
-                                            <a href="' . route('view-pending-order1', $row['id']) . '" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">'
-                                            . $receiver_name . '</a>
+                                            <span class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">'
+                                            . $receiver_name . '</span>
+                                            <span class="text-primary">' . $receiver_Port . '</span>
                                             <span class="text-gray-500 fw-semibold d-block fs-7">' . $receiver_email . '
                                             </span>
                                             <span class="text-gray-500 fw-semibold d-block fs-7">' . $receiver_phone_no . '
@@ -406,6 +598,8 @@ class PendingOrderController extends Controller
                         default => '<span class="badge badge-outline badge-secondary">Unknown</span>',
                     };
 
+                    $orderCodeBadge = ' <a href="' . route('view-pending-order1', $row['id']) . '" class="">'
+                        . $orderCodeBadge . '</a>';
                     $i++;
                     $nestedData = array();
                     $nestedData[] = $i;
@@ -416,6 +610,7 @@ class PendingOrderController extends Controller
                     $nestedData[] = $paymentBadge;
                     $nestedData[] = $orderBadge;
                     $nestedData[] = enterDateforment($row->created_at, 'd-m-Y H:i A');
+                    $nestedData[] = $actionhtml;
                     $data[] = $nestedData;
                 }
                 $json_data = array(

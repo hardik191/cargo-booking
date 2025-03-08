@@ -1,20 +1,30 @@
 var Pending_order = (function () {
     var list = function () {
-        var dataArr = {};
-        var columnWidth = { width: "5%", targets: 0 };
-        var arrList = {
-            tableID: "#pending_order_list",
-            ajaxURL: baseurl + "customer/order-management/pending-order-ajaxcall",
-            ajaxAction: "getdatatable",
-            postData: dataArr,
-            hideColumnList: [],
-            noSortingApply: [0, 2],
-            noSearchApply: [0, 2],
-            defaultSortColumn: [0],
-            defaultSortOrder: "DESC",
-            setColumnWidth: columnWidth,
-        };
-        getDataTable(arrList);
+
+        function filterSearch() {
+            var sender_port = $('.sender_port').val();
+            var receiver_port = $('.receiver_port').val();
+            var dataArr = {sender_port: sender_port, receiver_port: receiver_port};
+            var columnWidth = { width: "5%", targets: 0 };
+            var arrList = {
+                tableID: "#pending_order_list",
+                ajaxURL: baseurl + "customer/order-management/pending-order-ajaxcall",
+                ajaxAction: "getdatatable",
+                postData: dataArr,
+                hideColumnList: [],
+                noSortingApply: [ 8],
+                noSearchApply: [ 8],
+                defaultSortColumn: [0],
+                defaultSortOrder: "DESC",
+                setColumnWidth: columnWidth,
+            };
+            getDataTable(arrList);
+        }
+        filterSearch();
+
+        $("body").on("change", "#sender_port, #receiver_port", function () {
+            filterSearch();
+        });
 
         // $("body").on("click", ".delete-holiday, .inactive-holiday, .active-holiday", function () {
         //     var id = $(this).data("id");
@@ -68,13 +78,21 @@ var Pending_order = (function () {
         $('.total_qty').val(total_qty);
         $('.total_qty').text(total_qty);
 
+        var total_capacity = 0;
+        $(".my_capacity ").each(function () {
+            var my_capacity = parseFloat($(this).val()) || 0;
+            total_capacity += my_capacity;
+        });
+        $('.total_capacity').val(total_capacity.toFixed(2));
+        $('.total_capacity').text(total_capacity.toFixed(2));
+
         var total_price = 0;
         $(".sub_price").each(function () {
             var sub_price = parseFloat($(this).val()) || 0;
             total_price += sub_price;
         });
-        $('.total_price').val(total_price);
-        $('.total_price').text(total_price);
+        $('.total_price').val(total_price.toFixed(2));
+        $('.total_price').text(total_price.toFixed(2));
         
         charge_details_calculate();
     }
@@ -146,6 +164,10 @@ var Pending_order = (function () {
 
     function comman_order() {
 
+          $.validator.addMethod("differentPort", function (value, element) {
+                return value !== $("#sender_port").val();
+            }, "Sender and Receiver ports must be different.");
+
         $("#container-details-table").on("focusout", ".form-control", function () {
             var row = $(this).closest("tr");
 
@@ -163,119 +185,104 @@ var Pending_order = (function () {
     }
 
     var create_order = function () {
-         comman_order();
-         var validateTrip = true;
-         var customValid = true;
+        comman_order();
 
-         $("#create-save-order-form").validate({
-             debug: true,
-             errorElement: "span", //default input error message container
-             errorClass: "help-block", // default input error message class
+        $(document).ready(function() {
+            var sender_phone_no = document.querySelector("#sender_phone_no");
+            var iti = window.intlTelInput(sender_phone_no, {
+                initialCountry: "in",
+                separateDialCode: true,
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js" // for formatting/placeholders etc
+            });
 
-             rules: {
-                //  holiday_name: { required: true },
-                //  start_date: { required: true },
-                //  end_date: {
-                //      required: true,
-                //      greaterThanOrEqualToStartDateTime: true,
-                //  },
-             },
+            // Listen for the country change event
+            sender_phone_no.addEventListener('countrychange', function() {
+                // Get the selected country data
+                var countryData = iti.getSelectedCountryData();
+                // Get the country code
+                var countryCode = countryData.dialCode;
+                $('#sender_country_code').val(countryCode);
+            });
 
-             messages: {
-                //  holiday_name: { required: "Please enter holiday name." },
-                //  start_date: { required: "Please enter start date." },
-                //  end_date: {
-                //      required: "Please enter end date.",
-                //      greaterThanOrEqualToStartDateTime:
-                //          "End date must be greater than or equal to the start date.",
-                //  },
-             },
+            var receiver_phone_no = document.querySelector("#receiver_phone_no");
+            var iti_receiver = window.intlTelInput(receiver_phone_no, {
+                initialCountry: "in",
+                separateDialCode: true,
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js" // for formatting/placeholders etc
+            });
 
-             invalidHandler: function (event, validator) {
-                 validateTrip = false;
-                 customValid = customerInfoValid();
-             },
+            // Listen for the country change event
+            receiver_phone_no.addEventListener('countrychange', function() {
+                // Get the selected country data
+                var countryDataReceiver = iti_receiver.getSelectedCountryData();
+                // Get the country code
+                var countryCodeReceiver = countryDataReceiver.dialCode;
+                $('#receiver_country_code').val(countryCodeReceiver);
+            });
+        });
 
-             submitHandler: function (form) {
-                 $(".submitbtn:visible")
-                     .attr("data-kt-indicator", "on")
-                     .attr("disabled", true);
-                 $("#loader").show();
-                 customValid = customerInfoValid();
-                 if (customValid) {
-                     var options = {
-                         resetForm: false, // reset the form after successful submit
-                         success: function (output) {
-                             handleAjaxResponse(output);
-                         },
-                     };
-                     $(form).ajaxSubmit(options);
-                 } else {
-                     $(".submitbtn:visible")
-                         .attr("data-kt-indicator", "off")
-                         .attr("disabled", false);
-                     $("#loader").hide();
-                 }
-             },
-
-             errorPlacement: function (error, element) {
-                  customValid = customerInfoValid();
-                  var elem = $(element);
-                  if (elem.hasClass("select2-hidden-accessible")) {
-                      element = $(
-                          "#select2-" + elem.attr("id") + "-container"
-                      ).parent();
-                      error.insertAfter(element);
-                  }
-                  // Handle radio buttons (e.g., pass_to_inspection)
-                  else if (elem.is(":radio")) {
-                      // If the element is a radio button, find the closest .form-check-custom container
-                      var radioGroup = elem.closest(".form-check-radio-custom");
-
-                      // Insert the error message after the radio group container
-                      error.insertAfter(radioGroup);
-                  }
-                  // Handle other elements (e.g., text inputs)
-                  else {
-                      error.insertAfter(element);
-                  }
-             },
-         });
-
-         function customerInfoValid() {
-             var customValid = true;
-
-             return customValid;
-         }
-    };
-    
-    var edit_holiday = function () {
-        comman_holiday();
-        var validateTrip = true;
-        var customValid = true;
-
-        $("#edit-holiday-form").validate({
+        $("#create-save-order-form").validate({
             debug: true,
-            errorElement: "span", //default input error message container
-            errorClass: "help-block", // default input error message class
+            errorElement: "span",
+            errorClass: "help-block",
 
             rules: {
-                holiday_name: { required: true },
-                start_date: { required: true },
-                end_date: {
-                    required: true,
-                    greaterThanOrEqualToStartDateTime: true,
+                sender_name: { required: true, maxlength: 255 },
+                sender_email: { required: true, email: true, maxlength: 255 },
+                sender_phone_no: { 
+                    required: true, 
+                    // digits: true, 
+                    minlength: 8, 
+                    maxlength: 15 
                 },
+                sender_port: { required: true },
+                receiver_name: { required: true, maxlength: 255 },
+                receiver_email: { required: true, email: true, maxlength: 255 },
+                receiver_phone_no: { 
+                    required: true, 
+                    // digits: true,
+                    minlength: 8, 
+                    maxlength: 15 
+                },
+                receiver_port: { required: true, differentPort: true }, // Ensure different ports
+                total_qty: { number: true, min: 1, max: 5000 },
+                total_price: { required: true, number: true, min: 0 },
+                total_charge: { required: true, number: true, min: 0 },
+                final_total: { required: true, number: true, min: 0 },
+                // "my_order_qty[]": { required: true, number: true, min: 0 },
+                // "my_capacity[]": { required: true, number: true, min: 0 },
+                // "sub_price[]": { required: true, number: true, min: 0 },
+                // "charge_type[]": { required: true, digits: true, min: 0, max: 5 },
+                // "charge_value[]": { required: true, number: true, min: 0 }
             },
 
             messages: {
-                holiday_name: { required: "Please enter holiday name." },
-                start_date: { required: "Please enter start date." },
-                end_date: {
-                    required: "Please enter end date.",
-                    greaterThanOrEqualToStartDateTime:
-                        "End date must be greater than or equal to the start date.",
+                sender_name: { required: "Please enter sender name." },
+                sender_email: { required: "Please enter sender email.", email: "Enter a valid email." },
+                sender_phone_no: { 
+                    required: "Please enter sender phone number.", 
+                    // digits: "Only numbers allowed." 
                 },
+                sender_port: { required: "Please select sender port." },
+                receiver_name: { required: "Please enter receiver name." },
+                receiver_email: { required: "Please enter receiver email.", email: "Enter a valid email." },
+                receiver_phone_no: { 
+                    required: "Please enter receiver phone number.", 
+                    // digits: "Only numbers allowed." 
+                },
+                receiver_port: {
+                    required: "Please select receiver port.",
+                    differentPort: "Sender and Receiver ports must be different."
+                },
+                total_qty: { number: "Only numbers allowed.", min: "Must be at least 1.", max: "Must be at most 1000." },
+                total_price: { required: "Total price is required.", number: "Only numbers allowed.", min: "Cannot be negative." },
+                total_charge: { required: "Total charge is required.", number: "Only numbers allowed.", min: "Cannot be negative." },
+                final_total: { required: "Final total is required.", number: "Only numbers allowed.", min: "Cannot be negative." },
+                // "my_order_qty[]": { required: "Order quantity is required.", number: "Only numbers allowed.", min: "Must be at least 0." },
+                // "my_capacity[]": { required: "Capacity is required.", number: "Only numbers allowed.", min: "Must be at least 0." },
+                // "sub_price[]": { required: "Sub price is required.", number: "Only numbers allowed.", min: "Must be at least 0." },
+                // "charge_type[]": { required: "Charge type is required.", digits: "Only numbers allowed.", min: "At least 0.", max: "Cannot exceed 5." },
+                // "charge_value[]": { required: "Charge value is required.", number: "Only numbers allowed.", min: "Must be at least 0." }
             },
 
             invalidHandler: function (event, validator) {
@@ -284,53 +291,235 @@ var Pending_order = (function () {
             },
 
             submitHandler: function (form) {
-                $(".submitbtn:visible")
-                    .attr("data-kt-indicator", "on")
-                    .attr("disabled", true);
+                $(".submitbtn:visible").attr("data-kt-indicator", "on").attr("disabled", true);
                 $("#loader").show();
                 customValid = customerInfoValid();
                 if (customValid) {
                     var options = {
-                        resetForm: false, // reset the form after successful submit
+                        resetForm: false,
                         success: function (output) {
                             handleAjaxResponse(output);
-                        },
+                        }
                     };
                     $(form).ajaxSubmit(options);
                 } else {
-                    $(".submitbtn:visible")
-                        .attr("data-kt-indicator", "off")
-                        .attr("disabled", false);
+                    $(".submitbtn:visible").attr("data-kt-indicator", "off").attr("disabled", false);
                     $("#loader").hide();
                 }
             },
 
             errorPlacement: function (error, element) {
-                 customValid = customerInfoValid();
-                 var elem = $(element);
-                 if (elem.hasClass("select2-hidden-accessible")) {
-                     element = $(
-                         "#select2-" + elem.attr("id") + "-container"
-                     ).parent();
-                     error.insertAfter(element);
-                 }
-                 // Handle radio buttons (e.g., pass_to_inspection)
-                 else if (elem.is(":radio")) {
-                     // If the element is a radio button, find the closest .form-check-custom container
-                     var radioGroup = elem.closest(".form-check-radio-custom");
-
-                     // Insert the error message after the radio group container
-                     error.insertAfter(radioGroup);
-                 }
-                 // Handle other elements (e.g., text inputs)
-                 else {
-                     error.insertAfter(element);
-                 }
-            },
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    element = $("#select2-" + elem.attr("id") + "-container").parent();
+                    error.insertAfter(element);
+                } else if (elem.is(":radio")) {
+                    var radioGroup = elem.closest(".form-check-radio-custom");
+                    error.insertAfter(radioGroup);
+                } else {
+                    error.insertAfter(element);
+                }
+            }
         });
 
         function customerInfoValid() {
             var customValid = true;
+
+            // Remove existing error class
+            // $(".field-requireds").removeClass("field-requireds");
+            $(".my_order_qty").each(function () {
+                var orderQty = $(this);
+                var index = $(".my_order_qty").index(orderQty); // Get index to find matching my_capacity
+                var capacityField = $(".my_capacity").eq(index); // Get the corresponding my_capacity field
+
+                if (orderQty.is(":visible")) {
+                    if (orderQty.val() > 0) {
+                        if (capacityField.val().trim() === "" || capacityField.val() <= 0) {
+                            capacityField.addClass("field-requireds"); // Highlight my_capacity
+                            customValid = false;
+                        } else {
+                            customValid = true;
+                            capacityField.removeClass("field-requireds"); // Remove if valid
+                        }
+                    } else {
+                        capacityField.removeClass("field-requireds"); // Ensure no error if qty is 0
+                    }
+                }
+            });
+
+            return customValid;
+        }
+
+    };
+    
+    var edit_order = function () {
+        comman_order();
+        $(document).ready(function() {
+            var sender_phone_no = document.querySelector("#sender_phone_no");
+            var receiver_phone_no = document.querySelector("#receiver_phone_no");
+
+            // Get stored country codes from hidden input fields
+            var senderStoredCode = $("#sender_country_code").val();
+            var receiverStoredCode = $("#receiver_country_code").val();
+
+            // Initialize intlTelInput for Sender Phone
+            var iti = window.intlTelInput(sender_phone_no, {
+                initialCountry: senderStoredCode ? getCountryByDialCode(senderStoredCode) : "in",
+                separateDialCode: true,
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js"
+            });
+
+            // Set country code when country is changed
+            sender_phone_no.addEventListener('countrychange', function() {
+                var countryData = iti.getSelectedCountryData();
+                $('#sender_country_code').val(countryData.dialCode);
+            });
+
+            // Initialize intlTelInput for Receiver Phone
+            var iti_receiver = window.intlTelInput(receiver_phone_no, {
+                initialCountry: receiverStoredCode ? getCountryByDialCode(receiverStoredCode) : "in",
+                separateDialCode: true,
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js"
+            });
+
+            // Set country code when country is changed
+            receiver_phone_no.addEventListener('countrychange', function() {
+                var countryDataReceiver = iti_receiver.getSelectedCountryData();
+                $('#receiver_country_code').val(countryDataReceiver.dialCode);
+            });
+
+            // Function to get country code from dial code
+            function getCountryByDialCode(dialCode) {
+                var countryData = window.intlTelInputGlobals.getCountryData();
+                var country = countryData.find(country => country.dialCode === dialCode);
+                return country ? country.iso2 : "in"; // Default to "in" (India) if not found
+            }
+        });
+
+        $("#edit-save-order-form").validate({
+            debug: true,
+            errorElement: "span",
+            errorClass: "help-block",
+
+            rules: {
+                sender_name: { required: true, maxlength: 255 },
+                sender_email: { required: true, email: true, maxlength: 255 },
+                sender_phone_no: { 
+                    required: true, 
+                    // digits: true, 
+                    minlength: 8, 
+                    maxlength: 15 
+                },
+                sender_port: { required: true },
+                receiver_name: { required: true, maxlength: 255 },
+                receiver_email: { required: true, email: true, maxlength: 255 },
+                receiver_phone_no: { 
+                    required: true, 
+                    // digits: true,
+                    minlength: 8, 
+                    maxlength: 15 
+                },
+                 receiver_port: { required: true, differentPort: true }, // Ensure different ports
+                total_qty: { number: true, min: 1, max: 5000 },
+                total_price: { required: true, number: true, min: 0 },
+                total_charge: { required: true, number: true, min: 0 },
+                final_total: { required: true, number: true, min: 0 },
+                // "my_order_qty[]": { required: true, number: true, min: 0 },
+                // "my_capacity[]": { required: true, number: true, min: 0 },
+                // "sub_price[]": { required: true, number: true, min: 0 },
+                // "charge_type[]": { required: true, digits: true, min: 0, max: 5 },
+                // "charge_value[]": { required: true, number: true, min: 0 }
+            },
+
+            messages: {
+                sender_name: { required: "Please enter sender name." },
+                sender_email: { required: "Please enter sender email.", email: "Enter a valid email." },
+                sender_phone_no: { 
+                    required: "Please enter sender phone number.", 
+                    // digits: "Only numbers allowed." 
+                },
+                sender_port: { required: "Please select sender port." },
+                receiver_name: { required: "Please enter receiver name." },
+                receiver_email: { required: "Please enter receiver email.", email: "Enter a valid email." },
+                receiver_phone_no: { 
+                    required: "Please enter receiver phone number.", 
+                    // digits: "Only numbers allowed." 
+                },
+                receiver_port: {
+                    required: "Please select receiver port.",
+                    differentPort: "Sender and Receiver ports must be different."
+                },
+                total_qty: { number: "Only numbers allowed.", min: "Must be at least 1.", max: "Must be at most 1000." },
+                total_price: { required: "Total price is required.", number: "Only numbers allowed.", min: "Cannot be negative." },
+                total_charge: { required: "Total charge is required.", number: "Only numbers allowed.", min: "Cannot be negative." },
+                final_total: { required: "Final total is required.", number: "Only numbers allowed.", min: "Cannot be negative." },
+                // "my_order_qty[]": { required: "Order quantity is required.", number: "Only numbers allowed.", min: "Must be at least 0." },
+                // "my_capacity[]": { required: "Capacity is required.", number: "Only numbers allowed.", min: "Must be at least 0." },
+                // "sub_price[]": { required: "Sub price is required.", number: "Only numbers allowed.", min: "Must be at least 0." },
+                // "charge_type[]": { required: "Charge type is required.", digits: "Only numbers allowed.", min: "At least 0.", max: "Cannot exceed 5." },
+                // "charge_value[]": { required: "Charge value is required.", number: "Only numbers allowed.", min: "Must be at least 0." }
+            },
+
+            invalidHandler: function (event, validator) {
+                validateTrip = false;
+                customValid = customerInfoValid();
+            },
+
+            submitHandler: function (form) {
+                $(".submitbtn:visible").attr("data-kt-indicator", "on").attr("disabled", true);
+                $("#loader").show();
+                customValid = customerInfoValid();
+                if (customValid) {
+                    var options = {
+                        resetForm: false,
+                        success: function (output) {
+                            handleAjaxResponse(output);
+                        }
+                    };
+                    $(form).ajaxSubmit(options);
+                } else {
+                    $(".submitbtn:visible").attr("data-kt-indicator", "off").attr("disabled", false);
+                    $("#loader").hide();
+                }
+            },
+
+            errorPlacement: function (error, element) {
+                var elem = $(element);
+                if (elem.hasClass("select2-hidden-accessible")) {
+                    element = $("#select2-" + elem.attr("id") + "-container").parent();
+                    error.insertAfter(element);
+                } else if (elem.is(":radio")) {
+                    var radioGroup = elem.closest(".form-check-radio-custom");
+                    error.insertAfter(radioGroup);
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+
+        function customerInfoValid() {
+            var customValid = true;
+
+            // Remove existing error class
+            // $(".field-requireds").removeClass("field-requireds");
+            $(".my_order_qty").each(function () {
+                var orderQty = $(this);
+                var index = $(".my_order_qty").index(orderQty); // Get index to find matching my_capacity
+                var capacityField = $(".my_capacity").eq(index); // Get the corresponding my_capacity field
+
+                if (orderQty.is(":visible")) {
+                    if (orderQty.val() > 0) {
+                        if (capacityField.val().trim() === "" || capacityField.val() <= 0) {
+                            capacityField.addClass("field-requireds"); // Highlight my_capacity
+                            customValid = false;
+                        } else {
+                            capacityField.removeClass("field-requireds"); // Remove if valid
+                        }
+                    } else {
+                        capacityField.removeClass("field-requireds"); // Ensure no error if qty is 0
+                    }
+                }
+            });
 
             return customValid;
         }

@@ -100,6 +100,16 @@ class Order extends Model implements Auditable
         return $this->belongsTo(Port::class, 'receiver_port_id');
     }
 
+    public function orderChargeDetailMany()
+    {
+        return $this->hasMany(OrderChargeDetail::class, 'order_id');
+    }
+
+    public function orderContainerDetailMany()
+    {
+        return $this->hasMany(OrderContainerDetail::class, 'order_id');
+    }
+
     public function addBy()
     {
         return $this->belongsTo(User::class, 'add_by');
