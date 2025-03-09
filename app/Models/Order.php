@@ -29,7 +29,7 @@ class Order extends Model implements Auditable
         'total_price',
         'total_charge',
         'final_total',
-        'order_status', // 1 For Pending ,2 For Accepted, 3 For Rejected, 4 For Shipped, 5 For Deliver Default(1)
+        'order_status', // 1 For Pending ,2 For Accepted, 3 For Rejected, 4 For Shipped, 5 For Delivery Default(1)
         'payment_status', // 1 For Pending ,2 For Successful, 3 For Cancelled Default(1)
         'is_deleted',
         'add_by',

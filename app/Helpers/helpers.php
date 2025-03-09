@@ -9,6 +9,14 @@ function enterDateforment($date, $format = 'd-m-Y H:i A')
     return $date ? Carbon::parse($date)->format($format) : '';
 }
 
+function new_date_time_br_formate($date)
+{
+    $date_format = Carbon::parse($date)->format('d-M-Y');
+    $time_format = Carbon::parse($date)->format('h:i:s A');
+
+    return $date_format . '<br>' . $time_format;
+}
+
 function date_formate($date){
     return date("d-M-Y", strtotime($date));
 }

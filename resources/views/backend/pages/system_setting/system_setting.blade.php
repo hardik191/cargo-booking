@@ -401,7 +401,7 @@ if($data['user_image'] != '' || $data['user_image'] != null ){
                             </div>
                         @endcan
 
-                        <div class="tab-pane fade" id="kt_tab_pane_3" role="tabpanel">
+                        {{-- <div class="tab-pane fade" id="kt_tab_pane_3" role="tabpanel">
                             <form id="email-setting" class="form fv-plugins-bootstrap5 fv-plugins-framework" method="POST" action="{{route('save-system-setting')}}">
                                 @csrf
                                 <!--begin::Card body-->
@@ -515,10 +515,10 @@ if($data['user_image'] != '' || $data['user_image'] != null ){
                                     <!--end::Actions-->
                                 <input type="hidden">
                             </form>
-                        </div>
+                        </div> --}}
 
 
-                        <div class="tab-pane fade" id="kt_tab_pane_4" role="tabpanel">
+                        {{-- <div class="tab-pane fade" id="kt_tab_pane_4" role="tabpanel">
                             <form id="update-profile" class="form fv-plugins-bootstrap5 fv-plugins-framework" method="POST" action="">
                                 @csrf
                                 <div class="row g-5 g-xl-8">
@@ -569,7 +569,7 @@ if($data['user_image'] != '' || $data['user_image'] != null ){
 
                                 </div>
                             </form>
-                        </div>
+                        </div> --}}
 
                     </div>
                 </div>

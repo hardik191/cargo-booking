@@ -48,6 +48,10 @@ input.readonly, textarea.readonly, input.readonly:focus, textarea.readonly:focus
     padding-left: 0.75rem !important;
 }
 
+.classTable table thead th {
+    white-space: nowrap;
+}
+
 .classTable table tbody td:last-child,
 .classTable table thead th:last-child {
     padding-right: 0.75rem !important;
@@ -63,9 +67,10 @@ input.readonly, textarea.readonly, input.readonly:focus, textarea.readonly:focus
 .dataTables_scrollBody {
     overflow: unset !important;
 }
-/* .dataTables_scrollHeadInner {
+/* Apply width: 100% !important; to all DataTables EXCEPT the 'audits' table */
+.dataTables_scrollHeadInner:not(#audits_wrapper .dataTables_scrollHeadInner) {
     width: 100% !important;
-} */
+}
 
 .dataTables_wrapper {
     width: 100% !important;

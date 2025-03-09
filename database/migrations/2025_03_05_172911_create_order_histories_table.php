@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('order_id');
             $table->string('description')->nullable();
-            $table->tinyInteger('order_status')->default('1')->comment('1 for Pending, 2 for Accepted, 3 for Rejected, 4 for Shipped, 5 for Deliver, 6 for Payment Pending, 7 for Payment Successful, 8 for Payment Cancelled');
+            $table->tinyInteger('order_status')->default('1')->comment('1 for Pending, 2 for Accepted, 3 for Rejected, 4 for Shipped, 5 for Delivery, 6 for Payment Pending, 7 for Payment Successful, 8 for Payment Cancelled');
             $table->unsignedBigInteger('add_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();

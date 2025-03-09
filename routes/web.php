@@ -12,8 +12,11 @@ use App\Http\Controllers\backend\system_setting\SystemSettingController;
 use App\Http\Controllers\backend\user_management\AdminController;
 use App\Http\Controllers\backend\user_management\CustomerController;
 use App\Http\Controllers\customer\authentication\CustomerLoginController;
-use App\Http\Controllers\customer\order\AcceptedrderController;
+use App\Http\Controllers\customer\order\AcceptedOrderController;
+use App\Http\Controllers\customer\order\DeliveryOrderController;
 use App\Http\Controllers\customer\order\PendingOrderController;
+use App\Http\Controllers\customer\order\RejectedOrderController;
+use App\Http\Controllers\customer\order\ShippedOrderController;
 use App\Http\Controllers\roles_and_permissions\PermissionController;
 use App\Http\Controllers\roles_and_permissions\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -101,6 +104,32 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
         Route::post('order-charge-ajaxcall', [OrderChargeController::class, 'ajaxcall'])->name('order-charge-ajaxcall');
     });
 
+    $adminPrefixs = "order-management";
+    Route::group(['prefix' => $adminPrefixs, 'middleware' => ['auth']], function () {
+
+        // Pending Application
+        Route::get('pending-order', [PendingOrderController::class, 'index'])->name('pending-order');
+        Route::get('view-pending-order/{id}', [PendingOrderController::class, 'show'])->name('view-pending-order');
+
+        Route::post('edit-save-order-status', [PendingOrderController::class, 'order_status'])->name('edit-save-order-status');
+
+        // Accepted order
+        Route::get('accepted-order', [AcceptedOrderController::class, 'index'])->name('accepted-order');
+        Route::get('view-accepted-order/{id}', [AcceptedOrderController::class, 'show'])->name('view-accepted-order');
+
+        // Shipped order
+        Route::get('shipped-order', [ShippedOrderController::class, 'index'])->name('shipped-order');
+        Route::get('view-shipped-order/{id}', [ShippedOrderController::class, 'show'])->name('view-shipped-order');
+
+        // Delivery order
+        Route::get('delivery-order', [DeliveryOrderController::class, 'index'])->name('delivery-order');
+        Route::get('view-delivery-order/{id}', [DeliveryOrderController::class, 'show'])->name('view-delivery-order');
+
+        // Rejected Order
+        Route::get('rejected-order', [RejectedOrderController::class, 'index'])->name('rejected-order');
+        Route::get('view-rejected-order/{id}', [RejectedOrderController::class, 'show'])->name('view-rejected-order');
+    });
+
     //Update Profile
     Route::get('update-profile', [SystemSettingController::class, 'user_profile'])->name('update-profile');
     Route::post('update-save-profile', [SystemSettingController::class, 'update_save_profile'])->name('update-save-profile');
@@ -147,14 +176,29 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
         Route::get('edit-order/{id}', [PendingOrderController::class, 'edit'])->name('edit-order');
         Route::post('update-save-order', [PendingOrderController::class, 'update'])->name('update-save-order');
 
-        // Pending Application
+        // Pending Application 1
         Route::get('pending-order', [PendingOrderController::class, 'index'])->name('pending-order1');
         Route::get('view-pending-order/{id}', [PendingOrderController::class, 'show'])->name('view-pending-order1');
         Route::post('pending-order-ajaxcall', [PendingOrderController::class, 'ajaxcall'])->name('pending-order-ajaxcall1');
 
-        // Accepted order
-        Route::get('accepted-order', [AcceptedrderController::class, 'index'])->name('accepted-order');
-        Route::get('view-accepted-order/{id}', [AcceptedrderController::class, 'show'])->name('view-accepted-order1');
-        Route::post('accepted-order-ajaxcall', [AcceptedrderController::class, 'ajaxcall'])->name('accepted-order-ajaxcall1');
+        // Accepted order 2
+        Route::get('accepted-order', [AcceptedOrderController::class, 'index'])->name('accepted-order1');
+        Route::get('view-accepted-order/{id}', [AcceptedOrderController::class, 'show'])->name('view-accepted-order1');
+        Route::post('accepted-order-ajaxcall', [AcceptedOrderController::class, 'ajaxcall'])->name('accepted-order-ajaxcall1');
+
+        // Shipped order 4
+        Route::get('shipped-order', [ShippedOrderController::class, 'index'])->name('shipped-order1');
+        Route::get('view-shipped-order/{id}', [ShippedOrderController::class, 'show'])->name('view-shipped-order1');
+        Route::post('shipped-order-ajaxcall', [ShippedOrderController::class, 'ajaxcall'])->name('shipped-order-ajaxcall1');
+
+        // Delivery order 5
+        Route::get('delivery-order', [DeliveryOrderController::class, 'index'])->name('delivery-order1');
+        Route::get('view-delivery-order/{id}', [DeliveryOrderController::class, 'show'])->name('view-delivery-order1');
+        Route::post('delivery-order-ajaxcall', [DeliveryOrderController::class, 'ajaxcall'])->name('delivery-order-ajaxcall1');
+
+        // Rejected Order 3
+        Route::get('rejected-order', [RejectedOrderController::class, 'index'])->name('rejected-order1');
+        Route::get('view-rejected-order/{id}', [RejectedOrderController::class, 'show'])->name('view-rejected-order1');
+        Route::post('rejected-order-ajaxcall', [RejectedOrderController::class, 'ajaxcall'])->name('rejected-order-ajaxcall1');
     });
 });

@@ -74,6 +74,7 @@ class ForgotPasswordController extends Controller
             });
 
             if(isset($result)){
+                DB::commit();
                 $return = [
                     'status' => 'success',
                     'message' => 'We have send a password reset link to your email.',
@@ -110,6 +111,7 @@ class ForgotPasswordController extends Controller
                 'jscode' => '$("#loader").hide();',
                 'message' => 'Something went wrong. Please try again.',
             ];
+            throw $e;
         }
         return json_encode($return);
             exit();

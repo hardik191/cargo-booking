@@ -58,8 +58,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                     </div>
                 </div>
              
-                  <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array($currentRoute, ['create-order', 'edit-order', 'pending-order1', ]) ? 'here show' : '' ) }}">
-                        <!--begin:Menu link-->
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array($currentRoute, ['create-order', 'edit-order', 'pending-order1', 'view-pending-order1', 'accepted-order1', 'view-accepted-order1', 'shipped-order1', 'view-shipped-order1', 'delivery-order1', 'view-delivery-order1', 'rejected-order1', 'view-rejected-order1' ]) ? 'here show' : '' ) }}">
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-abstract-13 fs-2">
@@ -70,8 +69,6 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                             <span class="menu-title">ORDER Management</span>
                             <span class="menu-arrow"></span>
                         </span>
-                        <!--end:Menu link-->
-                        <!--begin:Menu sub-->
                         <div class="menu-sub menu-sub-accordion">
 
                             {{-- @if (Auth::user()->can('service-management dashboard') || Auth::user()->can('service-management own-dashboard')) --}}
@@ -86,16 +83,16 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                             {{-- @endif --}}
                         
                                 <div class="menu-item">
-                                    <a class="menu-link {{ ( in_array($currentRoute, ['pending-order1', 'edit-order', ]) ? 'active' : '' ) }}" href="{{route('pending-order1')}}">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['pending-order1', 'edit-order', 'view-pending-order1', ]) ? 'active' : '' ) }}" href="{{route('pending-order1')}}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
-                                        <span class="menu-title">Pendding Order</span>
+                                        <span class="menu-title">Pending Order</span>
                                     </a>
                                 </div>
 
                                 <div class="menu-item">
-                                    <a class="menu-link {{ ( in_array($currentRoute, ['']) ? 'active' : '' ) }}" href="{{route('create-order')}}">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['accepted-order1', 'view-accepted-order1', ]) ? 'active' : '' ) }}" href="{{route('accepted-order1')}}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
@@ -104,7 +101,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                                 </div>
 
                                 <div class="menu-item">
-                                    <a class="menu-link {{ ( in_array($currentRoute, ['']) ? 'active' : '' ) }}" href="{{route('create-order')}}">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['shipped-order1', 'view-shipped-order1', ]) ? 'active' : '' ) }}" href="{{route('shipped-order1')}}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
@@ -113,16 +110,16 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                                 </div>
 
                                 <div class="menu-item">
-                                    <a class="menu-link {{ ( in_array($currentRoute, ['']) ? 'active' : '' ) }}" href="{{route('create-order')}}">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['delivery-order1', 'view-delivery-order1', ]) ? 'active' : '' ) }}" href="{{route('delivery-order1')}}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>
-                                        <span class="menu-title">Deliver Order</span>
+                                        <span class="menu-title">Delivery Order</span>
                                     </a>
                                 </div>
 
                                 <div class="menu-item">
-                                    <a class="menu-link {{ ( in_array($currentRoute, ['']) ? 'active' : '' ) }}" href="{{route('create-order')}}">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['rejected-order1', 'view-rejected-order1']) ? 'active' : '' ) }}" href="{{route('rejected-order1')}}">
                                         <span class="menu-bullet">
                                             <span class="bullet bullet-dot"></span>
                                         </span>

@@ -174,7 +174,77 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                     </div>
                 @endcanany
 
+                @canany(['pending-order list', 'accepted-order list', 'rejected-order list', 'shipped-order list', 'delivery-order list'])
+                    <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ (in_array($currentRoute, ['pending-order', 'view-pending-order', 'accepted-order', 'view-accepted-order', 'shipped-order', 'view-shipped-order', 'delivery-order', 'view-delivery-order', 'rejected-order', 'view-rejected-order' ]) ? 'here show' : '' ) }}">
+                        <span class="menu-link">
+                            <span class="menu-icon">
+                                <i class="ki-duotone ki-abstract-13 fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </span>
+                            <span class="menu-title">ORDER Management</span>
+                            <span class="menu-arrow"></span>
+                        </span>
+                        <div class="menu-sub menu-sub-accordion">
+                            @can('pending-order list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['pending-order', 'edit-order', 'view-pending-order', ]) ? 'active' : '' ) }}" href="{{route('pending-order')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Pending Order</span>
+                                    </a>
+                                </div>
+                            @endcan
 
+                            @can('accepted-order list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['accepted-order', 'view-accepted-order', ]) ? 'active' : '' ) }}" href="{{route('accepted-order')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Accepted Order</span>
+                                    </a>
+                                </div>
+                            @endcan
+                            
+                            @can('shipped-order list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['shipped-order', 'view-shipped-order', ]) ? 'active' : '' ) }}" href="{{route('shipped-order')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Shipped Order</span>
+                                    </a>
+                                </div>
+                            @endcan
+
+                            @can('delivery-order list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['delivery-order', 'view-delivery-order', ]) ? 'active' : '' ) }}" href="{{route('delivery-order')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Delivery Order</span>
+                                    </a>
+                                </div>
+                            @endcan
+
+                            @can('rejected-order list')
+                                <div class="menu-item">
+                                    <a class="menu-link {{ ( in_array($currentRoute, ['rejected-order', 'view-rejected-order']) ? 'active' : '' ) }}" href="{{route('rejected-order')}}">
+                                        <span class="menu-bullet">
+                                            <span class="bullet bullet-dot"></span>
+                                        </span>
+                                        <span class="menu-title">Rejected Order</span>
+                                    </a>
+                                </div>
+                            @endcan
+                            
+                        </div>
+                    </div>
+                @endcanany
             </div>
         </div>
     </div>

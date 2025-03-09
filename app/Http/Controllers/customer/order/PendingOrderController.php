@@ -23,16 +23,7 @@ class PendingOrderController extends Controller
     {
         $data['port_details'] = Port::where('status', '1')->get();
 
-        $data['title'] =  'Pending Order' . ' || ' . get_system_name();
-        $data['header'] = array(
-            'title' => 'Pending Order',
-            'breadcrumb' => array(
-                'Home' => route('dashboard'),
-                'Create Order' => route('create-order'),
-                'Pending Order' => 'Pending Order',
-            )
-        );
-
+        $user = Auth::user();
         $data['css'] = array(
             'toastr/toastr.min.css'
         );
@@ -41,7 +32,7 @@ class PendingOrderController extends Controller
         );
         $data['pluginjs'] = array(
             'toastr/toastr.min.js',
-            // 'validate/jquery.validate.min.js',
+            'validate/jquery.validate.min.js',
         );
         $data['widgetjs'] = array(
             'plugins/custom/datatables/table/datatables.bundle.js',
@@ -55,7 +46,33 @@ class PendingOrderController extends Controller
             'Pending_order.init()'
         );
 
-        return view('customer.pages.order.pending_order.list', $data);
+        if ($user->hasRole('Customer')) {
+            $data['title'] =  'Pending Order List' . ' || ' . get_system_name();
+            $data['header'] = array(
+                'title' => 'Pending Order List',
+                'breadcrumb' => array(
+                    'Home' => route('dashboard1'),
+                    'Create Order' => route('create-order'),
+                    'Pending Order List' => 'Pending Order List',
+                )
+            );
+            return view('customer.pages.order.pending_order.list', $data);
+        } else {
+            $data['title'] =  'Pending Order List' . ' || ' . get_system_name();
+            $data['header'] = array(
+                'title' => 'Pending Order List',
+                'breadcrumb' => array(
+                    'Home' => route('dashboard'),
+                    'Pending Order List' => 'Pending Order List',
+                )
+            );
+
+            if ($user->can('pending-order list')) {
+                return view('customer.pages.order.pending_order.list', $data);
+            } else {
+                return redirect()->route('error-403');
+            }
+        }
     }
 
     /**
@@ -161,8 +178,8 @@ class PendingOrderController extends Controller
             ]);
 
             // Insert container details
-            foreach ($request->my_order_qty as $index => $qty) {
-                if ($qty > 0) {
+            foreach ($request->container_id as $index => $container_id) {
+                if ($container_id) {
                     $findContainer = Container::find($request->container_id[$index]);
                     OrderContainerDetail::create([
                         'order_id' => $order->id,
@@ -172,7 +189,7 @@ class PendingOrderController extends Controller
                         'capacity_unit' => $findContainer->capacity_unit,
                         'base_price' => $findContainer->base_price,
 
-                        'my_order_qty' => $qty ?? 0,
+                        'my_order_qty' => $request->my_order_qty[$index] ?? 0,
                         'my_capacity' => $request->my_capacity[$index] ?? 0,
                         'sub_price' => $request->sub_price[$index] ?? 0,
                         'add_by' => auth()->id(),
@@ -231,9 +248,77 @@ class PendingOrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $user = Auth::user();
+        if ($user->hasRole('Customer')) {
+            $data['order_details'] = Order::with(['orderContainerDetailMany', 'orderChargeDetailMany'])->where('add_by', $user->id)->where('id', $id)->first();
+
+            $data['title'] =  'Pending Order View' . ' || ' . get_system_name();
+            $data['header'] = array(
+                'title' => 'Pending Order View',
+                'breadcrumb' => array(
+                    'Home' => route('dashboard1'),
+                    'Pending Order' => route('pending-order1'),
+                    'Pending Order View' => 'Pending Order View',
+                )
+            );
+        } else {
+            $data['order_details'] = Order::with(['orderContainerDetailMany', 'orderChargeDetailMany'])->where('id', $id)->first();
+
+            $data['title'] =  'Pending Order View' . ' || ' . get_system_name();
+            $data['header'] = array(
+                'title' => 'Pending Order View',
+                'breadcrumb' => array(
+                    'Home' => route('dashboard'),
+                    'Pending Order' => route('pending-order'),
+                    'Pending Order View' => 'Pending Order View',
+                )
+            );
+        }
+
+        if (is_null($data['order_details'])) {
+            if ($user->hasRole('Customer')) {
+                return redirect()->route('pending-order1')->with('warning', 'Order not found.');
+            } else {
+                return redirect()->route('pending-order')->with('warning', 'Order not found.');
+            }
+        }
+
+        // $data['container_details'] = Container::where('status', '1')->get();
+        // $data['order_charge_details'] = OrderCharge::where('status', '1')->get();
+
+        $data['css'] = array(
+            'toastr/toastr.min.css'
+        );
+        $data['plugincss'] = array(
+            // 'plugins/custom/datatables/table/datatables.bundle.css',
+        );
+        $data['pluginjs'] = array(
+            'toastr/toastr.min.js',
+            // 'validate/jquery.validate.min.js',
+        );
+        $data['widgetjs'] = array(
+            // 'plugins/custom/datatables/table/datatables.bundle.js',
+        );
+        $data['js'] = array(
+            // 'comman_function.js',
+            // 'jquery.form.min.js',
+            // 'pending_order.js',
+        );
+        $data['funinit'] = array(
+            // 'Pending_order.edit()'
+        );
+
+        if ($user->hasRole('Customer')) {
+            return view('customer.pages.order.pending_order.view', $data);
+        } else {
+            if ($user->can('pending-order view')) {
+                return view('customer.pages.order.pending_order.admin_view', $data);
+            } else {
+                return redirect()->route('error-403');
+            }
+        }
     }
 
     /**
@@ -241,10 +326,17 @@ class PendingOrderController extends Controller
      */
     public function edit($id)
     {
-        $data['order_details'] = Order::with(['orderContainerDetailMany', 'orderChargeDetailMany'])->where('id', $id)->first();
+        $user = Auth::user();
+
+        $data['order_details'] = Order::with(['orderContainerDetailMany', 'orderChargeDetailMany'])
+            ->where('order_status', '1')
+            ->where('add_by', $user->id)
+            ->where('id', $id)
+            ->first();
+
 
         if (is_null($data['order_details'])) {
-            return redirect()->route('production-entry-list')->with('warning', 'Production Entry not found');
+            return redirect()->route('pending-order1')->with('warning', 'Order not found.');
         }
 
         $data['port_details'] = Port::where('status', '1')->orWhere('id', $data['order_details']->sender_port_id)->orWhere('id', $data['order_details']->receiver_port_id)->get();
@@ -266,7 +358,7 @@ class PendingOrderController extends Controller
         $data['header'] = array(
             'title' => 'Edit Order',
             'breadcrumb' => array(
-                'Home' => route('dashboard'),
+                'Home' => route('dashboard1'),
                 'Pending Order' => route('pending-order1'),
                 'Edit Order' => 'Edit Order',
             )
@@ -354,10 +446,12 @@ class PendingOrderController extends Controller
             ]);
 
             // Update Container Details
-            foreach ($request->my_order_qty as $index => $qty) {
-                if ($qty >= 0) {
+            foreach ($request->container_detail_main_id as $index => $container_detail_main_id) {
+                if ($container_detail_main_id) {
+                    $container_detail_main_id = $request->container_detail_main_id[$index] ?? null;
+
                     OrderContainerDetail::updateOrCreate(
-                        ['id' => $request->container_detail_main_id[$index] ?? null], // Use ID if exists
+                        ['id' => $container_detail_main_id], // Use ID if exists
                         [
                             'order_id' => $order->id,
                             'container_id' => $request->container_id[$index],
@@ -366,8 +460,8 @@ class PendingOrderController extends Controller
                             // 'capacity_unit' => $request->capacity_unit[$index],
                             // 'base_price' => $request->base_price[$index],
 
-                            'my_order_qty' => $qty ?? 0,
-                            'my_capacity' => $request->my_capacity[$index] ?? 0,
+                            'my_order_qty' => $request->my_order_qty[$index] ?? 0,
+                            'my_capacity' => !empty($request->my_order_qty[$index]) && $request->my_order_qty[$index] > 0 ? ($request->my_capacity[$index] ?? 0) : 0,
                             'sub_price' => $request->sub_price[$index] ?? 0,
                             'updated_by' => auth()->id(),
                         ]
@@ -440,25 +534,30 @@ class PendingOrderController extends Controller
                     4 => 'final_total',
                     5 => DB::raw("
                         (CASE 
-                            WHEN order_status = '1' THEN 'Pending'
-                            WHEN order_status = '2' THEN 'Accepted'
-                            WHEN order_status = '3' THEN 'Rejected'
-                            WHEN order_status = '4' THEN 'Shipped'
-                            WHEN order_status = '5' THEN 'Deliver'
-                            ELSE 'Deliver'
-                        END)
-                    "),
-                    6 => DB::raw("
-                        (CASE 
                             WHEN payment_status = '1' THEN 'Pending'
                             WHEN payment_status = '2' THEN 'Successful'
                             WHEN payment_status = '3' THEN 'Cancelled'
                             ELSE 'Cancelled'
                         END)
                     "),
+                    // 6 => DB::raw("
+                    //     (CASE 
+                    //         WHEN order_status = '1' THEN 'Pending'
+                    //         WHEN order_status = '2' THEN 'Accepted'
+                    //         WHEN order_status = '3' THEN 'Rejected'
+                    //         WHEN order_status = '4' THEN 'Shipped'
+                    //         WHEN order_status = '5' THEN 'Delivery'
+                    //         ELSE 'Delivery'
+                    //     END)
+                    // "),
+                    6 => 'created_at',
                 );
 
-                $query = Order::where('is_deleted', '1');
+                if ($user->hasRole('Customer')) {
+                    $query = Order::where('is_deleted', '1')->where('order_status', '1')->where('add_by', $user->id);
+                } else {
+                    $query = Order::where('is_deleted', '1')->where('order_status', '1');
+                }
 
                 if (!empty($request->input('data')['sender_port']) && $request->input('data')['sender_port'] != 'all') {
                     $query->where('sender_port_id', $request->input('data')['sender_port']);
@@ -466,20 +565,21 @@ class PendingOrderController extends Controller
                 if (!empty($request->input('data')['receiver_port']) && $request->input('data')['receiver_port'] != 'all') {
                     $query->where('receiver_port_id', $request->input('data')['receiver_port']);
                 }
-                
-                if (!empty($requestData['search']['value'])) {   // if there is a search parameter, $requestData['search']['value'] contains search parameter
+
+                if (!empty($requestData['search']['value'])) {
                     $searchVal = $requestData['search']['value'];
                     $query->where(function ($query) use ($columns, $searchVal, $requestData) {
-                        $flag = 0;
-                        foreach ($columns as $key => $value) {
-                            $searchVal = $requestData['search']['value'];
-                            if ($requestData['columns'][$key]['searchable'] == 'true') {
-                                if ($flag == 0) {
-                                    $query->where($value, 'like', '%' . $searchVal . '%');
-                                    $flag = $flag + 1;
-                                } else {
-                                    $query->orWhere($value, 'like', '%' . $searchVal . '%');
-                                }
+                        foreach ($columns as $key => $column) {
+                            if ($requestData['columns'][$key]['searchable'] === 'true') {
+
+                                // if ($column == 'store_items.item_name') {
+                                //     $query->orWhereHas('jobCardId.WorkOrder.store_items', function ($q) use ($searchVal) {
+                                //         $q->where('item_name', 'like', '%' . $searchVal . '%')
+                                //             ->orWhere('part_no', 'like', '%' . $searchVal . '%');
+                                //     });
+                                // } else {
+                                $query->orWhere($column, 'like', '%' . $searchVal . '%');
+                                // }
                             }
                         }
                     });
@@ -526,32 +626,37 @@ class PendingOrderController extends Controller
                     $orderColor = $financialYearColors[$financialYear];
 
                     $orderCodeBadge = '<span class="badge" style="background-color:' . $orderColor . '; color: #fff; padding: 5px 10px;">' . $row->order_code . '</span>';
- 
+
                     $actionhtml .= '<div class="dropdown">';
                     $actionhtml .= '<a href="javascript:;" class="menu-link px-3" id="dropdownMenuButton' . $row["id"] . '"                 data-bs-toggle="dropdown" aria-expanded="false">';
                     $actionhtml .= '<i style="font-size:1.3rem;" class="icon-xl fas fa-cog" title="Actions"></i>';
                     $actionhtml .= '</a>';
                     $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg px-3" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
 
-                    // if ($user->can('order edit')) {
+                    if ($user->hasRole('Customer')) {
                         $actionhtml .= '<li><a class="dropdown-item " href="' . route('edit-order',  $row["id"]) . '" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
-                    // }
-                    
+                        $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-pending-order1', $row['id']) . '" ><i class="fa fa-eye text-info"></i> View</a></li>';
+                    } else {
+                        if ($user->can('pending-order view')) {
+                            $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-pending-order', $row['id']) . '" ><i class="fa fa-eye text-info"></i> View</a></li>';
+                        }
+                    }
+
                     $actionhtml .= '</ul>';
                     $actionhtml .= '</div>';
 
                     $sender_name = $row->sender_name ?? 'N/A';
                     $sender_email = $row->sender_email ?? 'N/A';
-                    $sender_country_code = $row->sender_country_code ? '+'.$row->sender_country_code : '';
+                    $sender_country_code = $row->sender_country_code ? '+' . $row->sender_country_code : '';
                     $sender_phone_no = $row->sender_phone_no ? $sender_country_code . ' ' . $row->sender_phone_no : 'N/A';
-                    
+
                     // $sender_location = $row->senderPortId->location ? '(' . $row->senderPortId->location.')' : '';
                     // $sender_Port= $row->senderPortId->port_name ? $row->senderPortId->port_name . ' ' . $sender_location : 'N/A';
                     $sender_Port = $row->senderPortId->port_name ? $row->senderPortId->port_name : 'N/A';
 
                     $receiver_name = $row->receiver_name ?? 'N/A';
                     $receiver_email = $row->receiver_email ?? 'N/A';
-                    $receiver_country_code = $row->receiver_country_code ? '+'.$row->receiver_country_code : '';
+                    $receiver_country_code = $row->receiver_country_code ? '+' . $row->receiver_country_code : '';
                     $receiver_phone_no = $row->receiver_phone_no ? $receiver_country_code . ' ' . $row->receiver_phone_no : 'N/A';
 
                     // $receiver_location = $row->receiverPortId->location ? '(' . $row->receiverPortId->location.')' : '';
@@ -560,9 +665,9 @@ class PendingOrderController extends Controller
 
                     $sender_details = '<div class="d-flex align-items-center">
                                         <div class="d-flex justify-content-start flex-column">
-                                            <span class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">' 
-                                            . $sender_name . '</span>
-                                            <span class="text-primary">'. $sender_Port .'</span>
+                                            <span class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">'
+                        . $sender_name . '</span>
+                                            <span class="text-primary">' . $sender_Port . '</span>
                                             <span class="text-gray-500 fw-semibold d-block fs-7">' . $sender_email . '
                                             </span>
                                             <span class="text-gray-500 fw-semibold d-block fs-7">' . $sender_phone_no . '
@@ -573,7 +678,7 @@ class PendingOrderController extends Controller
                     $receiver_details = '<div class="d-flex align-items-center">
                                         <div class="d-flex justify-content-start flex-column">
                                             <span class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">'
-                                            . $receiver_name . '</span>
+                        . $receiver_name . '</span>
                                             <span class="text-primary">' . $receiver_Port . '</span>
                                             <span class="text-gray-500 fw-semibold d-block fs-7">' . $receiver_email . '
                                             </span>
@@ -589,17 +694,25 @@ class PendingOrderController extends Controller
                         default => '<span class="badge badge-secondary">Unknown</span>',
                     };
 
-                    $orderBadge = match ((int) $row->order_status) {
-                        1 => '<span class="badge badge-outline badge-warning">Pending</span>',
-                        2 => '<span class="badge badge-outline badge-primary">Accepted</span>',
-                        3 => '<span class="badge badge-outline badge-danger">Rejected</span>',
-                        4 => '<span class="badge badge-outline badge-info">Shipped</span>',
-                        5 => '<span class="badge badge-outline badge-success">Delivered</span>',
-                        default => '<span class="badge badge-outline badge-secondary">Unknown</span>',
-                    };
+                    // $orderBadge = match ((int) $row->order_status) {
+                    //     1 => '<span class="badge badge-outline badge-warning">Pending</span>',
+                    //     2 => '<span class="badge badge-outline badge-primary">Accepted</span>',
+                    //     3 => '<span class="badge badge-outline badge-danger">Rejected</span>',
+                    //     4 => '<span class="badge badge-outline badge-info">Shipped</span>',
+                    //     5 => '<span class="badge badge-outline badge-success">Delivery</span>',
+                    //     default => '<span class="badge badge-outline badge-secondary">Unknown</span>',
+                    // };
 
-                    $orderCodeBadge = ' <a href="' . route('view-pending-order1', $row['id']) . '" class="">'
-                        . $orderCodeBadge . '</a>';
+                    if ($user->hasRole('Customer')) {
+                        $orderCodeBadge = ' <a href="' . route('view-pending-order1', $row['id']) . '" class="">' . $orderCodeBadge . '</a>';
+                    } else {
+                        if ($user->can('pending-order view')) {
+                            $orderCodeBadge = ' <a href="' . route('view-pending-order', $row['id']) . '" class="">' . $orderCodeBadge . '</a>';
+                        } else {
+                            $orderCodeBadge = $orderCodeBadge;
+                        }
+                    }
+
                     $i++;
                     $nestedData = array();
                     $nestedData[] = $i;
@@ -608,8 +721,8 @@ class PendingOrderController extends Controller
                     $nestedData[] = $receiver_details;
                     $nestedData[] = $row->final_total;
                     $nestedData[] = $paymentBadge;
-                    $nestedData[] = $orderBadge;
-                    $nestedData[] = enterDateforment($row->created_at, 'd-m-Y H:i A');
+                    // $nestedData[] = $orderBadge;
+                    $nestedData[] = new_date_time_br_formate($row->created_at);
                     $nestedData[] = $actionhtml;
                     $data[] = $nestedData;
                 }
@@ -622,23 +735,6 @@ class PendingOrderController extends Controller
 
                 echo json_encode($json_data);
                 break;
-
-            case 'add-order-charge':
-
-                $data['charge_type'] = Config::get('constants.CHARGE_TYPE');
-
-                $list = view('backend.pages.order_charge.add', $data);
-                echo $list;
-                break;
-
-            case 'edit-order-charge':
-                $data['charge_type'] = Config::get('constants.CHARGE_TYPE');
-                $data['order_charge_details'] = OrderCharge::find($request->order_charge_id);
-                // dd($data['permission_details']);
-                $list = view('backend.pages.order_charge.edit', $data);
-                echo $list;
-                break;
-            
         }
     }
 }

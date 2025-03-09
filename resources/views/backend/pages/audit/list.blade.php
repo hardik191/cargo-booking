@@ -19,7 +19,7 @@
         </div>
         <!--end::Card header-->
         <!--begin::Card body-->
-        <div class="card-body pt-0">
+        <div class="card-body pt-0 classTable">
             <!--begin::Table-->
             <table class="table align-middle table-row-dashed fs-6 gy-3 mb-0" id="audits">
                 <thead>
@@ -28,12 +28,12 @@
                         <th>User</th>
                         <th>Model</th>
                         <th>Action</th>
-                        <th>Time</th>
-                        <th>Old Values</th>
-                        <th>New Values</th>
-                        <th>Url</th>
-                        <th>Ip Adrress</th>
-                        <th>Navegador</th>
+                        <th class="min-w-80px">Time</th>
+                        <th class="min-w-100px">Old Values</th>
+                        <th class="min-w-100px">New Values</th>
+                        <th class="min-w-100px ">Url</th>
+                        <th class="min-w-100px ">Ip Adrress</th>
+                        <th class="min-w-100px ">Navegador</th>
                     </tr>
                 </thead>
                 <tbody class="fw-semibold">
