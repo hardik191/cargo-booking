@@ -22,7 +22,7 @@
         @endcan
 
         <div class="card-body pt-0 classTable">
-            <table class="table table-bordered " id="container_list">
+            <table class="table align-middle fs-6 gy-3 mb-0" id="container_list">
                 <thead>
                     <tr class="text-start fw-bold fs-7 text-uppercase gs-0">
                         <th >#</th>

@@ -1,25 +1,24 @@
 @extends('backend.layout.layout')
 @section('content')
+    <div id="kt_app_content" class="app-content flex-column-fluid">
+        <div id="kt_app_content_container" class="app-container container-xxl">
+            @php
+                $paymentBadge = match ((int) $order_details->payment_status) {
+                    1 => '<span class="badge badge-warning">Pending</span>',
+                    2 => '<span class="badge badge-success">Successful</span>',
+                    3 => '<span class="badge badge-danger">Cancelled</span>',
+                    default => '<span class="badge badge-secondary">Unknown</span>',
+                };
 
-<div id="kt_app_content" class="app-content flex-column-fluid">
-    <div id="kt_app_content_container" class="app-container container-xxl">
-        @php
-            $paymentBadge = match ((int) $order_details->payment_status) {
-                1 => '<span class="badge badge-warning">Pending</span>',
-                2 => '<span class="badge badge-success">Successful</span>',
-                3 => '<span class="badge badge-danger">Cancelled</span>',
-                default => '<span class="badge badge-secondary">Unknown</span>',
-            };
-
-            $orderBadge = match ((int) $order_details->order_status) {
-                1 => '<span class="badge badge-outline badge-warning">Pending</span>',
-                2 => '<span class="badge badge-outline badge-primary">Accepted</span>',
-                3 => '<span class="badge badge-outline badge-danger">Rejected</span>',
-                4 => '<span class="badge badge-outline badge-info">Shipped</span>',
-                5 => '<span class="badge badge-outline badge-success">Delivery</span>',
-                default => '<span class="badge badge-outline badge-secondary">Unknown</span>',
-            };
-        @endphp
+                $orderBadge = match ((int) $order_details->order_status) {
+                    1 => '<span class="badge badge-outline badge-warning">Pending</span>',
+                    2 => '<span class="badge badge-outline badge-primary">Accepted</span>',
+                    3 => '<span class="badge badge-outline badge-danger">Rejected</span>',
+                    4 => '<span class="badge badge-outline badge-info">Shipped</span>',
+                    5 => '<span class="badge badge-outline badge-success">Delivery</span>',
+                    default => '<span class="badge badge-outline badge-secondary">Unknown</span>',
+                };
+            @endphp
             <div class="row mb-7">
                 <div class="col-xl-12">
                     <div class="card card-xl-stretch1">
@@ -45,7 +44,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="fw-bold">{{ ($order_details->created_at) }}</span>
+                                    <span class="fw-bold">{{ $order_details->created_at }}</span>
                                 </div>
                             </div>
                             <div class="separator border-1 my-5"></div>
@@ -53,13 +52,14 @@
                                 <div class="col-md-6">
                                     <div class="flex-grow-1 text-muted">
                                         <div class="d-flex align-items-center">
-                                        <i class="ki-duotone ki-two-credit-cart fs-2 me-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                            <span class="path4"></span>
-                                            <span class="path5"></span>
-                                            </i>Payment Status</div>
+                                            <i class="ki-duotone ki-two-credit-cart fs-2 me-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                                <span class="path5"></span>
+                                            </i>Payment Status
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -72,20 +72,22 @@
                                 <div class="col-md-6">
                                     <div class="flex-grow-1 text-muted">
                                         <div class="d-flex align-items-center">
-                                        <i class="ki-duotone ki-wallet fs-2 me-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                            <span class="path4"></span>
-                                        </i>Payment Method</div>
+                                            <i class="ki-duotone ki-wallet fs-2 me-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                            </i>Payment Method
+                                        </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
-                                    {{-- <span class="fw-bold">{{ isset($order_details['paymentDetails']->payment_mode) ? get_payment_mode($order_details['paymentDetails']->payment_mode) : 'N/A' }}</span> --}}
+                                    <span
+                                        class="fw-bold">{{ isset($order_details['paymentHasOne']->payment_mode) ? get_payment_mode($order_details['paymentHasOne']->payment_mode) : 'N/A' }}</span>
                                 </div>
                             </div>
-                        
+
                         </div>
                     </div>
                 </div>
@@ -101,56 +103,62 @@
                         </div>
                         <div class="card-body p-9">
                             <div class="row mb-5 g-1">
-                                    <div class="col-6">
-                                        <div class="flex-grow-1 text-muted">
-                                            <div class="d-flex align-items-center">
-                                                Sender Name
-                                            </div>
+                                <div class="col-6">
+                                    <div class="flex-grow-1 text-muted">
+                                        <div class="d-flex align-items-center">
+                                            Sender Name
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <span class="fw-bold">{{ $order_details->sender_name }}</span>
-                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="fw-bold">{{ $order_details->sender_name }}</span>
+                                </div>
 
                                 <div class="separator border-1 my-5"></div>
-                                    <div class="col-6">
-                                        <div class="flex-grow-1 text-muted">
-                                            <div class="d-flex align-items-center">
-                                                Sender Email
-                                            </div>
+                                <div class="col-6">
+                                    <div class="flex-grow-1 text-muted">
+                                        <div class="d-flex align-items-center">
+                                            Sender Email
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <span class="fw-bold">{{ $order_details->sender_email }}</span>
-                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="fw-bold">{{ $order_details->sender_email }}</span>
+                                </div>
 
                                 <div class="separator border-1 my-5"></div>
-                                    <div class="col-6">
-                                        <div class="flex-grow-1 text-muted">
-                                            <div class="d-flex align-items-center">
-                                                Sender Phone No
-                                            </div>
+                                <div class="col-6">
+                                    <div class="flex-grow-1 text-muted">
+                                        <div class="d-flex align-items-center">
+                                            Sender Phone No
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <span class="fw-bold"> <span class="text-primary">+{{ $order_details->sender_country_code }}</span>  {{ $order_details->sender_phone_no }}</span>
-                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="fw-bold"> <span
+                                            class="text-primary">+{{ $order_details->sender_country_code }}</span>
+                                        {{ $order_details->sender_phone_no }}</span>
+                                </div>
                                 <div class="separator border-1 my-5"></div>
-                                    <div class="col-6">
-                                        <div class="flex-grow-1 text-muted">
-                                            <div class="d-flex align-items-center">
-                                                Sender Port
-                                            </div>
+                                <div class="col-6">
+                                    <div class="flex-grow-1 text-muted">
+                                        <div class="d-flex align-items-center">
+                                            Sender Port
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        @php
-                                            $sender_location = $order_details->senderPortId->location ? '(' . $order_details->senderPortId->location.')' : '';
-                                            $sender_Port= $order_details->senderPortId->port_name ? $order_details->senderPortId->port_name . ' ' . $sender_location : 'N/A';
-                                        @endphp
-                                        <span class="fw-bold"> {{ $sender_Port }}</span>
-                                    </div>
-                                    
+                                </div>
+                                <div class="col-6">
+                                    @php
+                                        $sender_location = $order_details->senderPortId->location
+                                            ? '(' . $order_details->senderPortId->location . ')'
+                                            : '';
+                                        $sender_Port = $order_details->senderPortId->port_name
+                                            ? $order_details->senderPortId->port_name . ' ' . $sender_location
+                                            : 'N/A';
+                                    @endphp
+                                    <span class="fw-bold"> {{ $sender_Port }}</span>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -166,62 +174,68 @@
                         <div class="card-body p-9">
 
                             <div class="row mb-5 g-1">
-                                    <div class="col-6">
-                                        <div class="flex-grow-1 text-muted">
-                                            <div class="d-flex align-items-center">
-                                                Receiver Name
-                                            </div>
+                                <div class="col-6">
+                                    <div class="flex-grow-1 text-muted">
+                                        <div class="d-flex align-items-center">
+                                            Receiver Name
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <span class="fw-bold">{{ $order_details->receiver_name }}</span>
-                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="fw-bold">{{ $order_details->receiver_name }}</span>
+                                </div>
 
                                 <div class="separator border-1 my-5"></div>
-                                    <div class="col-6">
-                                        <div class="flex-grow-1 text-muted">
-                                            <div class="d-flex align-items-center">
-                                                Receiver Email
-                                            </div>
+                                <div class="col-6">
+                                    <div class="flex-grow-1 text-muted">
+                                        <div class="d-flex align-items-center">
+                                            Receiver Email
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <span class="fw-bold">{{ $order_details->receiver_email }}</span>
-                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="fw-bold">{{ $order_details->receiver_email }}</span>
+                                </div>
 
                                 <div class="separator border-1 my-5"></div>
-                                    <div class="col-6">
-                                        <div class="flex-grow-1 text-muted">
-                                            <div class="d-flex align-items-center">
-                                                Receiver Phone No
-                                            </div>
+                                <div class="col-6">
+                                    <div class="flex-grow-1 text-muted">
+                                        <div class="d-flex align-items-center">
+                                            Receiver Phone No
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <span class="fw-bold"> <span class="text-primary">+{{ $order_details->receiver_country_code }}</span>  {{ $order_details->receiver_phone_no }}</span>
-                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <span class="fw-bold"> <span
+                                            class="text-primary">+{{ $order_details->receiver_country_code }}</span>
+                                        {{ $order_details->receiver_phone_no }}</span>
+                                </div>
                                 <div class="separator border-1 my-5"></div>
-                                    <div class="col-6">
-                                        <div class="flex-grow-1 text-muted">
-                                            <div class="d-flex align-items-center">
-                                                Receiver Port
-                                            </div>
+                                <div class="col-6">
+                                    <div class="flex-grow-1 text-muted">
+                                        <div class="d-flex align-items-center">
+                                            Receiver Port
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <span class="fw-bold">
-                                            @php
-                                                $receiver_location = $order_details->receiverPortId->location ? '(' . $order_details->receiverPortId->location.')' : '';
-                                                $receiver_Port= $order_details->receiverPortId->port_name ? $order_details->receiverPortId->port_name . ' ' . $receiver_location : 'N/A';
-                                            @endphp
-                                            {{ $receiver_Port }}
-                                        </span>
-                                    </div>
-                                    
+                                </div>
+                                <div class="col-6">
+                                    <span class="fw-bold">
+                                        @php
+                                            $receiver_location = $order_details->receiverPortId->location
+                                                ? '(' . $order_details->receiverPortId->location . ')'
+                                                : '';
+                                            $receiver_Port = $order_details->receiverPortId->port_name
+                                                ? $order_details->receiverPortId->port_name . ' ' . $receiver_location
+                                                : 'N/A';
+                                        @endphp
+                                        {{ $receiver_Port }}
+                                    </span>
+                                </div>
+
                             </div>
                         </div>
                     </div>
-                </div>   
+                </div>
             </div>
 
             <div class="row g-5 g-xl-7">
@@ -234,7 +248,8 @@
                         </div>
                         <div class="card-body p-9">
                             <div class="table-responsive classTable">
-                                <table class="table table-bordered" id="container-details-table" style="border-radius: 10px !important; border: 2px solid rgb(40, 39, 39) !important;">
+                                <table class="table table-bordered" id="container-details-table"
+                                    style="border-radius: 10px !important; border: 2px solid rgb(40, 39, 39) !important;">
                                     <thead>
                                         <tr class="fw-bold fs-6 text-gray-800 text-uppercase" style="border: 2px solid">
                                             <th class="min-w-150px">Container Type</th>
@@ -246,7 +261,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($order_details->orderContainerDetailMany as $con_key => $container_val )
+                                        @foreach ($order_details->orderContainerDetailMany as $con_key => $container_val)
                                             <tr>
                                                 <td>
                                                     {{-- <input type="hidden" name="container_detail_main_id[]" value="{{ $container_val->id }}" autocomplete="off">
@@ -256,9 +271,11 @@
                                                 <td>
                                                     @php
                                                         if ($container_val->capacity_unit == 1) {
-                                                            $unit = '<span class="badge badge-outline badge-primary">KG</span>';
+                                                            $unit =
+                                                                '<span class="badge badge-outline badge-primary">KG</span>';
                                                         } else {
-                                                            $unit = '<span class="badge badge-outline badge-primary">Tone</span>';
+                                                            $unit =
+                                                                '<span class="badge badge-outline badge-primary">Tone</span>';
                                                         }
                                                     @endphp
                                                     {{ $container_val->max_capacity }} {!! $unit !!}
@@ -301,9 +318,9 @@
                                 </table>
                             </div>
                         </div>
-                    </div>  
+                    </div>
                 </div>
-                
+
                 <div class="col-md-12">
                     <div class="card card-xl-stretch1">
                         <div class="card-header pt-1 card-header-bg">
@@ -313,7 +330,8 @@
                         </div>
                         <div class="card-body p-9">
                             <div class="table-responsive classTable">
-                                <table class="table table-bordered" id="charge-details-table" style="border-radius: 10px !important; border: 2px solid rgb(40, 39, 39) !important;">
+                                <table class="table table-bordered" id="charge-details-table"
+                                    style="border-radius: 10px !important; border: 2px solid rgb(40, 39, 39) !important;">
                                     <thead>
                                         <tr class="fw-bold fs-6 text-gray-800 text-uppercase" style="border: 2px solid">
                                             <th class="min-w-150px">Charge Name</th>
@@ -322,8 +340,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($order_details->orderChargeDetailMany as $charge_key => $charge_detail_val )
-
+                                        @foreach ($order_details->orderChargeDetailMany as $charge_key => $charge_detail_val)
                                             @php
                                                 $charge_type_badge = '';
                                                 $badgeClasses = [
@@ -338,7 +355,12 @@
 
                                                 $randomBadge = $badgeClasses[array_rand($badgeClasses)]; // Pick a random badge
 
-                                                $charge_type_badge = '<span class="badge badge-outline ' . $randomBadge . '">' . ($chargeTypes[$charge_detail_val->charge_type] ?? 'Unknown') . '</span>';
+                                                $charge_type_badge =
+                                                    '<span class="badge badge-outline ' .
+                                                    $randomBadge .
+                                                    '">' .
+                                                    ($chargeTypes[$charge_detail_val->charge_type] ?? 'Unknown') .
+                                                    '</span>';
                                             @endphp
                                             <tr>
                                                 <td>
@@ -372,11 +394,96 @@
                                 </table>
                             </div>
                         </div>
-                    </div>  
+                    </div>
+                </div>
+
+                {{-- History --}}
+                <div class="col-md-12">
+                    <div class="card card-xl-stretch1">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>Order History</h2>
+                            </div>
+                        </div>
+
+                        <div class="card-body pt-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle table-row-dashed fs-6 gy-5 mb-0">
+                                    <thead>
+                                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                            <th class="min-w-100px">Order Code</th>
+                                            <th class="min-w-100px">Action Date</th>
+                                            <th class="min-w-175px">Description</th>
+                                            <th class="min-w-70px">Order Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fw-semibold text-gray-600">
+                                        @if ($order_details->orderHistoryMany->isNotEmpty())
+                                            @foreach ($order_details->orderHistoryMany as $history_val)
+                                                @php
+                                                    $payment_status = '';
+
+                                                    $status = get_order_status($history_val->order_status);
+
+                                                    $status = get_order_status($history_val->order_status);
+
+                                                    if ($history_val['order_status'] == 6) {
+                                                        $payment_status .=
+                                                            '
+                                                                <i class="ki-duotone ki-timer fs-3 " style="color: ' .
+                                                            $status['color'] .
+                                                            ';">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                    <span class="path3"></span>
+                                                                </i>';
+                                                    } elseif ($history_val['order_status'] == 7) {
+                                                        $payment_status .= '
+                                                                <i class="ki-duotone ki-check-circle fs-4 text-success">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2" ></span>
+                                                                </i>';
+                                                    } elseif ($history_val['order_status'] == 8) {
+                                                        $color = $status['color'];
+                                                        $payment_status .= "
+                                                            <i class='ki-duotone ki-cross-circle fs-4' style='color: {$color};'>
+                                                                <span class='path1'></span>
+                                                                <span class='path2'></span>
+                                                            </i>";
+                                                    } else {
+                                                        $payment_status .= '';
+                                                    }
+                                                @endphp
+                                                <tr>
+                                                    <td>#{{ $history_val->orderId->order_code }}</td>
+                                                    <td>{{ enterDateforment($history_val->created_at, 'd-m-Y H:i A') }}
+                                                    </td>
+                                                    <td>{{ $history_val->description }}</td>
+                                                    <td>
+                                                        <span class="py-3 px-4 fw-bold rounded text-nowrap"
+                                                            style="color: {{ $status['color'] }}; background-color: {{ $status['background-color'] }};">
+                                                            {!! $payment_status !!}
+                                                            {{ $status['title'] }}
+                                                        </span>
+                                                    </td>
+                                                    {{-- <td>{{ get_order_status($history_val->order_status) }}</td> --}}
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="4" class="text-center text-gray-500">
+                                                    No Data Available
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+        </div>
     </div>
-</div>
-
 @endsection

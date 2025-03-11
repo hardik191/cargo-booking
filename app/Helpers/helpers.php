@@ -139,4 +139,17 @@ function generateCustomerCode()
 
     return $newCode;
 }
+
+function get_payment_mode($mode_id)
+{
+    $statuses = config('constants.PAYMENT_MODE');
+    return $statuses[$mode_id] ?? 'N/A';
+
+}
+function get_order_status($status_id)
+{
+    $statuses = config('constants.HISTORY_ORDER_STATUS');
+    return $statuses[$status_id] ?? null;
+}
+
 ?>

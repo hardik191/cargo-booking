@@ -181,6 +181,8 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
         Route::get('view-pending-order/{id}', [PendingOrderController::class, 'show'])->name('view-pending-order1');
         Route::post('pending-order-ajaxcall', [PendingOrderController::class, 'ajaxcall'])->name('pending-order-ajaxcall1');
 
+        Route::post('edit-save-order-payment-satus', [PendingOrderController::class, 'order_payment_status'])->name('edit-save-order-payment-satus');
+
         // Accepted order 2
         Route::get('accepted-order', [AcceptedOrderController::class, 'index'])->name('accepted-order1');
         Route::get('view-accepted-order/{id}', [AcceptedOrderController::class, 'show'])->name('view-accepted-order1');

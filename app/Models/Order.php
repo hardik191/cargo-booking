@@ -90,6 +90,17 @@ class Order extends Model implements Auditable
     /**
      * Define relationships
      */
+
+    public function paymentHasOne()
+    {
+        return $this->hasOne(Payment::class, 'order_id');
+    }
+
+    public function orderHistoryMany()
+    {
+        return $this->hasMany(OrderHistory::class, 'order_id')->orderBy('id', 'desc');
+    }
+
     public function senderPortId()
     {
         return $this->belongsTo(Port::class, 'sender_port_id');

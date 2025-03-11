@@ -65,7 +65,7 @@ class RejectedOrderController extends Controller
                 );
                 return view('customer.pages.order.rejected_order.list', $data);
             } else {
-                return redirect()->route('error-403');
+                return redirect()->route('access-denied');
             }
         }
     }
@@ -159,7 +159,7 @@ class RejectedOrderController extends Controller
             if ($user->can('rejected-order view')) {
                 return view('customer.pages.order.accepted_order.view', $data);
             } else {
-                return redirect()->route('error-403');
+                return redirect()->route('access-denied');
             }
         }
     }

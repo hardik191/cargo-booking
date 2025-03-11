@@ -65,7 +65,7 @@ class ShippedOrderController extends Controller
                 );
                 return view('customer.pages.order.shipped_order.list', $data);
             } else {
-                return redirect()->route('error-403');
+                return redirect()->route('access-denied');
             }
         }
     }
@@ -159,7 +159,7 @@ class ShippedOrderController extends Controller
             if ($user->can('shipped-order view')) {
                 return view('customer.pages.order.accepted_order.view', $data);
             } else {
-                return redirect()->route('error-403');
+                return redirect()->route('access-denied');
             }
         }
     }

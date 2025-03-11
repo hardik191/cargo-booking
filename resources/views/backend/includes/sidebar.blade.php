@@ -52,6 +52,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                 </div>
 
                 {{-- User Management --}}
+                @canany(['role list', 'permission list', 'customer list', 'admin list'])
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ in_array($currentRoute, ['permissions', 'roles', 'customer-list', 'admin-list', 'add-admin', 'edit-admin']) ? 'here show' : '' }}" >
                         <span class="menu-link">
                             <span class="menu-icon">
@@ -111,6 +112,7 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                             @endcan
                         </div>
                     </div>
+                @endcanany
 
                 {{-- Master --}}
                 @canany(['port list', 'order-charge list', 'container list'])
@@ -160,15 +162,6 @@ data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                                     </a>
                                 </div>
                             @endcan
-
-                            {{-- <div class="menu-item">
-                                <a class="menu-link {{ in_array($currentRoute, ['permissions']) ? 'active' : '' }}" href="{{route('permissions')}}">
-                                    <span class="menu-bullet">
-                                        <span class="bullet bullet-dot"></span>
-                                    </span>
-                                    <span class="menu-title">Permissions</span>
-                                </a>
-                            </div> --}}
 
                         </div>
                     </div>

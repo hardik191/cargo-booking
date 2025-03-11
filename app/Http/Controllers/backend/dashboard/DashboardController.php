@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\backend\dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Container;
+use App\Models\OrderCharge;
+use App\Models\Port;
 use Illuminate\Http\Request;
-use Config;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 
 class DashboardController extends Controller
 {
@@ -13,16 +17,55 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $data['title'] =  'Dashboard'.'||'. get_system_name();
+        $user = Auth::user();
 
-        $data['header'] = array(
-            'title' => 'Dashboard',
-            'breadcrumb' => array(
-                'Dashboard' => route('dashboard'),
-            )
+        $data['css'] = array(
+            'toastr/toastr.min.css'
+        );
+        $data['plugincss'] = array(
+            // 'plugins/custom/datatables/table/datatables.bundle.css',
+        );
+        $data['pluginjs'] = array(
+            'toastr/toastr.min.js',
+            // 'validate/jquery.validate.min.js',
+        );
+        $data['widgetjs'] = array(
+            // 'plugins/custom/datatables/table/datatables.bundle.js',
+        );
+        $data['js'] = array(
+            'comman_function.js',
+            'jquery.form.min.js',
+            'dashboard.js',
+        );
+        $data['funinit'] = array(
+            'Dashboard.init()'
         );
 
-        return view('backend.pages.dashboard.list', $data);
+        $data['port_details'] = Port::where('status', '1')->get();
+        $data['container_details'] = Container::where('status', '1')->get();
+        $data['order_charge_details'] = OrderCharge::where('status', '1')->get();
+
+        $data['chargeTypes'] = Config::get('constants.CHARGE_TYPE'); // Get charge type names
+
+        if ($user->hasRole('Customer')) {
+            $data['title'] =  'Dashboard' . ' || ' . get_system_name();
+            $data['header'] = array(
+                'title' => 'Dashboard',
+                'breadcrumb' => array(
+                    'Home' => route('dashboard1'),
+                )
+            );
+            return view('backend.pages.dashboard.list', $data);
+        } else {
+            $data['title'] =  'Dashboard' . ' || ' . get_system_name();
+            $data['header'] = array(
+                'title' => 'Dashboard',
+                'breadcrumb' => array(
+                    'Home' => route('dashboard'),
+                )
+            );
+            return view('backend.pages.dashboard.admin_list', $data);
+        }
 
     }
 

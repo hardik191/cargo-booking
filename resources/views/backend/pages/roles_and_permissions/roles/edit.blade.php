@@ -10,7 +10,7 @@
         <!--end::Label-->
         <!--begin::Input-->
         <input type="hidden" name="edit_id" value="{{ $role_details->id }}">
-        <input class="form-control form-control-solid" placeholder="Enter a role name" value="{{ $role_details->name }}" name="role_name" />
+        <input class="form-control form-control-solid readonly" readonly placeholder="Enter a role name" value="{{ $role_details->name }}" name="role_name" />
         <!--end::Input-->
 
         <div class="fv-row mb-3">

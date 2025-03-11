@@ -8,7 +8,10 @@ use App\Models\Order;
 use App\Models\OrderCharge;
 use App\Models\OrderChargeDetail;
 use App\Models\OrderContainerDetail;
+use App\Models\OrderHistory;
+use App\Models\Payment;
 use App\Models\Port;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -70,7 +73,7 @@ class PendingOrderController extends Controller
             if ($user->can('pending-order list')) {
                 return view('customer.pages.order.pending_order.list', $data);
             } else {
-                return redirect()->route('error-403');
+                return redirect()->route('access-denied');
             }
         }
     }
@@ -112,10 +115,10 @@ class PendingOrderController extends Controller
         $data['js'] = array(
             'comman_function.js',
             'jquery.form.min.js',
-            'pending_order.js',
+            'create_order.js',
         );
         $data['funinit'] = array(
-            'Pending_order.create()'
+            'Order.create()'
         );
 
         return view('customer.pages.order.order.add', $data);
@@ -210,6 +213,22 @@ class PendingOrderController extends Controller
                 ]);
             }
 
+            OrderHistory::create([
+                'order_id' => $order->id,
+                'description' => 'Your order is placed, please wait for the admin accepted',
+                'order_status' => 1,
+                'add_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
+
+            OrderHistory::create([
+                'order_id' => $order->id,
+                'description' => 'Waiting for payment to be completed.',
+                'order_status' => 6,
+                'add_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
+
             DB::commit();
 
             $return = [
@@ -285,6 +304,9 @@ class PendingOrderController extends Controller
             }
         }
 
+        $data['chargeTypes'] = Config::get('constants.CHARGE_TYPE'); // Get charge type names
+        $data['paymentMode'] = Config::get('constants.PAYMENT_MODE'); // Get charge type names
+        
         // $data['container_details'] = Container::where('status', '1')->get();
         // $data['order_charge_details'] = OrderCharge::where('status', '1')->get();
 
@@ -296,27 +318,30 @@ class PendingOrderController extends Controller
         );
         $data['pluginjs'] = array(
             'toastr/toastr.min.js',
-            // 'validate/jquery.validate.min.js',
+            'validate/jquery.validate.min.js',
         );
         $data['widgetjs'] = array(
             // 'plugins/custom/datatables/table/datatables.bundle.js',
         );
         $data['js'] = array(
-            // 'comman_function.js',
-            // 'jquery.form.min.js',
-            // 'pending_order.js',
+            'comman_function.js',
+            'jquery.form.min.js',
+            'pending_order.js',
         );
-        $data['funinit'] = array(
-            // 'Pending_order.edit()'
-        );
-
         if ($user->hasRole('Customer')) {
+            $data['funinit'] = array(
+                'Pending_order.view()'
+            );
             return view('customer.pages.order.pending_order.view', $data);
         } else {
             if ($user->can('pending-order view')) {
+                
+                $data['funinit'] = array(
+                    'Pending_order.admin_view()'
+                );
                 return view('customer.pages.order.pending_order.admin_view', $data);
             } else {
-                return redirect()->route('error-403');
+                return redirect()->route('access-denied');
             }
         }
     }
@@ -380,10 +405,10 @@ class PendingOrderController extends Controller
         $data['js'] = array(
             'comman_function.js',
             'jquery.form.min.js',
-            'pending_order.js',
+            'create_order.js',
         );
         $data['funinit'] = array(
-            'Pending_order.edit()'
+            'Order.edit()'
         );
 
         return view('customer.pages.order.order.edit', $data);
@@ -482,6 +507,170 @@ class PendingOrderController extends Controller
                     ]
                 );
             }
+
+            DB::commit();
+            $return = [
+                'status' => 'success',
+                'message' => 'Order successfully updated.',
+                'jscode' => '$("#loader").hide();',
+                'redirect' =>  route('pending-order1'),
+            ];
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+
+            $errorMessages = '<ul>';
+            foreach ($e->errors() as $error) {
+                $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
+            }
+            $errorMessages .= '</ul>';
+
+            $return = [
+                'sweet_alert' => 'sweet_alert',
+                'status' => 'warning',
+                'message' => $errorMessages,
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();',
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $return['status'] = 'warning';
+            $return['jscode'] = '$("#loader").hide();';
+            $return['message'] = 'Something goes to wrong.';
+            throw $e;
+        }
+
+        echo json_encode($return);
+        exit;
+    }
+
+    public function order_status(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            // Validate Request Data
+            $request->validate([
+                'order_status' => ['required', 'integer'],
+                'reason' => ['required_if:order_status,3'],
+            ], [
+                'order_status.required' => 'Please select an order status.',
+                'order_status.integer' => 'Invalid order status selection.',
+                'reason.required_if' => 'A reason is required when rejecting an order.',
+            ]);
+
+
+            $findOrder = Order::where('id', $request->editId)->first();
+
+            $findOrder->update([
+                'order_status' => $request->order_status,
+                'updated_by' => Auth::id(),
+            ]);
+
+            $history_order_details = Config::get('constants.HISTORY_ORDER_STATUS');
+            $orderStatusDetail = $history_order_details[$request->order_status];
+            $order_status = $request->order_status;
+            if($request->order_status == 2){
+                OrderHistory::create([
+                    'order_id' => $findOrder->id,
+                    'description' => 'Your order has been accepted! It will be processed and dispatched soon.',
+                    'order_status' => $order_status,
+                    'add_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                ]);
+            } else {
+                // OrderHistory::create([
+                //     'order_id' => $findOrder->id,
+                //     'description' => 'Your order has been cancelled.',
+                //     'order_status' => $order_status,
+                //     'add_by' => Auth::id(),
+                //     'updated_by' => Auth::id(),
+                // ]);
+
+                OrderHistory::create([
+                    'order_id' => $findOrder->id,
+                    'description' => $request->reason,
+                    'order_status' => $order_status,
+                    'add_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                ]);
+            }
+
+            DB::commit();
+            $return = [
+                'status' => 'success',
+                'message' => 'Order successfully updated.',
+                'jscode' => '$("#loader").hide();',
+                'redirect' =>  route('pending-order'),
+            ];
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+
+            $errorMessages = '<ul>';
+            foreach ($e->errors() as $error) {
+                $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
+            }
+            $errorMessages .= '</ul>';
+
+            $return = [
+                'sweet_alert' => 'sweet_alert',
+                'status' => 'warning',
+                'message' => $errorMessages,
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();',
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $return['status'] = 'warning';
+            $return['jscode'] = '$("#loader").hide();';
+            $return['message'] = 'Something goes to wrong.';
+            throw $e;
+        }
+
+        echo json_encode($return);
+        exit;
+    }
+
+    public function order_payment_status(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            // Validate Request Data
+            $request->validate([
+                'payment_status' => ['required'],
+                'payment_mode' => ['required'],
+            ], [
+                'payment_status.required' => 'Please select payment status.',
+                'payment_mode.required' => 'Please select payment mode.',
+            ]);
+
+
+            $findOrder = Order::where('id', $request->editId)->first();
+
+            $findOrder->update([
+                'payment_status' => $request->payment_status,
+                'updated_by' => Auth::id(),
+            ]);
+
+            // $history_order_details = Config::get('constants.HISTORY_ORDER_STATUS');
+            // $orderStatusDetail = $history_order_details[$request->order_status];
+            // $order_status = $request->order_status;
+
+            Payment::create([
+                'order_id' => $findOrder->id,
+                'user_id' => Auth::id(),
+                'order_amount' => $findOrder->final_total,
+                'payment_document' => null,
+                'payment_mode' => $request->payment_mode,
+                'payment_status' => 2,
+                'payment_date' => Carbon::now(),
+                'add_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
+
+            OrderHistory::create([
+                'order_id' => $findOrder->id,
+                'description' => 'Payment was received!',
+                'order_status' => 7,
+                'add_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
 
             DB::commit();
             $return = [

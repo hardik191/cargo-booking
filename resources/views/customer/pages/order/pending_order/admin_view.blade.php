@@ -83,7 +83,8 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    {{-- <span class="fw-bold">{{ isset($order_details['paymentDetails']->payment_mode) ? get_payment_mode($order_details['paymentDetails']->payment_mode) : 'N/A' }}</span> --}}
+                                    <span
+                                        class="fw-bold">{{ isset($order_details['paymentHasOne']->payment_mode) ? get_payment_mode($order_details['paymentHasOne']->payment_mode) : 'N/A' }}</span>
                                 </div>
                             </div>
 
@@ -400,36 +401,134 @@
 
                                 <div class="row g-5 g-xl-7">
                                     <input type="hidden" name="editId" value="{{ $order_details->id }}">
-
-                                    <div class="form-check-custom form-check-radio-custom d-flex flex-wrap">
-                                        <span
-                                            class="form-check form-check-custom form-check-solid form-check-success d-flex align-items-center me-4 mb-2">
-                                            <input type="radio" name="order_ststus" id="accepted"
-                                                class="form-check-input" value="2">
-                                            <label for="accepted" class="ms-2 fs-6">Accpted</label>
-                                        </span>
-                                        <span
-                                            class="form-check form-check-custom form-check-solid form-check-danger d-flex align-items-center mb-2">
-                                            <input type="radio" name="order_ststus" id="rejected"
-                                                class="form-check-input" value="3">
-                                            <label for="rejected" class="ms-2 fs-6">Rejected</label>
-                                        </span>
+                                    <div class="col-md-6">
+                                        <label class="required fs-6 fw-semibold form-label mb-2">Order Status</label>
+                                        <div class="form-check-custom form-check-radio-custom d-flex flex-wrap">
+                                            <span
+                                                class="form-check form-check-custom form-check-solid form-check-success d-flex align-items-center me-4 mb-2">
+                                                <input type="radio" name="order_status" id="accepted"
+                                                    class="form-check-input order_status" value="2">
+                                                <label for="accepted" class="ms-2 fs-6">Accpted</label>
+                                            </span>
+                                            <span
+                                                class="form-check form-check-custom form-check-solid form-check-danger d-flex align-items-center mb-2">
+                                                <input type="radio" name="order_status" id="rejected"
+                                                    class="form-check-input order_status" value="3">
+                                                <label for="rejected" class="ms-2 fs-6">Rejected</label>
+                                            </span>
+                                        </div>
                                     </div>
 
+
+                                    <div id="reason_row" class="d-none">
+                                        <div class="col-md-12">
+                                            <label class=" fs-6 fw-semibold form-label mb-2">Reason</label>
+                                            <textarea name="reason" class="form-control form-control-solid1 form-control-lg reason w-100" maxlength="150"
+                                                placeholder="Please enter plant head remarks." autocomplete="off"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
 
-                            <div class="card-footer text-center">
-                                <a href="{{ url()->previous() }}" class="btn btn-secondary me-3">Back</a>
-                                <button type="submit" class="btn btn-primary submitbtn">
-                                    <span class="indicator-label">Submit</span>
-                                    <span class="indicator-progress">Please wait...
-                                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                                    </span>
-                                </button>
-                            </div>
+                            @if ($order_details->payment_status == 2)
+                                <div class="card-footer text-center">
+                                    <a href="{{ url()->previous() }}" class="btn btn-secondary me-3">Back</a>
+                                    <button type="submit" class="btn btn-primary submitbtn">
+                                        <span class="indicator-label">Submit</span>
+                                        <span class="indicator-progress">Please wait...
+                                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                                        </span>
+                                    </button>
+                                </div>
+                            @endif
                         </form>
+                    </div>
+                </div>
+
+                {{-- History --}}
+                <div class="col-md-12">
+                    <div class="card card-xl-stretch1">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2>Order History</h2>
+                            </div>
+                        </div>
+
+                        <div class="card-body pt-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle table-row-dashed fs-6 gy-5 mb-0">
+                                    <thead>
+                                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                            <th class="min-w-100px">Order Code</th>
+                                            <th class="min-w-100px">Action Date</th>
+                                            <th class="min-w-175px">Description</th>
+                                            <th class="min-w-70px">Order Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="fw-semibold text-gray-600">
+                                        @if ($order_details->orderHistoryMany->isNotEmpty())
+                                            @foreach ($order_details->orderHistoryMany as $history_val)
+                                                @php
+                                                    $payment_status = '';
+
+                                                    $status = get_order_status($history_val->order_status);
+
+                                                    $status = get_order_status($history_val->order_status);
+
+                                                    if ($history_val['order_status'] == 6) {
+                                                        $payment_status .=
+                                                            '
+                                                                <i class="ki-duotone ki-timer fs-3 " style="color: ' .
+                                                            $status['color'] .
+                                                            ';">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                    <span class="path3"></span>
+                                                                </i>';
+                                                    } elseif ($history_val['order_status'] == 7) {
+                                                        $payment_status .= '
+                                                                <i class="ki-duotone ki-check-circle fs-4 text-success">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2" ></span>
+                                                                </i>';
+                                                    } elseif ($history_val['order_status'] == 8) {
+                                                        $color = $status['color'];
+                                                        $payment_status .= "
+                                                            <i class='ki-duotone ki-cross-circle fs-4' style='color: {$color};'>
+                                                                <span class='path1'></span>
+                                                                <span class='path2'></span>
+                                                            </i>";
+                                                    } else {
+                                                        $payment_status .= '';
+                                                    }
+                                                @endphp
+                                                <tr>
+                                                    <td>#{{ $history_val->orderId->order_code }}</td>
+                                                    <td>{{ enterDateforment($history_val->created_at, 'd-m-Y H:i A') }}
+                                                    </td>
+                                                    <td>{{ $history_val->description }}</td>
+                                                    <td>
+                                                        <span class="py-3 px-4 fw-bold rounded text-nowrap"
+                                                            style="color: {{ $status['color'] }}; background-color: {{ $status['background-color'] }};">
+                                                            {!! $payment_status !!}
+                                                            {{ $status['title'] }}
+                                                        </span>
+                                                    </td>
+                                                    {{-- <td>{{ get_order_status($history_val->order_status) }}</td> --}}
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="4" class="text-center text-gray-500">
+                                                    No Data Available
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

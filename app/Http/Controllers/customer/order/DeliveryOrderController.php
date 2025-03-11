@@ -65,7 +65,7 @@ class DeliveryOrderController extends Controller
                 );
                 return view('customer.pages.order.delivery_order.list', $data);
             } else {
-                return redirect()->route('error-403');
+                return redirect()->route('access-denied');
             }
         }
     }
@@ -159,7 +159,7 @@ class DeliveryOrderController extends Controller
             if ($user->can('delivery-order view')) {
                 return view('customer.pages.order.accepted_order.view', $data);
             } else {
-                return redirect()->route('error-403');
+                return redirect()->route('access-denied');
             }
         }
     }

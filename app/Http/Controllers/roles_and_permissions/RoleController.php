@@ -93,6 +93,21 @@ class RoleController extends Controller
                 $return['jscode'] = '$("#loader").hide();';
                 $return['message'] = 'Something goes to wrong.';
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+
+            $errorMessages = '<ul>';
+            foreach ($e->errors() as $error) {
+                $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
+            }
+            $errorMessages .= '</ul>';
+
+            $return = [
+                'sweet_alert' => 'sweet_alert',
+                'status' => 'warning',
+                'message' => $errorMessages,
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();',
+            ];
         } catch (\Exception $e) {
             DB::rollback();
             $return = [
@@ -139,7 +154,7 @@ class RoleController extends Controller
             $role = Role::findOrFail($request->edit_id);
 
             $role_update = $role->update([
-                'name' => $request->role_name,
+                // 'name' => $request->role_name,
                 'updated_at' => Carbon::now(),
             ]);
 
@@ -160,7 +175,21 @@ class RoleController extends Controller
                 $return['jscode'] = '$("#loader").hide();';
                 $return['message'] = 'Something goes to wrong.';
             }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
 
+            $errorMessages = '<ul>';
+            foreach ($e->errors() as $error) {
+                $errorMessages .= '<li class="text-start">' . implode('</li><li>', $error) . '</li>';
+            }
+            $errorMessages .= '</ul>';
+
+            $return = [
+                'sweet_alert' => 'sweet_alert',
+                'status' => 'warning',
+                'message' => $errorMessages,
+                'jscode' => '$(".submitbtn:visible").removeAttr("disabled");$("#loader").hide();',
+            ];
         } catch (\Exception $e) {
             DB::rollback();
             $return = [
