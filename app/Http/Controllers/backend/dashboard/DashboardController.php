@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Container;
 use App\Models\OrderCharge;
 use App\Models\Port;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Spatie\Permission\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -47,6 +49,25 @@ class DashboardController extends Controller
 
         $data['chargeTypes'] = Config::get('constants.CHARGE_TYPE'); // Get charge type names
 
+        $data['total_role'] = Role::count();
+
+        $data['total_customer'] = User::with('roles')
+            ->where('status', '!=', '3')
+            ->whereHas('roles', function ($query) {
+                $query->where('name', 'Customer');
+            })->count();
+
+        $data['total_admin'] = User::with('roles')
+            ->where('status', '!=', '3')
+            ->whereHas('roles', function ($query) {
+                $query->where('name', '!=', 'Customer');
+            })->count();
+
+        $data['total_port'] = Port::where('status', '!=', '3')->count();
+
+        $data['total_container'] = Container::where('status', '!=', '3')->count();
+        $data['total_order_charge'] = OrderCharge::where('status', '!=', '3')->count();
+        
         if ($user->hasRole('Customer')) {
             $data['title'] =  'Dashboard' . ' || ' . get_system_name();
             $data['header'] = array(

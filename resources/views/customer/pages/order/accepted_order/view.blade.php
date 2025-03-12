@@ -402,7 +402,7 @@
                     <div class="card card-xl-stretch1">
                         <div class="card-header">
                             <div class="card-title">
-                                <h2>Order History</h2>
+                                <h2>Order History ({{ $order_details->order_code }})</h2>
                             </div>
                         </div>
 
@@ -411,7 +411,7 @@
                                 <table class="table table-hover align-middle table-row-dashed fs-6 gy-5 mb-0">
                                     <thead>
                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-100px">Order Code</th>
+                                            {{-- <th class="min-w-100px">Order Code</th> --}}
                                             <th class="min-w-100px">Action Date</th>
                                             <th class="min-w-175px">Description</th>
                                             <th class="min-w-70px">Order Status</th>
@@ -455,7 +455,7 @@
                                                     }
                                                 @endphp
                                                 <tr>
-                                                    <td>#{{ $history_val->orderId->order_code }}</td>
+                                                    {{-- <td>#{{ $history_val->orderId->order_code }}</td> --}}
                                                     <td>{{ enterDateforment($history_val->created_at, 'd-m-Y H:i A') }}
                                                     </td>
                                                     <td>{{ $history_val->description }}</td>

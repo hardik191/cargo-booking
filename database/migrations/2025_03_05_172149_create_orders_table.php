@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->decimal('total_charge', 15, 2)->default(0.00);
             $table->decimal('final_total', 15, 2)->default(0.00);
             $table->tinyInteger('order_status')->default(1)->comment('1 For Pending ,2 For Accepted, 3 For Rejected, 4 For Shipped, 5 For Delivery');
+            $table->tinyInteger('is_accepted_order')->default(1)->comment('1 For No ,2 For Yes');
             $table->tinyInteger('payment_status')->comment('1 For Pending ,2 For Successful, 3 For Cancelled');
             $table->tinyInteger('is_deleted')->default(1)->comment('1 For No ,2 For Yes');
             $table->unsignedBigInteger('add_by')->nullable();

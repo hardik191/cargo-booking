@@ -404,18 +404,22 @@
                                     <div class="col-md-6">
                                         <label class="required fs-6 fw-semibold form-label mb-2">Order Status</label>
                                         <div class="form-check-custom form-check-radio-custom d-flex flex-wrap">
-                                            <span
-                                                class="form-check form-check-custom form-check-solid form-check-success d-flex align-items-center me-4 mb-2">
-                                                <input type="radio" name="order_status" id="accepted"
-                                                    class="form-check-input order_status" value="2">
-                                                <label for="accepted" class="ms-2 fs-6">Accpted</label>
-                                            </span>
-                                            <span
-                                                class="form-check form-check-custom form-check-solid form-check-danger d-flex align-items-center mb-2">
-                                                <input type="radio" name="order_status" id="rejected"
-                                                    class="form-check-input order_status" value="3">
-                                                <label for="rejected" class="ms-2 fs-6">Rejected</label>
-                                            </span>
+                                            @if ($order_details->payment_status == 2)
+                                                <span
+                                                    class="form-check form-check-custom form-check-solid form-check-success d-flex align-items-center me-4 mb-2">
+                                                    <input type="radio" name="order_status" id="accepted"
+                                                        class="form-check-input order_status" value="2">
+                                                    <label for="accepted" class="ms-2 fs-6">Accpted</label>
+                                                </span>
+                                            @endif
+                                            @if ($order_details->payment_status == 1)
+                                                <span
+                                                    class="form-check form-check-custom form-check-solid form-check-danger d-flex align-items-center mb-2">
+                                                    <input type="radio" name="order_status" id="rejected"
+                                                        class="form-check-input order_status" value="3">
+                                                    <label for="rejected" class="ms-2 fs-6">Rejected</label>
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -431,7 +435,7 @@
 
                             </div>
 
-                            @if ($order_details->payment_status == 2)
+                            {{-- @if ($order_details->payment_status == 2) --}}
                                 <div class="card-footer text-center">
                                     <a href="{{ url()->previous() }}" class="btn btn-secondary me-3">Back</a>
                                     <button type="submit" class="btn btn-primary submitbtn">
@@ -441,7 +445,7 @@
                                         </span>
                                     </button>
                                 </div>
-                            @endif
+                            {{-- @endif --}}
                         </form>
                     </div>
                 </div>
@@ -451,7 +455,7 @@
                     <div class="card card-xl-stretch1">
                         <div class="card-header">
                             <div class="card-title">
-                                <h2>Order History</h2>
+                                <h2>Order History ({{ $order_details->order_code }})</h2>
                             </div>
                         </div>
 
@@ -460,7 +464,7 @@
                                 <table class="table table-hover align-middle table-row-dashed fs-6 gy-5 mb-0">
                                     <thead>
                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-100px">Order Code</th>
+                                            {{-- <th class="min-w-100px">Order Code</th> --}}
                                             <th class="min-w-100px">Action Date</th>
                                             <th class="min-w-175px">Description</th>
                                             <th class="min-w-70px">Order Status</th>
@@ -504,7 +508,7 @@
                                                     }
                                                 @endphp
                                                 <tr>
-                                                    <td>#{{ $history_val->orderId->order_code }}</td>
+                                                    {{-- <td>#{{ $history_val->orderId->order_code }}</td> --}}
                                                     <td>{{ enterDateforment($history_val->created_at, 'd-m-Y H:i A') }}
                                                     </td>
                                                     <td>{{ $history_val->description }}</td>

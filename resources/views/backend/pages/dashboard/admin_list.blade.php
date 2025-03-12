@@ -74,7 +74,7 @@ $auth_user = Auth::user();
                                 <div class="col-xl-4">
                                     <a href="{{route('roles')}}" class="card hoverable card-xl-stretch-style">
                                         <div class="card-body">
-                                            <span class="text-white fs-2x ms-n1"> 0</span>
+                                            <span class="text-white fs-2x ms-n1">{{ $total_role }}</span>
 
                                             <div class="text-white fw-bold fs-2 mb-2 mt-5 sub-title-size">Roles </div>
 
@@ -87,7 +87,7 @@ $auth_user = Auth::user();
                                 <div class="col-xl-4">
                                     <a href="{{route('customer-list')}}" class="card hoverable card-xl-stretch-style">
                                         <div class="card-body">
-                                            <span class="text-white fs-2x ms-n1"> 0</span>
+                                            <span class="text-white fs-2x ms-n1">{{ $total_customer }}</span>
 
                                             <div class="text-white fw-bold fs-2 mb-2 mt-5 sub-title-size">Customer</div>
                                             {{-- <div class="fw-semibold text-white">Flats, Shared Rooms, Duplex</div> --}}
@@ -100,7 +100,7 @@ $auth_user = Auth::user();
                                 <div class="col-xl-4">
                                     <a href="{{route('admin-list')}}" class="card hoverable card-xl-stretch-style mb-5">
                                         <div class="card-body">
-                                            <span class="text-white fs-2x ms-n1">0</span>
+                                            <span class="text-white fs-2x ms-n1">{{ $total_admin }}</span>
 
                                             <div class="text-white fw-bold fs-2 mb-2 mt-5 sub-title-size">Admin</div>
                                             {{-- <div class="fw-semibold text-white">50% Increased for FY20</div> --}}
@@ -133,7 +133,7 @@ $auth_user = Auth::user();
                                 <div class="col-xl-4">
                                     <a href="{{route('port-list')}}" class="card hoverable card-xl-stretch-style">
                                         <div class="card-body">
-                                            <span class="text-white fs-2x ms-n1"> 0</span>
+                                            <span class="text-white fs-2x ms-n1">{{ $total_port }}</span>
 
                                             <div class="text-white fw-bold fs-2 mb-2 mt-5 sub-title-size">Port </div>
 
@@ -146,7 +146,7 @@ $auth_user = Auth::user();
                                 <div class="col-xl-4">
                                     <a href="{{route('container-list')}}" class="card hoverable card-xl-stretch-style">
                                         <div class="card-body">
-                                            <span class="text-white fs-2x ms-n1"> 0</span>
+                                            <span class="text-white fs-2x ms-n1">{{ $total_container }}</span>
 
                                             <div class="text-white fw-bold fs-2 mb-2 mt-5 sub-title-size">Container</div>
                                             {{-- <div class="fw-semibold text-white">Flats, Shared Rooms, Duplex</div> --}}
@@ -159,7 +159,7 @@ $auth_user = Auth::user();
                                 <div class="col-xl-4">
                                     <a href="{{route('order-charge-list')}}" class="card hoverable card-xl-stretch-style mb-5">
                                         <div class="card-body">
-                                            <span class="text-white fs-2x ms-n1">0</span>
+                                            <span class="text-white fs-2x ms-n1">{{ $total_order_charge }}</span>
 
                                             <div class="text-white fw-bold fs-2 mb-2 mt-5 sub-title-size">Order Charge</div>
                                             {{-- <div class="fw-semibold text-white">50% Increased for FY20</div> --}}

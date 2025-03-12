@@ -26,46 +26,36 @@ var Shipped_order = (function () {
             filterSearch();
         });
 
-        // $("body").on("click", ".delete-holiday, .inactive-holiday, .active-holiday", function () {
-        //     var id = $(this).data("id");
-        //     var actionClass = "";
+        $("body").on("click", ".change-order", function () {
+            var id = $(this).data("id");
+            var change_status = $(this).data("change-status");
+            var actionClass = "";
 
-        //     if ($(this).hasClass("delete-holiday")) {
-        //         actionClass = ".yes-sure-delete";
-        //     } else if ($(this).hasClass("inactive-holiday")) {
-        //         actionClass = ".yes-sure-inactive";
-        //     } else if ($(this).hasClass("active-holiday")) {
-        //         actionClass = ".yes-sure-active";
-        //     }
-        //     setTimeout(function () { $(actionClass + ":visible").attr("data-id", id); }, 500);
-        // });
+            actionClass = ".yes-sure-change-order";
+           
+            setTimeout(function () { $(actionClass + ":visible").attr("data-id", id); }, 300);
+            setTimeout(function () { $(actionClass + ":visible").attr("data-change-status", change_status); }, 300);
+        });
 
-        // $("body").on("click", ".yes-sure-delete, .yes-sure-inactive, .yes-sure-active", function () {
-        //     $(".submitbtn:visible").attr("data-kt-indicator", "on").attr("disabled", true);
-        //     var id = $(this).attr("data-id");
-        //     var type = "";
-        //     $(".yes-sure-delete, .yes-sure-inactive, .yes-sure-active").removeAttr("data-id");
+        $("body").on("click", ".yes-sure-change-order", function () {
+            $(".submitbtn:visible").attr("data-kt-indicator", "on").attr("disabled", true);
+            var id = $(this).attr("data-id");
+            var change_status = $(this).attr("data-change-status");
+            $(".yes-sure-change-order").removeAttr("data-id").removeAttr("data-change-status");
 
-        //     if ($(this).hasClass("yes-sure-delete")) {
-        //         type = "3";
-        //     } else if ($(this).hasClass("yes-sure-inactive")) {
-        //         type = "2";
-        //     } else if ($(this).hasClass("yes-sure-active")) {
-        //         type = "1";
-        //     }
-        //     var data = { id: id, type: type, _token: $("#_token").val() };
-        //     if (id) {
-        //         $.ajax({
-        //             type: "POST",
-        //             headers: { "X-CSRF-TOKEN": $('input[name="_token"]').val(), },
-        //             url: baseurl + "admin/holiday-ajaxcall",
-        //             data: { action: "common-holiday", data: data },
-        //             success: function (data) {
-        //                 handleAjaxResponse(data);
-        //             },
-        //         });
-        //     }
-        // });
+            var data = { id: id, change_status: change_status, _token: $("#_token").val() };
+            if (id) {
+                $.ajax({
+                    type: "POST",
+                    headers: { "X-CSRF-TOKEN": $('input[name="_token"]').val(), },
+                    url: baseurl + "customer/order-management/pending-order-ajaxcall",
+                    data: { action: "common-change-order", data: data },
+                    success: function (data) {
+                        handleAjaxResponse(data);
+                    },
+                });
+            }
+        });
     };
 
     return {

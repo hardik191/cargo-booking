@@ -355,6 +355,7 @@ class PendingOrderController extends Controller
 
         $data['order_details'] = Order::with(['orderContainerDetailMany', 'orderChargeDetailMany'])
             ->where('order_status', '1')
+            ->where('is_accepted_order', '1')
             ->where('add_by', $user->id)
             ->where('id', $id)
             ->first();
@@ -823,11 +824,27 @@ class PendingOrderController extends Controller
                     $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg px-3" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
 
                     if ($user->hasRole('Customer')) {
-                        $actionhtml .= '<li><a class="dropdown-item " href="' . route('edit-order',  $row["id"]) . '" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
+                        if($row->order_status == 1 && $row->is_accepted_order == 1){
+                            $actionhtml .= '<li><a class="dropdown-item " href="' . route('edit-order',  $row["id"]) . '" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
+                        }
                         $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-pending-order1', $row['id']) . '" ><i class="fa fa-eye text-info"></i> View</a></li>';
                     } else {
                         if ($user->can('pending-order view')) {
                             $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-pending-order', $row['id']) . '" ><i class="fa fa-eye text-info"></i> View</a></li>';
+                        }
+
+                        if ($user->can('accepted-order shipped-order')) {
+
+                            if ($row->payment_status == 1) {
+                                $actionhtml .= '<li><a class="dropdown-item change-payment-alert" href="javascript:;" data-bs-toggle="modal" data-bs-target="#orderPaymentModal" data-id="' . $row["id"] . '" data-payment-alert="2">
+                                            <i class="ki-duotone ki-two-credit-cart fs-3 text-primary">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                                <span class="path5"></span>
+                                            </i> Payment Alert</a></li>';
+                            }
                         }
                     }
 
@@ -924,6 +941,100 @@ class PendingOrderController extends Controller
 
                 echo json_encode($json_data);
                 break;
+
+            case 'common-change-order':
+                $data = $request->input('data');
+
+                $findId = Order::find($data['id']);
+                $result = $findId->update([
+                    'order_status' => $data['change_status'],
+                    'updated_by' => $user->id,
+                    'updated_at' => Carbon::now(),
+                ]);
+
+                $statusMessages = [
+                    1 => 'Order successfully Pending.',
+                    2 => 'Order successfully Accepted.',
+                    3 => 'Order successfully Rejected.',
+                    4 => 'Order successfully Shipped.',
+                    5 => 'Order successfully Deliver.',
+                ];
+
+                $statusRedirects = [
+                    1 => route('pending-order'),
+                    2 => route('pending-order'),
+                    3 => route('pending-order'),
+                    4 => route('accepted-order'),
+                    5 => route('shipped-order'),
+                ];
+
+                if($data['change_status'] == 4){ // shipped
+                OrderHistory::create([
+                        'order_id' => $data['id'],
+                        'description' => 'Your order has been shipped and is on its way to you. You’ll receive a tracking update soon!',
+                        'order_status' => 4,
+                        'add_by' => Auth::id(),
+                        'updated_by' => Auth::id(),
+                    ]);
+                } else if ($data['change_status'] == 5) {
+                    OrderHistory::create([
+                        'order_id' => $data['id'],
+                        'description' => 'Your order has been delivered.',
+                        'order_status' => 5,
+                        'add_by' => Auth::id(),
+                        'updated_by' => Auth::id(),
+                    ]);
+                }
+
+                if (isset($result)) {
+                    $return['status'] = 'success';
+                    $return['message'] = $statusMessages[$data['change_status']];
+                    $return['jscode'] = '$("#loader").hide();$("#orderModal").modal("hide");';
+                    $return['redirect'] = $statusRedirects[$data['change_status']] ?? route('pending-order');
+                } else {
+                    $return['status'] = 'error';
+                    $return['jscode'] = '$("#loader").hide();';
+                    $return['message'] = 'Something went wrong.';
+                }
+                echo json_encode($return);
+                exit;
+
+            case 'order-payment-alert':
+                $data = $request->input('data');
+
+                $findId = Order::find($data['id']);
+                $result = $findId->update([
+                    'is_accepted_order' => $data['payment_alert'],
+                    'updated_by' => $user->id,
+                    'updated_at' => Carbon::now(),
+                ]);
+
+                $statusRedirects = [
+                    2 => route('pending-order'),
+                ];
+
+                // if ($data['change_status'] == 4) { // shipped
+                //     OrderHistory::create([
+                //         'order_id' => $data['id'],
+                //         'description' => 'Your order has been shipped and is on its way to you. You’ll receive a tracking update soon!',
+                //         'order_status' => 4,
+                //         'add_by' => Auth::id(),
+                //         'updated_by' => Auth::id(),
+                //     ]);
+                // } 
+
+                if (isset($result)) {
+                    $return['status'] = 'success';
+                    $return['message'] = 'Payment Alert Successfully.';
+                    $return['jscode'] = '$("#loader").hide();$("#orderPaymentModal").modal("hide");';
+                    $return['ajaxcall'] = 'Pending_order.init()';
+                } else {
+                    $return['status'] = 'error';
+                    $return['jscode'] = '$("#loader").hide();';
+                    $return['message'] = 'Something went wrong.';
+                }
+                echo json_encode($return);
+                exit;
         }
     }
 }

@@ -57,6 +57,7 @@ INSERT INTO `permissions` ( `name`, `guard_name`, `created_at`, `updated_at`) VA
 ('accepted-order list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 -- ('accepted-order own-list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 ('accepted-order view', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
+('accepted-order shipped-order', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 
 ('rejected-order list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 -- ('rejected-order own-list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
@@ -65,6 +66,7 @@ INSERT INTO `permissions` ( `name`, `guard_name`, `created_at`, `updated_at`) VA
 ('shipped-order list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 -- ('shipped-order own-list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 ('shipped-order view', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
+('shipped-order delivery-order', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 
 ('delivery-order list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 -- ('delivery-order own-list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),

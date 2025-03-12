@@ -97,7 +97,7 @@ return [
             'title' => "Shipped",
             'color' => '#7239ea',
             'background-color' => '#f8f5ff',
-            'description' => 'Your order is on the way.',
+            'description' => 'Your order has been shipped and is on its way to you. You’ll receive a tracking update soon!',
         ],
         '5' => [
             'title' => "Delivered",

@@ -430,10 +430,20 @@
                                             </select>
                                         </div>
 
+                                       <div class="alert alert-warning d-flex align-items-center p-5">
+                                            <i class="ki-duotone ki-shield-tick fs-2hx text-warning-2 me-4">
+                                                <span class="path1"></span><span class="path2"></span>
+                                            </i> 
+                                            <div class="d-flex flex-column">
+                                                <h4 class="mb-1 text-warning-2 text-gray-200">Warning</h4>
+                                                <span class="fs-5 text-dark">This order is confirmed after payment. The order will be delivered soon after payment is sent.</span>
+                                            </div>
+                                        </div>
+                                        
                                     </div>
                                 @endif
                             </div>
-                            @if ($order_details->payment_status == 1)
+                            @if ($order_details->payment_status == 1 && $order_details->is_accepted_order == 2)
                                 <div class="card-footer text-center">
                                     <a href="{{ url()->previous() }}" class="btn btn-secondary me-3">Back</a>
                                     <button type="submit" class="btn btn-primary submitbtn">
@@ -461,7 +471,7 @@
                                 <table class="table table-hover align-middle table-row-dashed fs-6 gy-5 mb-0">
                                     <thead>
                                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-100px">Order Code</th>
+                                            {{-- <th class="min-w-100px">Order Code</th> --}}
                                             <th class="min-w-100px">Action Date</th>
                                             <th class="min-w-175px">Description</th>
                                             <th class="min-w-70px">Order Status</th>
@@ -505,7 +515,7 @@
                                                     }
                                                 @endphp
                                                 <tr>
-                                                    <td>#{{ $history_val->orderId->order_code }}</td>
+                                                    {{-- <td>#{{ $history_val->orderId->order_code }}</td> --}}
                                                     <td>{{ enterDateforment($history_val->created_at, 'd-m-Y H:i A') }}
                                                     </td>
                                                     <td>{{ $history_val->description }}</td>
@@ -536,5 +546,6 @@
 
         </div>
     </div>
+
 
 @endsection

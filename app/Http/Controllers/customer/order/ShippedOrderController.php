@@ -302,6 +302,10 @@ class ShippedOrderController extends Controller
                         if ($user->can('shipped-order view')) {
                             $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-shipped-order', $row['id']) . '" ><i class="fa fa-eye text-info"></i> View</a></li>';
                         }
+
+                        if ($user->can('shipped-order delivery-order')) {
+                            $actionhtml .= '<li><a class="dropdown-item change-order" href="javascript:;" data-bs-toggle="modal" data-bs-target="#orderModal" data-id="' . $row["id"] . '" data-change-status="5"><i class="fa-solid fa-shuffle text-primary"></i> Delivery Order</a></li>';
+                        }
                     }
 
                     $actionhtml .= '</ul>';

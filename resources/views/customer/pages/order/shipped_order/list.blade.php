@@ -68,4 +68,31 @@
         </div>
         <!--end::Card body-->
     </div>
+
+{{-- Change Order delivery --}}
+<div class="modal fade" tabindex="-1" id="orderModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Delivery Order</h3>
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+            <div class="modal-body">
+                <p class="h6">Are you sure you want to Delivery Order ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary submitbtn yes-sure-change-order" data-kt-roles-modal-action="submit">
+                    <span class="indicator-label">Yes , I am sure</span>
+                    <span class="indicator-progress">Please wait...
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
