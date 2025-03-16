@@ -330,9 +330,9 @@ class AdminController extends Controller
                         $actionhtml .= '<li><a class="dropdown-item" href="' . route('edit-admin',  $row["id"]) . '" ><i class="fa fa-edit text-warning"></i>Edit</a></li>';
                     }
 
-                    if ($user->can('admin view')) {
-                        $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-customer', $row['id']) . '" ><i class="fa fa-eye text-info"></i>View</a></li>';
-                    }
+                    // if ($user->can('admin view')) {
+                    //     $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-customer', $row['id']) . '" ><i class="fa fa-eye text-info"></i>View</a></li>';
+                    // }
 
                     if ($row['status'] == 1) {
                         $status = '<span class="badge py-1 px-4 fs-7 badge-light-success">Active</span>';

@@ -45,7 +45,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <span class="fw-bold">{{ $order_details->created_at }}</span>
+                                    <span class="fw-bold">{{ enterDateforment($order_details->created_at, 'd-m-Y H:i A') }}</span>
                                 </div>
                             </div>
                             <div class="separator border-1 my-5"></div>

@@ -122,7 +122,13 @@ return [
             'color' => '#f8285a',
             'background-color' => '#ffeef3',
             'description' => 'Payment has been not received.',
-        ], 
+        ],
+        '9' => [
+            'title' => "Remember Payment.",
+            'color' => '#f8285a',
+            'background-color' => '#ffeef3',
+            'description' => 'Order confirmed after payment. Please remember to send the payment.',
+        ],
     ],
 
 ]

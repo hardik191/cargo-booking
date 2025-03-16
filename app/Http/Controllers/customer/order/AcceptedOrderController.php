@@ -303,7 +303,7 @@ class AcceptedOrderController extends Controller
                             $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-accepted-order', $row['id']) . '" ><i class="fa fa-eye text-info"></i> View</a></li>';
                         }
 
-                        if ($user->can('accepted-order shipped-order')) {
+                        if ($user->can('accepted-order Shipped Order')) {
                             $actionhtml .= '<li><a class="dropdown-item change-order" href="javascript:;" data-bs-toggle="modal" data-bs-target="#orderModal" data-id="' . $row["id"] . '" data-change-status="4"><i class="fa-solid fa-shuffle text-primary"></i> Shipped Order</a></li>';
                         }
                     }

@@ -11,11 +11,14 @@ use App\Models\OrderContainerDetail;
 use App\Models\OrderHistory;
 use App\Models\Payment;
 use App\Models\Port;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\CreateOrderNotification;
+use Illuminate\Support\Facades\Notification;
 
 class PendingOrderController extends Controller
 {
@@ -229,6 +232,17 @@ class PendingOrderController extends Controller
                 'updated_by' => Auth::id(),
             ]);
 
+            $authUser = Auth::user();
+            if ($authUser) {
+                $authUser->notify(new CreateOrderNotification($order));
+            }
+
+            // **Step 2: Notify Users with "Notification Create Order" Permission**
+            $usersWithPermission = User::permission('Notification Create Order')->get();
+            Notification::send($usersWithPermission, new CreateOrderNotification($order));
+
+
+
             DB::commit();
 
             $return = [
@@ -306,7 +320,7 @@ class PendingOrderController extends Controller
 
         $data['chargeTypes'] = Config::get('constants.CHARGE_TYPE'); // Get charge type names
         $data['paymentMode'] = Config::get('constants.PAYMENT_MODE'); // Get charge type names
-        
+
         // $data['container_details'] = Container::where('status', '1')->get();
         // $data['order_charge_details'] = OrderCharge::where('status', '1')->get();
 
@@ -335,7 +349,7 @@ class PendingOrderController extends Controller
             return view('customer.pages.order.pending_order.view', $data);
         } else {
             if ($user->can('pending-order view')) {
-                
+
                 $data['funinit'] = array(
                     'Pending_order.admin_view()'
                 );
@@ -568,7 +582,7 @@ class PendingOrderController extends Controller
             $history_order_details = Config::get('constants.HISTORY_ORDER_STATUS');
             $orderStatusDetail = $history_order_details[$request->order_status];
             $order_status = $request->order_status;
-            if($request->order_status == 2){
+            if ($request->order_status == 2) {
                 OrderHistory::create([
                     'order_id' => $findOrder->id,
                     'description' => 'Your order has been accepted! It will be processed and dispatched soon.',
@@ -824,7 +838,7 @@ class PendingOrderController extends Controller
                     $actionhtml .= '<ul class="dropdown-menu dropdown-menu-lg px-3" aria-labelledby="dropdownMenuButton' . $row["id"] . '">';
 
                     if ($user->hasRole('Customer')) {
-                        if($row->order_status == 1 && $row->is_accepted_order == 1){
+                        if ($row->order_status == 1 && $row->is_accepted_order == 1) {
                             $actionhtml .= '<li><a class="dropdown-item " href="' . route('edit-order',  $row["id"]) . '" data-id="' . $row["id"] . '"><i class="fa fa-edit text-warning"></i> Edit</a></li>';
                         }
                         $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-pending-order1', $row['id']) . '" ><i class="fa fa-eye text-info"></i> View</a></li>';
@@ -833,7 +847,7 @@ class PendingOrderController extends Controller
                             $actionhtml .= '<li><a class="dropdown-item" href="' . route('view-pending-order', $row['id']) . '" ><i class="fa fa-eye text-info"></i> View</a></li>';
                         }
 
-                        if ($user->can('accepted-order shipped-order')) {
+                        if ($user->can('pending-order Payment Alert')) {
 
                             if ($row->payment_status == 1) {
                                 $actionhtml .= '<li><a class="dropdown-item change-payment-alert" href="javascript:;" data-bs-toggle="modal" data-bs-target="#orderPaymentModal" data-id="' . $row["id"] . '" data-payment-alert="2">
@@ -968,8 +982,8 @@ class PendingOrderController extends Controller
                     5 => route('shipped-order'),
                 ];
 
-                if($data['change_status'] == 4){ // shipped
-                OrderHistory::create([
+                if ($data['change_status'] == 4) { // shipped
+                    OrderHistory::create([
                         'order_id' => $data['id'],
                         'description' => 'Your order has been shipped and is on its way to you. You’ll receive a tracking update soon!',
                         'order_status' => 4,
@@ -1003,11 +1017,24 @@ class PendingOrderController extends Controller
                 $data = $request->input('data');
 
                 $findId = Order::find($data['id']);
-                $result = $findId->update([
-                    'is_accepted_order' => $data['payment_alert'],
-                    'updated_by' => $user->id,
-                    'updated_at' => Carbon::now(),
-                ]);
+
+                if ($findId->is_accepted_order == 2) {
+                    OrderHistory::create([
+                        'order_id' => $data['id'],
+                        'description' => 'Order confirmed after payment. Please remember to send the payment.',
+                        'order_status' => 9,
+                        'add_by' => Auth::id(),
+                        'updated_by' => Auth::id(),
+                    ]);
+                } 
+                    $result = $findId->update([
+                        'is_accepted_order' => $data['payment_alert'],
+                        'updated_by' => $user->id,
+                        'updated_at' => Carbon::now(),
+                    ]);
+                
+
+
 
                 $statusRedirects = [
                     2 => route('pending-order'),

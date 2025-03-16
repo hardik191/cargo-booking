@@ -104,3 +104,23 @@
         @endif
     });
 </script>
+
+<script>
+     $("body").on("click",'.onclick-read-notification',function(){
+        var notification_id = $(this).data('id');
+        var elem = $(this).removeClass('notification-unread');
+        // alert('hi');
+
+        $.ajax({
+            type: "POST",
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').val(),
+            },
+            url: baseurl + "read-notification",
+            data: { 'action': 'read-notification', notification_id:notification_id},
+            success: function(data) {
+                $('.notification-count').text(data.unread_count)
+            }
+        });
+    });
+</script>

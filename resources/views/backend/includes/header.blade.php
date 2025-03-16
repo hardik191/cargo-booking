@@ -248,6 +248,10 @@ $branding_details = json_decode($get_system_setting['value']);
     </style> --}}
 
     <style>
+         .notification-unread{
+            background-color: #f3f1f1;
+        }
+        
         [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-heading {
             color: {{ isset($branding_details->sidebar_active_color) ? $branding_details->sidebar_active_color : '#ffffff' }} !important;
         }

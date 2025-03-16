@@ -28,7 +28,7 @@ INSERT INTO `permissions` ( `name`, `guard_name`, `created_at`, `updated_at`) VA
 ('admin list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 ('admin add', 'web', '2024-06-24 22:39:20', '2024-06-25 22:43:01'),
 ('admin edit', 'web', '2024-06-24 22:39:20', '2024-06-25 22:42:50'),
-('admin view', 'web', '2024-06-24 22:39:20', '2024-06-25 22:42:38'),
+-- ('admin view', 'web', '2024-06-24 22:39:20', '2024-06-25 22:42:38'),
 ('admin status', 'web', '2024-06-24 22:39:20', '2024-06-25 22:42:02'),
 ('admin delete', 'web', '2024-06-24 22:39:20', '2024-06-25 22:41:33'),
 
@@ -50,14 +50,17 @@ INSERT INTO `permissions` ( `name`, `guard_name`, `created_at`, `updated_at`) VA
 ('order-charge status', 'web', '2024-06-24 22:39:20', '2024-06-25 22:42:02'),
 ('order-charge delete', 'web', '2024-06-24 22:39:20', '2024-06-25 22:41:33'),
 
+('Notification Create Order', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
+
 ('pending-order list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 -- ('pending-order own-list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 ('pending-order view', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
+('pending-order Payment Alert', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 
 ('accepted-order list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 -- ('accepted-order own-list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 ('accepted-order view', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
-('accepted-order shipped-order', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
+('accepted-order Shipped Order', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 
 ('rejected-order list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),
 -- ('rejected-order own-list', 'web', '2024-06-24 22:11:22', '2024-06-25 22:49:21'),

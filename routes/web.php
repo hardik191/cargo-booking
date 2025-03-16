@@ -11,6 +11,7 @@ use App\Http\Controllers\backend\port\PortController;
 use App\Http\Controllers\backend\system_setting\SystemSettingController;
 use App\Http\Controllers\backend\user_management\AdminController;
 use App\Http\Controllers\backend\user_management\CustomerController;
+use App\Http\Controllers\CommonController;
 use App\Http\Controllers\customer\authentication\CustomerLoginController;
 use App\Http\Controllers\customer\order\AcceptedOrderController;
 use App\Http\Controllers\customer\order\DeliveryOrderController;
@@ -78,7 +79,7 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
         Route::post('add-save-admin', [AdminController::class, 'store'])->name('add-save-admin');
         Route::get('edit-admin/{id}', [AdminController::class, 'edit'])->name('edit-admin')->middleware('checkPermission:admin edit');
         Route::post('edit-save-admin', [AdminController::class, 'update'])->name('edit-save-admin');
-        Route::get('view-admin/{id}',[AdminController::class,'show'])->name('view-admin')->middleware('checkPermission:admin view');
+        // Route::get('view-admin/{id}',[AdminController::class,'show'])->name('view-admin')->middleware('checkPermission:admin view');
         Route::post('admin-ajaxcall', [AdminController::class, 'ajaxcall'])->name('admin-ajaxcall');
     });
 
@@ -141,6 +142,8 @@ Route::group(['prefix' => $adminPrefix, 'middleware' => ['auth']], function () {
 });
 
 Route::get('access-denied', [ErrorController::class, 'accessDenied'])->name('access-denied');
+
+Route::post('read-notification', [CommonController::class, 'ajaxcall'])->name('read-notification');
 
 Route::get('/superadmin', [LoginController::class, 'index'])->name('login');
 Route::post('check-login', [LoginController::class, 'store'])->name('check-login');
