@@ -133,6 +133,17 @@ if($data['user_image'] != '' || $data['user_image'] != null ){
                                         @enderror
                                     </div>
 
+                                    <div class="col-md-6 fv-row fv-plugins-icon-container">
+
+                                        <label class="required fs-5 fw-semibold mb-2"> User Sidebar Navbar Name</label>
+
+                                        <input type="text" class="form-control " placeholder="Please enter sidebar navbar name" name="user_sidebar_navbar_name" value="{{isset($general_setting_details->user_sidebar_navbar_name) ? $general_setting_details->user_sidebar_navbar_name : old('user_sidebar_navbar_name') }}">
+
+                                        @error('user_sidebar_navbar_name')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
                                     {{-- <div class="col-md-6 fv-row fv-plugins-icon-container">
 
                                         <label class="required fs-5 fw-semibold mb-2">Header Navbar Name</label>

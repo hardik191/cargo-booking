@@ -76,10 +76,10 @@ if($data['user_image'] != '' || $data['user_image'] != null ){
                                 <input type="hidden" name="editId" value="{{$data['id']}}">
                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
 
-                             <div class="col-md-4 fv-row fv-plugins-icon-container">
+                             {{-- <div class="col-md-4 fv-row fv-plugins-icon-container">
                                 <label class="required fs-5 fw-semibold mb-2">Mobile No</label>
                                 <input type="text" class="form-control form-control-solid" placeholder="Please enter mobile number" name="mobile_no">
-                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div>
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div></div> --}}
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end py-6 px-9">

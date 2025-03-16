@@ -2,6 +2,19 @@
     $get_system_setting = get_system_setting('general_setting');
     $general_setting_details = json_decode($get_system_setting['value']);
 @endphp
+
+@php
+    $get_system_setting = get_system_setting('branding');
+$branding_details = json_decode($get_system_setting['value']);
+
+
+    if(isset($branding_details->favicon_icon_name) ){
+        $favicon_icon = url("backend/upload/system_setting/".$branding_details->favicon_icon_name);
+    }else{
+        $favicon_icon = url("backend/upload/system_setting/default_no_image.png");
+    }
+
+@endphp
 <div id="kt_app_header" class="app-header" data-kt-sticky="true"
                 data-kt-sticky-activate="{default: true, lg: true}" data-kt-sticky-name="app-header-minimize"
                 data-kt-sticky-offset="{default: '200px', lg: '0'}" data-kt-sticky-animation="false"
@@ -23,7 +36,7 @@
                     <!--begin::Mobile logo-->
                     <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
                         <a href="javascript:;" class="d-lg-none">
-                            <img alt="Logo" src="{{ asset('backend/media/logos/default-small.svg') }}"
+                            <img alt="Logo" src="{{ $favicon_icon }}"
                                 class="h-30px" />
                         </a>
                     </div>

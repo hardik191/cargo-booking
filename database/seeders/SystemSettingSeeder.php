@@ -26,6 +26,7 @@ class SystemSettingSeeder extends Seeder
                 'footer_text' => 'Cargo Booking 2025',
                 'footer_link' => 'https://cargo-booking.com/',
                 'sidebar_navbar_name' => 'Admin Panel',
+                'user_sidebar_navbar_name' => 'Customer Panel',
                 'key' => 'general_setting'
             ]),
             'created_at' => Carbon::now()->format('Y-m-d h:i:s'),
@@ -56,8 +57,8 @@ class SystemSettingSeeder extends Seeder
                 'favicon_icon' => null,
                 'avatar_remove' => null,
                 'login_icon' => null,
-                'favicon_icon_name' => 'favicon_icon1720092836.png',
-                'login_icon_name' => 'login_icon1720092836.png'
+                'favicon_icon_name' => 'favicon_icon1720092836.jpg',
+                'login_icon_name' => 'login_icon1720092836.jpg'
             ]),
             'created_at' => Carbon::now()->format('Y-m-d h:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d h:i:s'),

@@ -170,15 +170,15 @@ class ContainerController extends Controller
 
         DB::beginTransaction();
         try {
-            $request->validate([
-                'container_type' => 'required|unique:containers,container_type,' . $request->edit_id,
-                // 'max_container' => 'required|integer|min:1',
-                'max_capacity' => 'required|integer|min:1',
-                'capacity_unit' => 'required|in:1,2', // 1=KG, 2=Tons
-                'base_price' => 'required|numeric|min:1',
-                'status' => 'required|in:1,2',
-                'updated_by' => auth()->user()->id,
-            ]);
+            // $request->validate([
+            //     'container_type' => 'required|unique:containers,container_type,' . $request->edit_id,
+            //     // 'max_container' => 'required|integer|min:1',
+            //     'max_capacity' => 'required|integer|min:1',
+            //     'capacity_unit' => 'required|in:1,2', // 1=KG, 2=Tons
+            //     'base_price' => 'required|numeric|min:1',
+            //     'status' => 'required|in:1,2',
+            //     'updated_by' => auth()->user()->id,
+            // ]);
 
             $findContainer = Container::find($request->edit_id);
             $findContainer->update([

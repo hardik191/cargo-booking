@@ -14,7 +14,7 @@ data-kt-drawer-overlay="true" data-kt-drawer-width="225px" data-kt-drawer-direct
 data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
 <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
     <div class="hide-on-toggle">
-        <h3 style="color: {{isset($branding_setting_details->sidebar_menu_font_color) ? $branding_setting_details->sidebar_menu_font_color : '#9a9cae'}}">{{isset($general_setting_details->sidebar_navbar_name) ? $general_setting_details->sidebar_navbar_name : ''}}</h3>
+        <h3 style="color: {{isset($branding_setting_details->sidebar_menu_font_color) ? $branding_setting_details->sidebar_menu_font_color : '#9a9cae'}}">{{isset($general_setting_details->user_sidebar_navbar_name) ? $general_setting_details->user_sidebar_navbar_name : ''}}</h3>
     </div>
 
 
